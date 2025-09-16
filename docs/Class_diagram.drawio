@@ -1,19 +1,19 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36" version="28.2.3">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36" modified="2025-09-16T20:00:27.044Z" version="21.6.1" etag="Ir9T7w7pmPjHwxSUQlfc" type="device">
   <diagram name="Page-1" id="c4acf3e9-155e-7222-9cf6-157b1a14988f">
-    <mxGraphModel dx="2339" dy="774" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
+    <mxGraphModel dx="1505" dy="863" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="INni8aJdQVXMnW472Vi9-1" value="ImageLoader (namespace)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-1" value="ImageLoader (namespace)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="460" y="160" width="200" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-1" vertex="1">
           <mxGeometry y="26" width="200" height="44" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-4" value="+ load_image(String file_path)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-4" value="+ load_image(String file_path)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-1" vertex="1">
           <mxGeometry y="70" width="200" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-5" target="INni8aJdQVXMnW472Vi9-4">
+        <mxCell id="INni8aJdQVXMnW472Vi9-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="INni8aJdQVXMnW472Vi9-5" target="INni8aJdQVXMnW472Vi9-4" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="565" y="320" />
@@ -21,69 +21,69 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-10" value="calls" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="INni8aJdQVXMnW472Vi9-9">
+        <mxCell id="INni8aJdQVXMnW472Vi9-10" value="calls" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="INni8aJdQVXMnW472Vi9-9" vertex="1" connectable="0">
           <mxGeometry x="0.119" y="-1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-5" value="VideoLoader (namespace)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-5" value="VideoLoader (namespace)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="460" y="360" width="200" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-7" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-5">
+        <mxCell id="INni8aJdQVXMnW472Vi9-7" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-5" vertex="1">
           <mxGeometry y="26" width="200" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-8" value="+ load_video(String file_path)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-5">
+        <mxCell id="INni8aJdQVXMnW472Vi9-8" value="+ load_video(String file_path)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-5" vertex="1">
           <mxGeometry y="34" width="200" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-11" value="AnnotationLoader (namespace)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-11" value="AnnotationLoader (namespace)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="460" y="40" width="240" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-13" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-11">
+        <mxCell id="INni8aJdQVXMnW472Vi9-13" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-11" vertex="1">
           <mxGeometry y="26" width="240" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-14" value="+ load_image_annotations(String file_path)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-11">
+        <mxCell id="INni8aJdQVXMnW472Vi9-14" value="+ load_image_annotations(String file_path)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-11" vertex="1">
           <mxGeometry y="34" width="240" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-15" value="BasicCardDetector" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-15" value="BasicCardDetector" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="820" y="270" width="310" height="198" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-16" value="- Dataset dataset&lt;div&gt;- int curr_index / iterator&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-15">
+        <mxCell id="INni8aJdQVXMnW472Vi9-16" value="- Dataset dataset&lt;div&gt;- int curr_index / iterator&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-15" vertex="1">
           <mxGeometry y="26" width="310" height="64" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-17" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-15">
+        <mxCell id="INni8aJdQVXMnW472Vi9-17" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-15" vertex="1">
           <mxGeometry y="90" width="310" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-18" value="+ std::vector&amp;lt;Label&amp;gt; detect_image() (&quot;simple&quot; card detector, no temporal memory)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-15">
+        <mxCell id="INni8aJdQVXMnW472Vi9-18" value="+ std::vector&amp;lt;Label&amp;gt; detect_image() (&quot;simple&quot; card detector, no temporal memory)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-15" vertex="1">
           <mxGeometry y="98" width="310" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-19" value="Dataset (collection of images&#39; file names)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-19" value="Dataset (collection of images&#39; file names)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="820" y="40" width="310" height="160" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-20" value="- std::vector&amp;lt;String&amp;gt; images_filenames&lt;div&gt;- String dataset_path&lt;/div&gt;&lt;div&gt;- iterator / current_index&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-19">
+        <mxCell id="INni8aJdQVXMnW472Vi9-20" value="- std::vector&amp;lt;String&amp;gt; images_filenames&lt;div&gt;- String dataset_path&lt;/div&gt;&lt;div&gt;- iterator / current_index&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-19" vertex="1">
           <mxGeometry y="26" width="310" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-21" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-19">
+        <mxCell id="INni8aJdQVXMnW472Vi9-21" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-19" vertex="1">
           <mxGeometry y="80" width="310" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-22" value="+ String advance() (every time is called, returns next image file name)&lt;div&gt;+ String restart()&lt;/div&gt;&lt;div&gt;+ String move_to(int index)&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-19">
+        <mxCell id="INni8aJdQVXMnW472Vi9-22" value="+ String advance() (every time is called, returns next image file name)&lt;div&gt;+ String restart()&lt;/div&gt;&lt;div&gt;+ String move_to(int index)&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-19" vertex="1">
           <mxGeometry y="88" width="310" height="72" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-25" value="TODO: understand how to link images filenames with annotations&lt;div&gt;check if the annotation of each file contain the file name&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-25" value="TODO: understand how to link images filenames with annotations&lt;div&gt;check if the annotation of each file contain the file name&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="430" y="115" width="370" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-26" value="WhiteDetector (the name sucks)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-26" value="WhiteDetector (the name sucks)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1220" y="270" width="430" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-27" value="+ static final unsigned int white_threshold" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-26">
+        <mxCell id="INni8aJdQVXMnW472Vi9-27" value="+ static final unsigned int white_threshold" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-26" vertex="1">
           <mxGeometry y="26" width="430" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-28" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-26">
+        <mxCell id="INni8aJdQVXMnW472Vi9-28" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-26" vertex="1">
           <mxGeometry y="52" width="430" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-29" value="+ std::Vector&amp;lt;cv::Rect&amp;gt; detect_cards(cv::Mat image) (detects white cards and outputs bounding boxes)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-26">
+        <mxCell id="INni8aJdQVXMnW472Vi9-29" value="+ std::Vector&amp;lt;cv::Rect&amp;gt; detect_cards(cv::Mat image) (detects white cards and outputs bounding boxes)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-26" vertex="1">
           <mxGeometry y="60" width="430" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-18">
+        <mxCell id="INni8aJdQVXMnW472Vi9-30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="INni8aJdQVXMnW472Vi9-18" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1220" y="310" as="targetPoint" />
             <Array as="points">
@@ -93,7 +93,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-32" target="INni8aJdQVXMnW472Vi9-29">
+        <mxCell id="INni8aJdQVXMnW472Vi9-38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="INni8aJdQVXMnW472Vi9-32" target="INni8aJdQVXMnW472Vi9-29" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1370" y="430" />
@@ -101,24 +101,24 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-39" value="optionally uses bounding boxes (more efficient?)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="INni8aJdQVXMnW472Vi9-38">
+        <mxCell id="INni8aJdQVXMnW472Vi9-39" value="optionally uses bounding boxes (more efficient?)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="INni8aJdQVXMnW472Vi9-38" vertex="1" connectable="0">
           <mxGeometry x="0.0958" y="1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-32" value="CardClassifier" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-32" value="CardClassifier" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1220" y="480" width="300" height="190" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-33" value="+ field: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-32">
+        <mxCell id="INni8aJdQVXMnW472Vi9-33" value="+ field: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-32" vertex="1">
           <mxGeometry y="26" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-34" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-32">
+        <mxCell id="INni8aJdQVXMnW472Vi9-34" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-32" vertex="1">
           <mxGeometry y="52" width="300" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-35" value="+ std::Vector&amp;lt;Label&amp;gt; classify_cards(cv::Mat image, std::vector&amp;lt;cv::Rect&amp;gt; bounding_boxes) (bounding boxes should be optional, should be from CardDetector.detect_cards(). Applies keypoint description - matching to classify selected bounding boxes into card ranks/suits. Whatever technique other than keypoint description - matching is possible)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-32">
+        <mxCell id="INni8aJdQVXMnW472Vi9-35" value="+ std::Vector&amp;lt;Label&amp;gt; classify_cards(cv::Mat image, std::vector&amp;lt;cv::Rect&amp;gt; bounding_boxes) (bounding boxes should be optional, should be from CardDetector.detect_cards(). Applies keypoint description - matching to classify selected bounding boxes into card ranks/suits. Whatever technique other than keypoint description - matching is possible)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-32" vertex="1">
           <mxGeometry y="60" width="300" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-18" target="INni8aJdQVXMnW472Vi9-33">
+        <mxCell id="INni8aJdQVXMnW472Vi9-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="INni8aJdQVXMnW472Vi9-18" target="INni8aJdQVXMnW472Vi9-33" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1200" y="418" />
@@ -126,10 +126,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-42" value="uses" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-42" value="uses" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="1130" y="390" width="50" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-43" target="INni8aJdQVXMnW472Vi9-22">
+        <mxCell id="INni8aJdQVXMnW472Vi9-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="INni8aJdQVXMnW472Vi9-43" target="INni8aJdQVXMnW472Vi9-22" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="580" y="450" />
@@ -138,36 +138,36 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-52" value="linked to" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="INni8aJdQVXMnW472Vi9-51">
+        <mxCell id="INni8aJdQVXMnW472Vi9-52" value="linked to" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="INni8aJdQVXMnW472Vi9-51" vertex="1" connectable="0">
           <mxGeometry x="-0.0281" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-43" value="pure virtual CardDetector" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-43" value="pure virtual CardDetector" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="460" y="480" width="280" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-44" value="+ field: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-43">
+        <mxCell id="INni8aJdQVXMnW472Vi9-44" value="+ field: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-43" vertex="1">
           <mxGeometry y="26" width="280" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-45" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-43">
+        <mxCell id="INni8aJdQVXMnW472Vi9-45" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-43" vertex="1">
           <mxGeometry y="52" width="280" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-46" value="+ std::vector&amp;lt;Label&amp;gt; detect_image() (every time this method is called, internally calls dataset.advance() to retrieve the image to load (using method ImageLoader.load_image() ))" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-43">
+        <mxCell id="INni8aJdQVXMnW472Vi9-46" value="+ std::vector&amp;lt;Label&amp;gt; detect_image() (every time this method is called, internally calls dataset.advance() to retrieve the image to load (using method ImageLoader.load_image() ))" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-43" vertex="1">
           <mxGeometry y="60" width="280" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-47" value="TemporalCardDetector" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-47" value="TemporalCardDetector" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="820" y="542" width="320" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-48" value="- card position memory" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-47">
+        <mxCell id="INni8aJdQVXMnW472Vi9-48" value="- card position memory" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-47" vertex="1">
           <mxGeometry y="26" width="320" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-49" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-47">
+        <mxCell id="INni8aJdQVXMnW472Vi9-49" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-47" vertex="1">
           <mxGeometry y="52" width="320" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-50" value="+ std::vector&amp;lt;Label&amp;gt; detect_image() (thanks to some magic, uses previous knowledge of card locations to better know where are the cards in the current frame, WORKS ONLY FOR SEQUENTIAL IMAGES (video))" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-47">
+        <mxCell id="INni8aJdQVXMnW472Vi9-50" value="+ std::vector&amp;lt;Label&amp;gt; detect_image() (thanks to some magic, uses previous knowledge of card locations to better know where are the cards in the current frame, WORKS ONLY FOR SEQUENTIAL IMAGES (video))" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-47" vertex="1">
           <mxGeometry y="60" width="320" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.987;entryY=0.216;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-16" target="INni8aJdQVXMnW472Vi9-46">
+        <mxCell id="INni8aJdQVXMnW472Vi9-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.987;entryY=0.216;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="INni8aJdQVXMnW472Vi9-16" target="INni8aJdQVXMnW472Vi9-46" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="780" y="328" />
@@ -175,12 +175,12 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-55" value="derives from" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="INni8aJdQVXMnW472Vi9-54">
+        <mxCell id="INni8aJdQVXMnW472Vi9-55" value="derives from" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="INni8aJdQVXMnW472Vi9-54" vertex="1" connectable="0">
           <mxGeometry x="0.5295" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.996;entryY=0.216;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-48" target="INni8aJdQVXMnW472Vi9-46">
+        <mxCell id="INni8aJdQVXMnW472Vi9-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.996;entryY=0.216;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="INni8aJdQVXMnW472Vi9-48" target="INni8aJdQVXMnW472Vi9-46" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="780" y="581" />
@@ -188,50 +188,50 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-57" value="derives from" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="INni8aJdQVXMnW472Vi9-56">
+        <mxCell id="INni8aJdQVXMnW472Vi9-57" value="derives from" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="INni8aJdQVXMnW472Vi9-56" vertex="1" connectable="0">
           <mxGeometry x="-0.4948" relative="1" as="geometry">
             <mxPoint x="-14" y="13" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-50" target="INni8aJdQVXMnW472Vi9-35">
+        <mxCell id="INni8aJdQVXMnW472Vi9-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="INni8aJdQVXMnW472Vi9-50" target="INni8aJdQVXMnW472Vi9-35" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-50" target="INni8aJdQVXMnW472Vi9-29">
+        <mxCell id="INni8aJdQVXMnW472Vi9-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="INni8aJdQVXMnW472Vi9-50" target="INni8aJdQVXMnW472Vi9-29" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-60" value="uses" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-60" value="uses" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="1135" y="618" width="50" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-65" value="StatisticsCalculation (namespace)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="INni8aJdQVXMnW472Vi9-65" value="StatisticsCalculation (namespace)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-20" y="160" width="380" height="380" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-66" value="+ final float IoU_threshold (usually 0.5?)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-65">
+        <mxCell id="INni8aJdQVXMnW472Vi9-66" value="+ final float IoU_threshold (usually 0.5?)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-65" vertex="1">
           <mxGeometry y="26" width="380" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-67" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="INni8aJdQVXMnW472Vi9-65">
+        <mxCell id="INni8aJdQVXMnW472Vi9-67" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="INni8aJdQVXMnW472Vi9-65" vertex="1">
           <mxGeometry y="52" width="380" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-68" value="+ calc_IoU(cv::Mat true_mask, cv::Mat pred_mask) (don&#39;t know yet what will be the image / labels format, this method calculates the intersection over union of every class in an image comparing the annotations and the predictions (outputs from CardDetector). Returns a value between 0 and 1 for every label class (fixed size array so it&#39;s easier to sum everything up)&lt;div&gt;+ calc_meanIoU(list of IoU, one for every image) (one IoU for every image, notice that IoU is a vector containing the IoU score for every label class, so summing everything up and then dividing by the number of images should give the mean intra-class IoU)&lt;/div&gt;&lt;div&gt;+ calc_MEAN_IoU(IoU) (IoU is a vector containing the IoU score for every class, the final mean is obtained by summing every element of the vector and dividing by the number of the classes)&lt;br&gt;&lt;div&gt;+ calc_confusion_matrix(every pixel counts as one element in the confusion matrix, i.e. 1 pixel is predicted correctly as card 2Spades, then is a TruePositive for the class 2Spades. Summing the pixels should give the total pixels of the image)&lt;/div&gt;&lt;div&gt;+ calc_TP,TN,FP,FN(confusion_matrix, label class)&lt;/div&gt;&lt;div&gt;+ calc_precision(confusion_matrix, label class)&lt;/div&gt;&lt;div&gt;+ calc_recall(confusion_matrix, label class)&lt;/div&gt;&lt;div&gt;+ calc_f1(confusion_matrix, label class)&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="INni8aJdQVXMnW472Vi9-65">
+        <mxCell id="INni8aJdQVXMnW472Vi9-68" value="+ calc_IoU(cv::Mat true_mask, cv::Mat pred_mask) (don&#39;t know yet what will be the image / labels format, this method calculates the intersection over union of every class in an image comparing the annotations and the predictions (outputs from CardDetector). Returns a value between 0 and 1 for every label class (fixed size array so it&#39;s easier to sum everything up)&lt;div&gt;+ calc_meanIoU(list of IoU, one for every image) (one IoU for every image, notice that IoU is a vector containing the IoU score for every label class, so summing everything up and then dividing by the number of images should give the mean intra-class IoU)&lt;/div&gt;&lt;div&gt;+ calc_MEAN_IoU(IoU) (IoU is a vector containing the IoU score for every class, the final mean is obtained by summing every element of the vector and dividing by the number of the classes)&lt;br&gt;&lt;div&gt;+ calc_confusion_matrix(every pixel counts as one element in the confusion matrix, i.e. 1 pixel is predicted correctly as card 2Spades, then is a TruePositive for the class 2Spades. Summing the pixels should give the total pixels of the image)&lt;/div&gt;&lt;div&gt;+ calc_TP,TN,FP,FN(confusion_matrix, label class)&lt;/div&gt;&lt;div&gt;+ calc_precision(confusion_matrix, label class)&lt;/div&gt;&lt;div&gt;+ calc_recall(confusion_matrix, label class)&lt;/div&gt;&lt;div&gt;+ calc_f1(confusion_matrix, label class)&lt;/div&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="INni8aJdQVXMnW472Vi9-65" vertex="1">
           <mxGeometry y="60" width="380" height="320" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-68" target="INni8aJdQVXMnW472Vi9-14">
+        <mxCell id="INni8aJdQVXMnW472Vi9-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="INni8aJdQVXMnW472Vi9-68" target="INni8aJdQVXMnW472Vi9-14" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-70" value="retrieves true bounding boxes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="INni8aJdQVXMnW472Vi9-69">
+        <mxCell id="INni8aJdQVXMnW472Vi9-70" value="retrieves true bounding boxes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="INni8aJdQVXMnW472Vi9-69" vertex="1" connectable="0">
           <mxGeometry x="0.2595" y="3" relative="1" as="geometry">
             <mxPoint x="-77" y="-36" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="INni8aJdQVXMnW472Vi9-68" target="INni8aJdQVXMnW472Vi9-46">
+        <mxCell id="INni8aJdQVXMnW472Vi9-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="INni8aJdQVXMnW472Vi9-68" target="INni8aJdQVXMnW472Vi9-46" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-72" value="retrieves predicted bounding boxes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="INni8aJdQVXMnW472Vi9-71">
+        <mxCell id="INni8aJdQVXMnW472Vi9-72" value="retrieves predicted bounding boxes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="INni8aJdQVXMnW472Vi9-71" vertex="1" connectable="0">
           <mxGeometry x="0.2478" relative="1" as="geometry">
             <mxPoint x="-90" y="59" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="INni8aJdQVXMnW472Vi9-73" value="Don&#39;t know if TP,TN,FP,FN,prec,rec,f1 are needed though" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="-10" y="438" width="330" height="30" as="geometry" />
+        <mxCell id="INni8aJdQVXMnW472Vi9-73" value="Don&#39;t know if TP,TN,FP,FN,prec,rec,f1 are needed though" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="-30" y="85" width="330" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
