@@ -33,6 +33,7 @@ void Card_Type::set_type(const std::string& card_text) {
     suit = su;
 }
 
+
 std::map<std::string, Card_Type::Rank> Card_Type::map_string_to_rank = {
     {"K",  Card_Type::Rank::K},
     {"Q",  Card_Type::Rank::Q},
@@ -71,7 +72,6 @@ std::string Card_Type::to_string() const {
     return r + s; // ex: "10H", 10 of Hearts
 }
 
-
 const Card_Type::Rank Card_Type::string_to_rank(const std::string& s) {
     auto it = map_string_to_rank.find(s);
     return it != map_string_to_rank.end() ? it->second : Card_Type::Rank::UNKNOWN;
@@ -94,5 +94,21 @@ std::ostream& operator<<(std::ostream& os, const Card_Type& c) {
     return os << c.to_string();
 }
 
+
+Card_Type Yolo_index_codec::yolo_index_to_card(int index){
+    if (index < 0 || index >= 52) {
+        Card_Type card(Card_Type::Rank::UNKNOWN, Card_Type::Suit::UNKNOWN);
+        return card;
+    }
+    int r = index / 4;
+    int s = index % 4;
+    return Card_Type(static_cast<Card_Type::Rank>(r), static_cast<Card_Type::Suit>(s));
+}
+
+int Yolo_index_codec::card_to_yolo_index(const Card_Type& card){
+     if (card.get_rank() == Card_Type::Rank::UNKNOWN || card.get_suit() == Card_Type::Suit::UNKNOWN) return -1;
+    int index = static_cast<int>(card.get_rank()) * 4 + static_cast<int>(card.get_suit());
+    return index;
+}
 
 

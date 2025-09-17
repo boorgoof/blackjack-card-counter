@@ -25,7 +25,7 @@ class Label {
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Label& l){
-    os << l.get_class_name().to_string() << " " << l.get_bounding_box();
+    os << l.get_class_name() << " " << l.get_bounding_box();
     return os;
 }
 

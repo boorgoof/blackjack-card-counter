@@ -1,7 +1,7 @@
 CMakeFiles/main.dir/code/src/Utils.cpp.o: \
- /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/Utils.cpp \
+ /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/Utils.cpp \
  /usr/include/stdc-predef.h \
- /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/../include/Utils.h \
+ /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/../include/Utils.h \
  /usr/include/c++/13/string /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -116,8 +116,8 @@ CMakeFiles/main.dir/code/src/Utils.cpp.o: \
  /usr/include/c++/13/bits/memory_resource.h /usr/include/c++/13/cstddef \
  /usr/include/c++/13/bits/uses_allocator.h \
  /usr/include/c++/13/bits/uses_allocator_args.h /usr/include/c++/13/tuple \
- /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/../include/Label.h \
- /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/../include/CardType.h \
+ /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/../include/Label.h \
+ /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/../include/CardType.h \
  /usr/include/c++/13/map /usr/include/c++/13/bits/stl_tree.h \
  /usr/include/c++/13/ext/aligned_buffer.h \
  /usr/include/c++/13/bits/node_handle.h \

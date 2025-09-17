@@ -1,3 +1,3 @@
-/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build/CMakeFiles/main.dir
-/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build/CMakeFiles/edit_cache.dir
-/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build/CMakeFiles/rebuild_cache.dir
+/mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/build/CMakeFiles/main.dir
+/mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/build/CMakeFiles/edit_cache.dir
+/mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/build/CMakeFiles/rebuild_cache.dir
