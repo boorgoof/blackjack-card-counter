@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter
+CMAKE_SOURCE_DIR = /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build
+CMAKE_BINARY_DIR = /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build/CMakeFiles /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/build/CMakeFiles /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -153,6 +153,30 @@ code/src/CardType.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/src/CardType.cpp.s
 .PHONY : code/src/CardType.cpp.s
 
+code/src/Loaders.o: code/src/Loaders.cpp.o
+.PHONY : code/src/Loaders.o
+
+# target to build an object file
+code/src/Loaders.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/src/Loaders.cpp.o
+.PHONY : code/src/Loaders.cpp.o
+
+code/src/Loaders.i: code/src/Loaders.cpp.i
+.PHONY : code/src/Loaders.i
+
+# target to preprocess a source file
+code/src/Loaders.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/src/Loaders.cpp.i
+.PHONY : code/src/Loaders.cpp.i
+
+code/src/Loaders.s: code/src/Loaders.cpp.s
+.PHONY : code/src/Loaders.s
+
+# target to generate assembly for a file
+code/src/Loaders.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/code/src/Loaders.cpp.s
+.PHONY : code/src/Loaders.cpp.s
+
 code/src/Utils.o: code/src/Utils.cpp.o
 .PHONY : code/src/Utils.o
 
@@ -213,6 +237,9 @@ help:
 	@echo "... code/src/CardType.o"
 	@echo "... code/src/CardType.i"
 	@echo "... code/src/CardType.s"
+	@echo "... code/src/Loaders.o"
+	@echo "... code/src/Loaders.i"
+	@echo "... code/src/Loaders.s"
 	@echo "... code/src/Utils.o"
 	@echo "... code/src/Utils.i"
 	@echo "... code/src/Utils.s"

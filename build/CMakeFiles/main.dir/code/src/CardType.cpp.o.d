@@ -1,8 +1,8 @@
 CMakeFiles/main.dir/code/src/CardType.cpp.o: \
- /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/CardType.cpp \
+ /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/CardType.cpp \
  /usr/include/stdc-predef.h \
- /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/../include/Label.h \
- /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/../include/CardType.h \
+ /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/../include/Label.h \
+ /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/../include/CardType.h \
  /usr/include/c++/13/string /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -369,5 +369,5 @@ CMakeFiles/main.dir/code/src/CardType.cpp.o: \
  /usr/local/include/opencv4/opencv2/video.hpp \
  /usr/local/include/opencv4/opencv2/video/tracking.hpp \
  /usr/local/include/opencv4/opencv2/video/background_segm.hpp \
- /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/../include/Utils.h \
- /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/../include/Label.h
+ /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/../include/Utils.h \
+ /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/../include/Label.h

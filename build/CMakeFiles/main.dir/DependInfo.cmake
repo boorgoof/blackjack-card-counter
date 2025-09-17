@@ -8,9 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/CardType.cpp" "CMakeFiles/main.dir/code/src/CardType.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/CardType.cpp.o.d"
-  "/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/Utils.cpp" "CMakeFiles/main.dir/code/src/Utils.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/Utils.cpp.o.d"
-  "/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/code/src/main.cpp" "CMakeFiles/main.dir/code/src/main.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/main.cpp.o.d"
+  "/mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/CardType.cpp" "CMakeFiles/main.dir/code/src/CardType.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/CardType.cpp.o.d"
+  "/mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/Loaders.cpp" "CMakeFiles/main.dir/code/src/Loaders.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/Loaders.cpp.o.d"
+  "/mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/Utils.cpp" "CMakeFiles/main.dir/code/src/Utils.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/Utils.cpp.o.d"
+  "/mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/code/src/main.cpp" "CMakeFiles/main.dir/code/src/main.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/main.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

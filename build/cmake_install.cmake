@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter
+# Install script for directory: /mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/d/LAB_computer_vision/new_final_project/blackjack-card-counter/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
