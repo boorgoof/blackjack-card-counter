@@ -1,3 +1,3 @@
-/Users/gianlucacaregnato/Desktop/blackjack-card-counter/build/CMakeFiles/opencv_hello.dir
-/Users/gianlucacaregnato/Desktop/blackjack-card-counter/build/CMakeFiles/edit_cache.dir
-/Users/gianlucacaregnato/Desktop/blackjack-card-counter/build/CMakeFiles/rebuild_cache.dir
+/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build/CMakeFiles/main.dir
+/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build/CMakeFiles/edit_cache.dir
+/mnt/d/LAB_computer_vision/real_final_project/blackjack-card-counter/build/CMakeFiles/rebuild_cache.dir

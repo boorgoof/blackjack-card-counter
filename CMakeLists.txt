@@ -3,5 +3,8 @@ project(EasyPeasyCV-Blackjack)
 
 find_package(OpenCV REQUIRED)
 
-add_executable(opencv_hello src/main.cpp)
-target_link_libraries(opencv_hello ${OpenCV_LIBS})
+add_executable(main code/src/main.cpp
+                    code/src/Utils.cpp
+                    code/src/CardType.cpp)
+                           
+target_link_libraries(main ${OpenCV_LIBS})
