@@ -10,24 +10,11 @@
  */
 namespace Utils{
 
-
     namespace String{
 
-        std::string normalize(std::string_view str) {
-
-            std::string out; 
-            out.reserve(str.size());
-
-            for (unsigned char c : str) {
-                if (!std::isspace(c) && c != '_')
-                    out.push_back(static_cast<char>(std::toupper(c)));
-            }
-            return out;
-        }
+        std::string normalize(const std::string& str); 
 
     }
-    
-
     
     /**
      * @brief functions to handle maps.

@@ -1,13 +1,7 @@
 #ifndef CARD_TYPE_H
 #define CARD_TYPE_H
 
-#include <cstdint>
 #include <string>
-#include <string_view>
-#include <optional>
-#include <ostream>
-#include <cctype>
-#include <opencv2/core.hpp>
 #include <map>
 
 
@@ -33,7 +27,7 @@ public:
     
     Card_Type(const std::string& card_text);
     Card_Type(const Rank& r, const Suit& s) : rank{r}, suit{s} {}
-
+    
     const Rank& get_rank() const { return this->rank; }
     const Suit& get_suit() const { return this->suit; }
 
@@ -43,8 +37,8 @@ public:
 
     std::string to_string() const;
 
-    static const Rank& string_to_rank(const std::string& r);
-    static const Suit& string_to_suit(const std::string& s);
+    static const Rank string_to_rank(const std::string& r);
+    static const Suit string_to_suit(const std::string& s);
 
     
     static std::map<std::string, Rank> map_string_to_rank;
@@ -54,12 +48,12 @@ public:
     static std::map<Suit, std::string> map_suit_to_string;
 
 private:
-    static std::optional<Rank> parse_rank_token(const std::string& t);
-    static std::optional<Suit> parse_suit_token(const std::string& t);
-
+   
     Rank rank{Rank::UNKNOWN};
     Suit suit{Suit::UNKNOWN};
 };
+
+std::ostream& operator<<(std::ostream& os, const Card_Type& c); 
 
 namespace blackjack {
 

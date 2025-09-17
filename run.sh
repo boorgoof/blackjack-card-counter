@@ -1,2 +1,2 @@
-cd build && ./task1 Robocup.jpg; cd ..
+cd build && ./main ../dataset ../output; cd ..
 
