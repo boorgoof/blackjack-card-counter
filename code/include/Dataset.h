@@ -1,40 +1,41 @@
 #ifndef DATASET_H
 #define DATASET_H
 
+#include <cstddef>
+#include <filesystem>
 #include <vector>
-#include <string>
-#include <stdexcept>
+
+#include "ImageInfo.h"
 
 class Dataset {
-private:
-    std::vector<std::string> data;
-    size_t current_index = 0; // used for next()
-
 public:
-    // constructors
-    Dataset() = default;
-    Dataset(std::initializer_list<std::string> init);
+    Dataset();
+    Dataset(std::filesystem::path image_root, std::filesystem::path annotation_root);
 
-    // modifiers
-    void add(const std::string& value);
+    bool has_next() const noexcept;
+    ImageInfo next();
 
-    // accessors
-    const std::string& next();
-    const std::string& at(size_t index) const;
-    const std::string& operator[](size_t index) const;
+    void reset() noexcept;
 
-    // iteration support (if you want to use range-for)
-    using iterator = std::vector<std::string>::iterator;
-    using const_iterator = std::vector<std::string>::const_iterator;
+    std::size_t size() const noexcept { return entries_.size(); }
+    std::size_t current_index() const noexcept { return current_index_; }
 
-    iterator begin();
-    iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
+    const std::filesystem::path& image_root() const noexcept { return image_root_; }
+    const std::filesystem::path& annotation_root() const noexcept { return annotation_root_; }
 
-    // utility
-    size_t size() const;
-    void reset();
+private:
+    struct Entry {
+        std::filesystem::path image_path;
+        std::filesystem::path annotation_path;
+    };
+
+    static std::vector<Entry> build_entries(const std::filesystem::path& image_root,
+                                            const std::filesystem::path& annotation_root);
+
+    std::filesystem::path image_root_;
+    std::filesystem::path annotation_root_;
+    std::vector<Entry> entries_;
+    std::size_t current_index_{0};
 };
 
 #endif // DATASET_H
