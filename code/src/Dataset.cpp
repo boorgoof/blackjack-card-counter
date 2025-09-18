@@ -1,13 +1,9 @@
-#include "../Dataset.h"
+#include "../include/Dataset.h"
 
 #include <array>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
-
-#include <opencv2/imgcodecs.hpp>
-
-#include "Loaders.h"
 
 namespace {
 constexpr const char* kImagesRelativePath = "../../Dataset/Images/Images/";
@@ -33,20 +29,7 @@ ImageInfo Dataset::next() {
     if (!has_next()) {
         throw std::out_of_range("Dataset::next called past the end of the dataset");
     }
-
-    const Entry& entry = entries_[current_index_++];
-
-    cv::Mat image = cv::imread(entry.image_path.string(), cv::IMREAD_COLOR);
-    if (image.empty()) {
-        throw std::runtime_error("Failed to load image: " + entry.image_path.string());
-    }
-
-    std::vector<Label> labels;
-    if (std::filesystem::exists(entry.annotation_path)) {
-        labels = AnnotationLoaders::load_yolo_image_annotations(entry.annotation_path.string(), image.cols, image.rows);
-    }
-
-    return ImageInfo{std::move(image), entry.image_path.string(), std::move(labels)};
+    return load_index(current_index_++);
 }
 
 void Dataset::reset() noexcept {
@@ -77,4 +60,42 @@ std::vector<Dataset::Entry> Dataset::build_entries(const std::filesystem::path& 
     }
 
     return entries;
+}
+
+ImageInfo Dataset::at(std::size_t index) const {
+    if (index >= entries_.size()) {
+        throw std::out_of_range("Dataset::at index out of range");
+    }
+    return load_index(index);
+}
+
+ImageInfo Dataset::operator[](std::size_t index) const {
+    return load_index(index);
+}
+
+Dataset& Dataset::operator++() {
+    if (current_index_ < entries_.size()) {
+        ++current_index_;
+    }
+    return *this;
+}
+
+Dataset Dataset::operator++(int) {
+    Dataset tmp = *this;
+    ++(*this);
+    return tmp;
+}
+
+bool Dataset::operator==(const Dataset& other) const noexcept {
+    return current_index_ == other.current_index_
+        && image_root_ == other.image_root_
+        && annotation_root_ == other.annotation_root_;
+}
+
+ImageInfo Dataset::load_index(std::size_t index) const {
+    const Entry& entry = entries_[index];
+
+    // Build a lightweight ImageInfo from paths only
+    const std::string name = entry.image_path.stem().string();
+    return ImageInfo{name, entry.image_path.string()};
 }

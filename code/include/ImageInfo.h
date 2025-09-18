@@ -11,25 +11,19 @@
 class ImageInfo {
 public:
     ImageInfo() = default;
-    ImageInfo(cv::Mat image, std::string path, std::vector<Label> labels)
-        : image_{std::move(image)}, path_{std::move(path)}, labels_{std::move(labels)} {}
+    ImageInfo(std::string name, std::string path)
+        : name_{std::move(name)}, pathImage_{std::move(path)} {}
 
-    bool empty() const noexcept { return image_.empty(); }
-    int width() const noexcept { return image_.cols; }
-    int height() const noexcept { return image_.rows; }
+    bool empty() const noexcept { return name_.empty(); }
 
-    const cv::Mat& image() const noexcept { return image_; }
-    cv::Mat& image() noexcept { return image_; }
-
-    const std::string& path() const noexcept { return path_; }
-
-    const std::vector<Label>& labels() const noexcept { return labels_; }
-    std::vector<Label>& labels() noexcept { return labels_; }
+    const std::string& name() const noexcept { return name_; }
+    const std::string& path() const noexcept { return pathImage_; }
+    const std::string& pathLabel() const noexcept { return pathLabel_; }
 
 private:
-    cv::Mat image_;
-    std::string path_;
-    std::vector<Label> labels_;
+    std::string name_;
+    std::string pathImage_;
+    std::string pathLabel_;
 };
 
 #endif
