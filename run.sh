@@ -1,2 +1,2 @@
-cd build && ./main ../dataset ../output; cd ..
+cd build && ./main ../data/single_cards ../output; cd ..
 
