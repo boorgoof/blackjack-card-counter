@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 #include <opencv2/opencv.hpp>
 
@@ -11,8 +12,8 @@
 class ImageInfo {
 public:
     ImageInfo() = default;
-    ImageInfo(std::string name, std::string path)
-        : name_{std::move(name)}, pathImage_{std::move(path)} {}
+    ImageInfo(std::string name, std::string image_path, std::string label_path)
+        : name_{std::move(name)}, pathImage_{std::move(image_path)}, pathLabel_{std::move(label_path)} {}
 
     bool empty() const noexcept { return name_.empty(); }
 
