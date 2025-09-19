@@ -1,63 +1,55 @@
 #include "../include/Dataset.h"
 
-#include <array>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
+#include <filesystem>
+#include <algorithm>
+#include <cctype>
 
 namespace {
-constexpr const char* kImagesRelativePath = "../../Dataset/Images/Images/";
-constexpr const char* kAnnotationsRelativePath = "../../Dataset/YOLO_Annotations/YOLO_Annotations/";
-constexpr std::array<const char*, 13> kRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
-constexpr std::array<char, 4> kSuits = {'C', 'D', 'H', 'S'};
-constexpr int kCopiesPerCard = 51;
+constexpr const char* kImagesRelativePath = "Dataset/Images/Images/";
+constexpr const char* kAnnotationsRelativePath = "Dataset/YOLO_Annotations/YOLO_Annotations/";
 }
 
 Dataset::Dataset()
     : Dataset(std::filesystem::path(kImagesRelativePath), std::filesystem::path(kAnnotationsRelativePath)) {}
+
+Dataset::Dataset(const std::string& image_dir, const std::string& annotation_dir)
+    : Dataset(std::filesystem::path(image_dir), std::filesystem::path(annotation_dir)) {}
 
 Dataset::Dataset(std::filesystem::path image_root, std::filesystem::path annotation_root)
     : image_root_{std::move(image_root)},
       annotation_root_{std::move(annotation_root)},
       entries_{build_entries(image_root_, annotation_root_)} {}
 
-bool Dataset::has_next() const noexcept {
-    return current_index_ < entries_.size();
-}
 
-ImageInfo Dataset::next() {
-    if (!has_next()) {
-        throw std::out_of_range("Dataset::next called past the end of the dataset");
+std::vector<ImageInfo> Dataset::build_entries(const std::filesystem::path& image_root, const std::filesystem::path& annotation_root) {
+    std::vector<ImageInfo> entries;
+    if (!std::filesystem::exists(image_root) || !std::filesystem::is_directory(image_root)) {
+        return entries;
     }
-    return load_index(current_index_++);
-}
 
-void Dataset::reset() noexcept {
-    current_index_ = 0;
-}
+    // Collect all image files in the directory
+    for (const auto& dirent : std::filesystem::directory_iterator(image_root)) {
+        if (!dirent.is_regular_file()) continue;
 
-std::vector<Dataset::Entry> Dataset::build_entries(const std::filesystem::path& image_root,
-                                                   const std::filesystem::path& annotation_root) {
-    std::vector<Entry> entries;
-    entries.reserve(kRanks.size() * kSuits.size() * kCopiesPerCard);
+        const auto& p = dirent.path();
+        auto ext = p.extension().string();
+        // lowercase extension
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return std::tolower(c); });
 
-    for (const auto* rank : kRanks) {
-        for (char suit : kSuits) {
-            for (int copy = 0; copy < kCopiesPerCard; ++copy) {
-                std::ostringstream stem;
-                stem << rank << suit << copy;
-
-                const auto image_path = image_root / (stem.str() + ".jpg");
-                const auto annotation_path = annotation_root / (stem.str() + ".txt");
-
-                if (!std::filesystem::exists(image_path)) {
-                    continue;
-                }
-
-                entries.push_back({image_path, annotation_path});
-            }
+        if (ext == ".jpg" || ext == ".jpeg" || ext == ".png") {
+            const auto stem = p.stem().string();
+            const auto ann = annotation_root / (stem + ".txt");
+            entries.emplace_back(stem, p.string(), ann.string());
         }
     }
+
+    // Sort deterministically by filename
+    std::sort(entries.begin(), entries.end(), [](const ImageInfo& a, const ImageInfo& b){
+        return a.name() < b.name();
+    });
 
     return entries;
 }
@@ -66,12 +58,9 @@ ImageInfo Dataset::at(std::size_t index) const {
     if (index >= entries_.size()) {
         throw std::out_of_range("Dataset::at index out of range");
     }
-    return load_index(index);
+    return entries_.at(index);
 }
 
-ImageInfo Dataset::operator[](std::size_t index) const {
-    return load_index(index);
-}
 
 Dataset& Dataset::operator++() {
     if (current_index_ < entries_.size()) {
@@ -90,12 +79,4 @@ bool Dataset::operator==(const Dataset& other) const noexcept {
     return current_index_ == other.current_index_
         && image_root_ == other.image_root_
         && annotation_root_ == other.annotation_root_;
-}
-
-ImageInfo Dataset::load_index(std::size_t index) const {
-    const Entry& entry = entries_[index];
-
-    // Build a lightweight ImageInfo from paths only
-    const std::string name = entry.image_path.stem().string();
-    return ImageInfo{name, entry.image_path.string()};
 }

@@ -1,0 +1,28 @@
+
+# Consider dependencies only in project.
+set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
+
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  )
+
+# The set of dependency files which are needed:
+set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/gian/Desktop/blackjack-card-counter/code/src/CardType.cpp" "CMakeFiles/main.dir/code/src/CardType.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/CardType.cpp.o.d"
+  "/home/gian/Desktop/blackjack-card-counter/code/src/Dataset.cpp" "CMakeFiles/main.dir/code/src/Dataset.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/Dataset.cpp.o.d"
+  "/home/gian/Desktop/blackjack-card-counter/code/src/Loaders.cpp" "CMakeFiles/main.dir/code/src/Loaders.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/Loaders.cpp.o.d"
+  "/home/gian/Desktop/blackjack-card-counter/code/src/Utils.cpp" "CMakeFiles/main.dir/code/src/Utils.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/Utils.cpp.o.d"
+  "/home/gian/Desktop/blackjack-card-counter/code/src/main.cpp" "CMakeFiles/main.dir/code/src/main.cpp.o" "gcc" "CMakeFiles/main.dir/code/src/main.cpp.o.d"
+  "" "main" "gcc" "CMakeFiles/main.dir/link.d"
+  )
+
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_LINKED_INFO_FILES
+  )
+
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_FORWARD_LINKED_INFO_FILES
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")

@@ -1,0 +1,3 @@
+/home/gian/Desktop/blackjack-card-counter/build_local/CMakeFiles/main.dir
+/home/gian/Desktop/blackjack-card-counter/build_local/CMakeFiles/edit_cache.dir
+/home/gian/Desktop/blackjack-card-counter/build_local/CMakeFiles/rebuild_cache.dir
