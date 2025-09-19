@@ -36,10 +36,8 @@ std::vector<ImageInfo> Dataset::build_entries(const std::filesystem::path& image
 
         const auto& p = dirent.path();
         auto ext = p.extension().string();
-        // lowercase extension
-        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return std::tolower(c); });
 
-        if (ext == ".jpg" || ext == ".jpeg" || ext == ".png") {
+        if (ext == ".jpg" || ext == ".png") { //jpg dataset given, png for dataset of the video
             const auto stem = p.stem().string();
             const auto ann = annotation_root / (stem + ".txt");
             entries.emplace_back(stem, p.string(), ann.string());
