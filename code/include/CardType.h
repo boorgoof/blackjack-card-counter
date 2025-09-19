@@ -58,6 +58,7 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const Card_Type& c); 
+bool operator<(const Card_Type& l, const Card_Type& r);
 
 namespace Yolo_index_codec {
 
