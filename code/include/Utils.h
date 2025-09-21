@@ -4,6 +4,7 @@
 #include <string>
 #include "Label.h"
 #include <map>
+#include <filesystem>
 
 /**
  * @brief utility functions.
@@ -14,6 +15,11 @@ namespace Utils{
 
         std::string normalize(const std::string& str); 
 
+    }
+
+    namespace Path{
+        std::string longestCommonPath(const std::string& path1_str, const std::string& path2_str);
+        std::filesystem::path longestCommonPath(const std::filesystem::path& path1, const std::filesystem::path& path2);
     }
     
     /**
