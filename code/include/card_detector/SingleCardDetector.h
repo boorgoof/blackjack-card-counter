@@ -5,7 +5,7 @@
 
 class SingleCardDetector : public CardDetector {
 public:
-    SingleCardDetector(bool detect_full_card = false);
+    SingleCardDetector(bool detect_full_card = false, bool visualize = false);
     ~SingleCardDetector();
 
     std::vector<Label> detect_image(const cv::Mat& image) override;

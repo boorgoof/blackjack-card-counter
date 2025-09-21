@@ -1,6 +1,6 @@
 #include "../../include/card_detector/SingleCardDetector.h"
 
-SingleCardDetector::SingleCardDetector(bool detect_full_card) : CardDetector(detect_full_card) {
+SingleCardDetector::SingleCardDetector(bool detect_full_card, bool visualize) : CardDetector(detect_full_card, visualize) {
     // Constructor implementation
 }
 
