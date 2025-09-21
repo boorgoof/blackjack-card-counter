@@ -46,6 +46,7 @@ public:
 
     const bool is_sequential() const noexcept { return is_sequential_; }
     void set_is_sequential(bool val) noexcept { is_sequential_ = val; }
+    const std::filesystem::path& get_path() const noexcept { return path_; }
     const std::filesystem::path& get_image_root() const noexcept { return image_root_; }
     const std::filesystem::path& get_annotation_root() const noexcept { return annotation_root_; }
 
@@ -53,7 +54,7 @@ private:
     static std::vector<ImageInfo> build_entries(const std::filesystem::path& image_root,
                                                 const std::filesystem::path& annotation_root);
 
-
+    std::filesystem::path path_;
     std::filesystem::path image_root_;
     std::filesystem::path annotation_root_;
     std::vector<ImageInfo> entries_;
