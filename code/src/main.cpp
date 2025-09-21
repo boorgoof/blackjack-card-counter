@@ -99,6 +99,9 @@ int main(int argc, char** argv) {
         total_detection_time += std::chrono::duration<double, std::milli>(detection_time - loading_time);
 
         true_labels.push_back(Loader::Annotation::load_yolo_image_annotations(img_info.get_pathLabel(), img.cols, img.rows));
+
+        Utils::Visualization::printProgressBar(static_cast<float>(std::distance(single_cards_dataset.begin(), it) + 1) / std::distance(single_cards_dataset.begin(), single_cards_dataset.end()),
+                                                 50, "Processing images: ", "Complete");
     }
 
     std::cout << "Dataset: " << single_cards_dataset.get_path() << std::endl;

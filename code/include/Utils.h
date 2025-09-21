@@ -12,7 +12,6 @@
 namespace Utils{
 
     namespace String{
-
         std::string normalize(const std::string& str); 
 
     }
@@ -22,11 +21,14 @@ namespace Utils{
         std::filesystem::path longestCommonPath(const std::filesystem::path& path1, const std::filesystem::path& path2);
     }
     
+    namespace Visualization{
+        void printProgressBar(float progress, size_t barwidth, const std::string& prefix = "", const std::string& suffix = "");
+    }
+
     /**
      * @brief functions to handle maps.
      */
     namespace Map{
-
         /**
          * @brief function to create an inverse map from a given map.
          * @tparam MapA2B the type of the map to be inverted

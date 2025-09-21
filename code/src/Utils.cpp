@@ -30,3 +30,15 @@ std::string Utils::String::normalize(const std::string& str) {
     
     return t;
 }
+
+void Utils::Visualization::printProgressBar(float progress, size_t barwidth, const std::string& prefix, const std::string& suffix) {
+    std::cout << "\r" << prefix << " [";
+    size_t pos = static_cast<size_t>(barwidth * progress);
+    for (size_t i = 0; i < barwidth; ++i) {
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << ">";
+        else std::cout << " ";
+    }
+    std::cout << "] " << int(progress * 100.0) << "% " << suffix << std::flush;
+    if (progress >= 1.0) std::cout << std::endl;
+}
