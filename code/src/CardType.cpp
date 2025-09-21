@@ -83,7 +83,6 @@ const Card_Type::Suit Card_Type::string_to_suit(const std::string& s) {
 }
 
 
-// ordering: prima suit poi rank
 bool operator<(const Card_Type& l, const Card_Type& r) {
     if (l.get_suit() != r.get_suit())
         return l.get_suit() < r.get_suit();
