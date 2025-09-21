@@ -1,5 +1,3 @@
-#include "CardDetector.h"
-#include "SequentialCardDetector.h"
-#include "SingleCardDetector.h"
+#include "../../include/card_detector/CardDetector.h"
 
 CardDetector::~CardDetector() {}

@@ -17,9 +17,14 @@ public:
 
     bool empty() const noexcept { return name_.empty(); }
 
-    const std::string& name() const noexcept { return name_; }
-    const std::string& path() const noexcept { return pathImage_; }
-    const std::string& pathLabel() const noexcept { return pathLabel_; }
+    const std::string& get_name() const noexcept { return name_; }
+    const std::string& get_pathImage() const noexcept { return pathImage_; }
+    const std::string& get_pathLabel() const noexcept { return pathLabel_; }
+
+    friend std::ostream& operator<<(std::ostream& os, const ImageInfo& info) {
+        os << "ImageInfo{name: " << info.name_ << ", image_path: " << info.pathImage_ << ", label_path: " << info.pathLabel_ << "}";
+        return os;
+    }
 
 private:
     std::string name_;

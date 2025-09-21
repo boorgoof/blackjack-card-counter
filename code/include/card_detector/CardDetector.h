@@ -13,10 +13,10 @@ public:
     CardDetector& operator=(const CardDetector&) = delete;
 
     virtual ~CardDetector();
+    virtual std::vector<Label> detect_image(const cv::Mat& image) = 0;
 
 protected:
     bool detect_full_card;
-    virtual std::vector<Label> detect_image(const cv::Mat& image, bool is_sequential) = 0;
 };
 
 #endif // CARD_DETECTOR_H
