@@ -8,7 +8,7 @@
 class CardDetector {
 public:
 //delete default constructor, copy constructor and assignment operator
-    CardDetector(bool detect_full_card = false) : detect_full_card(detect_full_card) {}
+    CardDetector(bool detect_full_card = false, bool visualize = false) : detect_full_card(detect_full_card), visualize(visualize) {}
     CardDetector(const CardDetector&) = delete;
     CardDetector& operator=(const CardDetector&) = delete;
 
@@ -17,6 +17,7 @@ public:
 
 protected:
     bool detect_full_card;
+    bool visualize;
 };
 
 #endif // CARD_DETECTOR_H
