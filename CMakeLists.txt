@@ -6,7 +6,8 @@ find_package(OpenCV REQUIRED)
 add_executable(main code/src/main.cpp
                     code/src/Utils.cpp
                     code/src/CardType.cpp
-                    code/src/Loaders.cpp)
+                    code/src/Loaders.cpp
+                    code/src/Dataset.cpp)
 
 add_executable(stats_test code/test/testStatsCalculation.cpp
                     code/src/Utils.cpp
