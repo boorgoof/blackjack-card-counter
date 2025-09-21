@@ -38,9 +38,9 @@ int main() {
     std::cout << img2.cols << " " << img.rows << std::endl;
 
 
-    std::vector<Label> true_labels = AnnotationLoaders::load_yolo_image_annotations("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/2C0.txt", img.cols, img.rows);
-    std::vector<Label> pred_labels = AnnotationLoaders::load_yolo_image_annotations("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/2C0.txt", img.cols, img.rows);
-    std::vector<Label> pred_labels_2 = AnnotationLoaders::load_yolo_image_annotations("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/2C3.txt", img2.cols, img2.rows);
+    std::vector<Label> true_labels = Loader::Annotation::load_yolo_image_annotations("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/2C0.txt", img.cols, img.rows);
+    std::vector<Label> pred_labels = Loader::Annotation::load_yolo_image_annotations("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/2C0.txt", img.cols, img.rows);
+    std::vector<Label> pred_labels_2 = Loader::Annotation::load_yolo_image_annotations("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/2C3.txt", img2.cols, img2.rows);
 
     for(int i = 0; i < true_labels.size(); i++){
         

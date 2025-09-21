@@ -1,7 +1,6 @@
 //Matteo Bino
 
 #include "../include/ImageFilter.h"
-#include "../include/CustomErrors.h"
 
 ImageFilter::~ImageFilter(){
     this->filter_pipeline.clear();
@@ -27,7 +26,7 @@ bool ImageFilter::remove_filter(const std::string& filter_name){
 
 cv::Mat Filters::gaussian_blur(const cv::Mat& src_img, const cv::Size& kernel_size){
     if (kernel_size.width <= 0 || kernel_size.height <= 0 || kernel_size.width % 2 == 0 || kernel_size.height % 2 == 0) {
-        throw CustomErrors::InvalidArgumentError("kernel_size", "Gaussian kernel dimensions must be positive and odd.");
+        throw std::runtime_error("Gaussian kernel dimensions must be positive and odd: " + std::to_string(kernel_size.width) + "x" + std::to_string(kernel_size.height));
     }
     cv::Mat dst_img;
     cv::GaussianBlur(src_img, dst_img, kernel_size, 0);
@@ -35,7 +34,7 @@ cv::Mat Filters::gaussian_blur(const cv::Mat& src_img, const cv::Size& kernel_si
 }
 cv::Mat Filters::median_blur(const cv::Mat& src_img, const cv::Size& kernel_size){
     if (kernel_size.width <= 0 || kernel_size.height <= 0 || kernel_size.width % 2 == 0 || kernel_size.height % 2 == 0) {
-        throw CustomErrors::InvalidArgumentError("kernel_size", "Median kernel dimensions must be positive and odd.");
+        throw std::runtime_error("Median kernel dimensions must be positive and odd: " + std::to_string(kernel_size.width) + "x" + std::to_string(kernel_size.height));
     }
     cv::Mat dst_img;
     cv::medianBlur(src_img, dst_img, kernel_size.width);
@@ -43,7 +42,7 @@ cv::Mat Filters::median_blur(const cv::Mat& src_img, const cv::Size& kernel_size
 }
 cv::Mat Filters::average_blur(const cv::Mat& src_img, const cv::Size& kernel_size){
     if (kernel_size.width <= 0 || kernel_size.height <= 0 || kernel_size.width % 2 == 0 || kernel_size.height % 2 == 0) {
-        throw CustomErrors::InvalidArgumentError("kernel_size", "Average kernel dimensions must be positive and odd.");
+        throw std::runtime_error("Average kernel dimensions must be positive and odd: " + std::to_string(kernel_size.width) + "x" + std::to_string(kernel_size.height));
     }
     cv::Mat dst_img;
     cv::blur(src_img, dst_img, kernel_size);
@@ -136,7 +135,7 @@ cv::Mat Filters::unsharp_mask(const cv::Mat &src_img, double sigma, double alpha
 
 cv::Mat Filters::resize(const cv::Mat& src_img, const float width_mult, const float height_mult){
     if (width_mult <= 0 || height_mult <= 0) {
-        throw CustomErrors::InvalidArgumentError("width_mult/height_mult", "Resize multipliers must be positive.");
+        throw std::runtime_error("Width and height multipliers must be positive: " + std::to_string(width_mult) + ", " + std::to_string(height_mult));
     }
     cv::Mat dst_img;
     cv::resize(src_img, dst_img, cv::Size(), width_mult, height_mult);

@@ -8,7 +8,7 @@ public:
     SingleCardDetector(bool detect_full_card = false);
     ~SingleCardDetector();
 
-    std::vector<Label> detect_image(const cv::Mat& image, bool is_sequential) override;
+    std::vector<Label> detect_image(const cv::Mat& image) override;
 };
 
 #endif

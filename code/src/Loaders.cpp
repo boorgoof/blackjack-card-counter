@@ -1,10 +1,10 @@
 #include "../include/Loaders.h"
 #include <fstream>
 #include <opencv2/opencv.hpp>
+#include <filesystem>
 
 
-
-std::vector<Label> AnnotationLoaders::load_yolo_image_annotations(const std::string& annotation_file_path, int image_width, int image_height){
+std::vector<Label> Loader::Annotation::load_yolo_image_annotations(const std::string& annotation_file_path, const int image_width, const int image_height){
 
     std::vector<Label> labels;
     std::ifstream ann_file(annotation_file_path);
@@ -18,8 +18,6 @@ std::vector<Label> AnnotationLoaders::load_yolo_image_annotations(const std::str
     while (std::getline(ann_file, line)) {
 
         if (line.empty()) continue;
-
-        std::cout << "Riga : " << line << std::endl;
         
         std::istringstream iss(line);
 
@@ -44,7 +42,7 @@ std::vector<Label> AnnotationLoaders::load_yolo_image_annotations(const std::str
 
 }
 
-cv::Rect AnnotationLoaders::yoloNorm_to_rect(float x_center, float y_center, float width, float height, int image_width, int image_height)
+cv::Rect Loader::Annotation::yoloNorm_to_rect(float x_center, float y_center, float width, float height, int image_width, int image_height)
 {
     int x = static_cast<int>((x_center - width/2.0f) * image_width);
     int y = static_cast<int>((y_center - height/2.0f) * image_height);
@@ -58,4 +56,13 @@ cv::Rect AnnotationLoaders::yoloNorm_to_rect(float x_center, float y_center, flo
 
     
     return cv::Rect(x, y, w, h);
+}
+
+cv::Mat Loader::Image::load_image(const std::string &image_path)
+{
+    //check if the file exists
+    if (!std::filesystem::exists(image_path)) {
+        throw std::runtime_error("Image file not found: " + image_path);
+    }
+    return cv::imread(image_path, cv::IMREAD_COLOR);
 }

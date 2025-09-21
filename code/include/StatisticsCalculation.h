@@ -47,7 +47,8 @@ namespace StatisticsCalculation {
      */
     std::vector<float> calc_dataset_meanIoU(const std::vector<std::vector<Label>>& true_labels, 
                                        const std::vector<std::vector<Label>>& pred_labels);
-                                      
+    
+    //TODO: instead of asking the number of classes, ask for the list of classes (std::vector<Card_Type>) to be more flexible
      /**
      * @brief Calculates confusion matrix (TP, FP, FN, TN) from single image labels
      * 
@@ -62,6 +63,7 @@ namespace StatisticsCalculation {
                                  int num_classes,
                                  float iou_threshold = 0.5f);
     
+    //TODO: instead of asking the number of classes, ask for the list of classes (std::vector<Card_Type>) to be more flexible
     /**
      * @brief Calculates confusion matrix from multiple images
      *      

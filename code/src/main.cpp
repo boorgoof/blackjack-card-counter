@@ -6,32 +6,11 @@
 #include "../include/Utils.h"
 #include "../include/Loaders.h"
 #include "../include/ImageFilter.h"
-#include "../include/CardDetector.h"
-#include "../include/SequentialCardDetector.h"
-#include "../include/SingleCardDetector.h"
+#include "../include/card_detector/CardDetector.h"
+#include "../include/card_detector/SequentialCardDetector.h"
+#include "../include/card_detector/SingleCardDetector.h"
 #include "../include/Dataset.h"
-
-
-static void print_info(const ImageInfo& info, const char* prefix = "") {
-    std::cout << prefix << "ImageInfo{\n"
-              << "  name: " << info.name() << "\n"
-              << "  image: " << info.path() << "\n"
-              << "  label: " << info.pathLabel() << "\n"
-              << "}\n";
-}
-
-static void try_open_with_opencv(const std::string& img_path) {
-    std::cout << "Trying to open image with OpenCV: " << img_path << "\n";
-    cv::Mat img = cv::imread(img_path, cv::IMREAD_COLOR);
-    if (img.empty()) {
-        std::cerr << "[ERROR] imread failed. File not found or unreadable: " << img_path << "\n";
-    } else {
-        std::cout << "  Loaded OK. Size: " << img.cols << "x" << img.rows
-                  << "  Channels: " << img.channels() << "\n";
-    }
-}
-
-
+#include "../include/StatisticsCalculation.h"
 
 int main(int argc, char** argv) {
 
@@ -48,7 +27,7 @@ int main(int argc, char** argv) {
     }
 
     if (std::filesystem::exists(output_path)) {
-        std::cout << "The output path already exists! Do you want to proceed? (y/n)";
+        std::cout << "The output path already exists! Do you want to proceed? (y/n): ";
         char response;
         std::cin >> response;
         if (response != 'y' && response != 'Y') {
@@ -90,50 +69,28 @@ int main(int argc, char** argv) {
     img_filter.add_filter("Gaussian Blur", Filters::gaussian_blur, cv::Size(7,7)); //check if it is useful for robustness to noise or just useless
 
     //prepare a vector to store the predicted labels for every image
-    std::vector<std::pair<std::string, std::vector<Label>>> single_cards_labels = std::vector<std::pair<std::string, std::vector<Label>>>();
+    std::vector<std::vector<Label>> predicted_labels = std::vector<std::vector<Label>>();
+    std::vector<std::vector<Label>> true_labels = std::vector<std::vector<Label>>();
+
 
     for ( ; it != single_cards_dataset.end(); ++it) {
         ImageInfo img_info = *it;
-        //here you should see the image filename, image path, annotation path, is_annotated flag
-        cv::Mat img = Loaders::load_image(img_info.image_path);
-        if (img.empty()) {
-            std::cerr << "Could not read the image: " << img_info.image_path << std::endl;
-            continue;
-        }
-        //apply preprocessing filters
+
+        cv::Mat img = Loader::Image::load_image(img_info.get_pathImage());
+
         img = img_filter.apply_filters(img);
-        //adds the result of the detection to the vector
-        single_cards_labels.push_back({img_info.image_filename, card_detector->detect_image(img)});
+
+        //detects card in image and adds the result of the detection to the vector
+        predicted_labels.push_back(card_detector->detect_image(img));
+        true_labels.push_back(Loader::Annotation::load_yolo_image_annotations(img_info.get_pathLabel(), img.cols, img.rows));
     }
 
+    /**
     //calculate metrics for single cards dataset
+    cv::Mat cfm = StatisticsCalculation::calc_confusion_matrix(true_labels, predicted_labels, 52); //52 classes for a standard deck of cards
+    StatisticsCalculation::print_confusion_matrix(cfm);
 
-
-    //same for sequential cards dataset
-
-
-        std::cout << "Checking directories exist:\n";
-        std::cout << "  images:      " << image_dir
-                  << (std::filesystem::exists(image_dir) ? " [OK]\n" : " [MISSING]\n");
-        std::cout << "  annotations: " << annotation_dir
-                  << (std::filesystem::exists(annotation_dir) ? " [OK]\n" : " [MISSING]\n");
-
-    Card_Type card("10S");
-    Card_Type card2("10000S");  
-    Card_Type card3("AS");  
-    Card_Type card4("ASP");
-    Card_Type card5("10C");  
-    std::cout << card << std::endl;
-    std::cout << card2 << std::endl;
-    std::cout << card3 << std::endl;
-    
-    
-   
-    
-    cv::Mat img;
-    img = cv::imread("../dataset/images/image1.png");
-    if (img.empty()) {
-        std::cerr << "Could not read the image: " << std::endl;
-        return 1;
-    }
+    StatisticsCalculation::calc_dataset_meanIoU(true_labels, predicted_labels);
+    StatisticsCalculation::print_dataset_meanIoU();
+    */
 }
