@@ -21,6 +21,7 @@ add_executable(stats_test code/test/testStatsCalculation.cpp
                     code/src/Loaders.cpp
                     code/src/StatisticsCalculation.cpp)
 
+
 set_property(TARGET main PROPERTY CXX_STANDARD 17)
 set_property(TARGET stats_test PROPERTY CXX_STANDARD 17)
 

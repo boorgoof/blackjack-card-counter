@@ -141,6 +141,7 @@ std::vector<std::pair<int,int>> StatisticsCalculation::Helper::find_best_labels_
     std::vector<bool> pred_used(pred_labels.size(), false);
     
     for (const auto& [iou, true_idx, pred_idx] : all_candidates_pairs) {
+        
         if (!true_used[true_idx] && !pred_used[pred_idx]) {
             matches.emplace_back(true_idx, pred_idx);
             true_used[true_idx] = true;
@@ -152,3 +153,30 @@ std::vector<std::pair<int,int>> StatisticsCalculation::Helper::find_best_labels_
 }
 
 
+/*
+
+cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<std::vector<Label>>& true_labels,
+                                                    const std::vector<std::vector<Label>>& pred_labels,
+                                                    int num_classes) {
+        
+    if (true_labels.size() != pred_labels.size()) {
+        throw std::invalid_argument("True and predicted labels vectors must have the same size");
+    }
+    
+    cv::Mat confusion_matrix = cv::Mat::zeros(num_classes, num_classes, CV_32S);
+    
+    // Process each image
+    for (size_t img_idx = 0; img_idx < true_labels.size(); ++img_idx) {
+        cv::Mat single_image_matrix = calc_confusion_matrix(
+            true_labels[img_idx], 
+            pred_labels[img_idx], 
+            num_classes, 
+            0.5f  
+        );
+        
+        // Accumulate into total matrix
+        confusion_matrix += single_image_matrix;
+    }
+    
+    return confusion_matrix;
+}*/
