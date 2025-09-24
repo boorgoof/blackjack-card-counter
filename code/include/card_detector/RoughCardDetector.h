@@ -5,10 +5,12 @@
 
 class RoughCardDetector{
     public:
-        RoughCardDetector() = delete;
-        RoughCardDetector(cv::Mat img);
+        RoughCardDetector();
+        std::vector<std::vector<cv::Point>> getCardsPolygon(const cv::Mat& originalImage);
     private:
-        cv::Mat img_;
+        void removeNoise(cv::Mat& image) { cv::GaussianBlur(image, image, cv::Size(5, 5), 0); }
+        cv::Mat whiteTreshold(const cv::Mat& image);
+        void filterBySize(cv::Mat& mask, int minArea);
 };
 
 
