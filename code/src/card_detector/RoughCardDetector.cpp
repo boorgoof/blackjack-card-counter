@@ -7,17 +7,17 @@ std::vector<std::vector<cv::Point>> RoughCardDetector::getCardsPolygon(const cv:
     std::vector<std::vector<cv::Point>> cards_polygons;
     cv::Mat img = originalImage.clone(); // deep copy
     cv::imshow("Original Image", img);
-    // Step 1: Get the white mask
+    // Get the white mask
     cv::Mat mask = whiteTreshold(img);
     
-    // Step 2: Apply morphological operations to clean up the mask
+    // Apply morphological operations to clean up the mask
     cv::Mat kernel_small = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
     cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel_small);
     
     cv::Mat kernel_medium = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(7, 7));
     cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel_medium);
     
-    // Step 3: Filter by size to keep only card-sized objects
+    // Filter by size to keep only card-sized objects
     filterBySize(mask, 2000);
     
     cv::imshow("Mask after morphology", mask);
