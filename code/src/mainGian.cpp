@@ -34,12 +34,18 @@ int main() {
             // Draw actual polygon using all points
             cv::polylines(polygonImage, polygons[i], true, color, 2);
             
-            // Add polygon index
-            if (!polygons[i].empty()) {
-                cv::putText(polygonImage, "P" + std::to_string(i), polygons[i][0], 
-                           cv::FONT_HERSHEY_SIMPLEX, 0.7, color, 2);
-            }
         }
+
+        // Test getConvexHulls
+        std::vector<std::vector<cv::Point>> convexHulls = detector.getConvexHulls(imageFiles);
+        cv::Mat convexHullImage = imageFiles.clone();
+        for (size_t i = 0; i < convexHulls.size(); ++i) {
+            cv::Scalar color(0, 0, 255); // Red color for convex hull
+            cv::polylines(convexHullImage, convexHulls[i], true, color, 2);
+        }
+
+        // Display convex hull image
+        cv::imshow("Convex Hulls", convexHullImage);
         
         // Test getCardsBoundingBox
         cv::Mat boundingBoxImage = detector.getCardsBoundingBox(imageFiles);

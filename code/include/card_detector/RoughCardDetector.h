@@ -8,6 +8,7 @@ class RoughCardDetector{
         RoughCardDetector();
         cv::Mat getCardsMask(const cv::Mat& originalImage);
         std::vector<std::vector<cv::Point>> getCardsPolygon(const cv::Mat& originalImage);
+        std::vector<std::vector<cv::Point>> getConvexHulls(const cv::Mat& originalImage);
         cv::Mat getCardsBoundingBox(const cv::Mat& originalImage);
     private:
         cv::Mat whiteTreshold(const cv::Mat& image);
