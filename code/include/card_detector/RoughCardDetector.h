@@ -6,11 +6,13 @@
 class RoughCardDetector{
     public:
         RoughCardDetector();
+        cv::Mat getCardsMask(const cv::Mat& originalImage);
         std::vector<std::vector<cv::Point>> getCardsPolygon(const cv::Mat& originalImage);
+        cv::Mat getCardsBoundingBox(const cv::Mat& originalImage);
     private:
-        void removeNoise(cv::Mat& image) { cv::GaussianBlur(image, image, cv::Size(5, 5), 0); }
         cv::Mat whiteTreshold(const cv::Mat& image);
         void filterBySize(cv::Mat& mask, int minArea);
+        void morphologicalCleanup(cv::Mat& mask, int openSize = 5, int closeSize = 7);
 };
 
 
