@@ -17,6 +17,30 @@ std::vector<std::vector<cv::Point>> RoughCardDetector::getCardsPolygon(const cv:
     return cards_polygons;
 }
 
+std::vector<std::vector<cv::Point>> RoughCardDetector::getConvexHulls(const cv::Mat& originalImage) {
+    std::vector<std::vector<cv::Point>> cards_polygons = getCardsPolygon(originalImage);
+    std::vector<std::vector<cv::Point>> convex_hulls;
+    for (const auto& polygon : cards_polygons) {
+        if (!polygon.empty()) {
+            std::vector<cv::Point> hull;
+            cv::convexHull(polygon, hull);
+            convex_hulls.push_back(hull);
+        }
+    }
+    return convex_hulls;
+}
+
+cv::Mat RoughCardDetector::getCardsBoundingBox(const cv::Mat& originalImage) {
+    std::vector<std::vector<cv::Point>> cards_polygons = getCardsPolygon(originalImage);
+    cv::Mat boundingBoxImage = originalImage.clone();
+    for (const auto& polygon : cards_polygons) {
+        cv::Rect bbox = cv::boundingRect(polygon);
+        cv::rectangle(boundingBoxImage, bbox, cv::Scalar(0, 0, 255), 2);
+    }
+    return boundingBoxImage;
+}
+
+
 cv::Mat RoughCardDetector::whiteTreshold(const cv::Mat& image) {
     cv::Mat enhanced;
     cv::convertScaleAbs(image, enhanced, 1.2, 10);
@@ -50,15 +74,7 @@ void RoughCardDetector::filterBySize(cv::Mat& mask, int minArea) {
     mask = filtered_mask;
 }
 
-cv::Mat RoughCardDetector::getCardsBoundingBox(const cv::Mat& originalImage) {
-    std::vector<std::vector<cv::Point>> cards_polygons = getCardsPolygon(originalImage);
-    cv::Mat boundingBoxImage = originalImage.clone();
-    for (const auto& polygon : cards_polygons) {
-        cv::Rect bbox = cv::boundingRect(polygon);
-        cv::rectangle(boundingBoxImage, bbox, cv::Scalar(0, 0, 255), 2);
-    }
-    return boundingBoxImage;
-}
+
 
 void RoughCardDetector::morphologicalCleanup(cv::Mat& mask, int openSize, int closeSize) {
     cv::Mat kernel_open = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(openSize, openSize));
