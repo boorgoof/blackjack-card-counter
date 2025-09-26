@@ -28,8 +28,6 @@ std::vector<ImageInfo> Dataset::build_entries(const std::filesystem::path& image
     if (!std::filesystem::exists(image_root) || !std::filesystem::is_directory(image_root)) {
         return entries;
     }
-    
-    // Check if annotation directory exists
     if (!std::filesystem::exists(annotation_root) || !std::filesystem::is_directory(annotation_root)) {
         return entries;
     }
@@ -43,7 +41,6 @@ std::vector<ImageInfo> Dataset::build_entries(const std::filesystem::path& image
         const auto& p = dirent.path();
         auto ext = p.extension().string();
         
-        // Convert extension to lowercase for case-insensitive comparison
         std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) {
             return std::tolower(c);
         });

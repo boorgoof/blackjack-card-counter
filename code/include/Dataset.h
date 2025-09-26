@@ -124,14 +124,19 @@ public:
     }
 
 private:
+    /**
+     * @brief Builds the dataset entries by scanning the image and annotation directories.
+     * @param image_root Path to the directory containing images.
+     * @param annotation_root Path to the directory containing annotations.
+     * @return A vector of ImageInfo objects representing the dataset entries.
+     */
     static std::vector<ImageInfo> build_entries(const std::filesystem::path& image_root,
                                                 const std::filesystem::path& annotation_root);
-
+    
+    // Vector of all image info entries
     std::vector<ImageInfo> entries_;
+    // Whether the dataset is a video
     bool is_sequential_;
 };
-
-
-
 
 #endif 
