@@ -30,14 +30,14 @@ std::vector<std::vector<cv::Point>> RoughCardDetector::getConvexHulls(const cv::
     return convex_hulls;
 }
 
-cv::Mat RoughCardDetector::getCardsBoundingBox(const cv::Mat& originalImage) {
+std::vector<cv::Rect> RoughCardDetector::getCardsBoundingBox(const cv::Mat& originalImage) {
     std::vector<std::vector<cv::Point>> cards_polygons = getCardsPolygon(originalImage);
-    cv::Mat boundingBoxImage = originalImage.clone();
+    std::vector<cv::Rect> bounding_boxes;
     for (const auto& polygon : cards_polygons) {
         cv::Rect bbox = cv::boundingRect(polygon);
-        cv::rectangle(boundingBoxImage, bbox, cv::Scalar(0, 0, 255), 2);
+        bounding_boxes.push_back(bbox);
     }
-    return boundingBoxImage;
+    return bounding_boxes;
 }
 
 
