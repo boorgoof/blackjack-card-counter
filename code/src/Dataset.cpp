@@ -8,22 +8,18 @@
 #include <algorithm>
 #include <cctype>
 
-Dataset::Dataset(const std::string& dataset_path, const bool is_sequential = false)
+Dataset::Dataset(const std::string& dataset_path, const bool is_sequential)
     : Dataset(std::filesystem::path(dataset_path) / "Images" / "Images",
               std::filesystem::path(dataset_path) / "YOLO_Annotations" / "YOLO_Annotations",
               is_sequential) {
-    this->path_ = std::filesystem::path(dataset_path);
 }
 
-Dataset::Dataset(const std::string& image_dir, const std::string& annotation_dir, const bool is_sequential = false)
+Dataset::Dataset(const std::string& image_dir, const std::string& annotation_dir, const bool is_sequential)
     : Dataset(std::filesystem::path(image_dir), std::filesystem::path(annotation_dir), is_sequential) {
-    this->path_ = Utils::Path::longestCommonPath(image_dir, annotation_dir);
 }
 
-Dataset::Dataset(std::filesystem::path image_root, std::filesystem::path annotation_root, const bool is_sequential = false)
-    : image_root_{std::move(image_root)},
-      annotation_root_{std::move(annotation_root)},
-      entries_{build_entries(image_root_, annotation_root_)},
+Dataset::Dataset(std::filesystem::path image_root, std::filesystem::path annotation_root, const bool is_sequential)
+    : entries_{build_entries(image_root, annotation_root)},
       is_sequential_{is_sequential} {}
 
 

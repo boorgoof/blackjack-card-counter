@@ -105,18 +105,28 @@ public:
      */
     void set_is_sequential(bool val) noexcept { is_sequential_ = val; }
 
-    
-    //const std::filesystem::path& get_path() const noexcept { return path_; }
-    //const std::filesystem::path& get_image_root() const noexcept { return image_root_; }
-    //const std::filesystem::path& get_annotation_root() const noexcept { return annotation_root_; }
+    /**
+     * @brief Get the image root directory (derived from entries).
+     * @return Path to the image directory, or empty path if no entries.
+     */
+    std::filesystem::path get_image_root() const {
+        if (entries_.empty()) return {};
+        return std::filesystem::path(entries_.front().get_pathImage()).parent_path();
+    }
+
+    /**
+     * @brief Get the annotation root directory (derived from entries).
+     * @return Path to the annotation directory, or empty path if no entries.
+     */
+    std::filesystem::path get_annotation_root() const {
+        if (entries_.empty()) return {};
+        return std::filesystem::path(entries_.front().get_pathLabel()).parent_path();
+    }
 
 private:
     static std::vector<ImageInfo> build_entries(const std::filesystem::path& image_root,
                                                 const std::filesystem::path& annotation_root);
 
-    std::filesystem::path path_;
-    std::filesystem::path image_root_;
-    std::filesystem::path annotation_root_;
     std::vector<ImageInfo> entries_;
     bool is_sequential_;
 };
