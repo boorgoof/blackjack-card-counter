@@ -48,8 +48,14 @@ int main() {
         cv::imshow("Convex Hulls", convexHullImage);
         
         // Test getCardsBoundingBox
-        cv::Mat boundingBoxImage = detector.getCardsBoundingBox(imageFiles);
+        std::vector<cv::Rect> boundingBoxes = detector.getCardsBoundingBox(imageFiles);
+        cv::Mat boundingBoxImage = imageFiles.clone();
         
+        // Draw bounding boxes
+        for (size_t i = 0; i < boundingBoxes.size(); ++i) {
+            cv::Scalar color(255, 0, 0); // Blue color for bounding boxes
+            cv::rectangle(boundingBoxImage, boundingBoxes[i], color, 2);
+        }
         // Display results
         cv::imshow("Original Image", imageFiles);
         cv::imshow("Polygons", polygonImage);
