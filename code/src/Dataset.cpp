@@ -17,7 +17,6 @@ Dataset::Dataset(const std::string& dataset_path, const bool is_sequential = fal
 
 Dataset::Dataset(const std::string& image_dir, const std::string& annotation_dir, const bool is_sequential = false)
     : Dataset(std::filesystem::path(image_dir), std::filesystem::path(annotation_dir), is_sequential) {
-    //find common path between image_dir and annotation_dir
     this->path_ = Utils::Path::longestCommonPath(image_dir, annotation_dir);
 }
 
@@ -33,14 +32,27 @@ std::vector<ImageInfo> Dataset::build_entries(const std::filesystem::path& image
     if (!std::filesystem::exists(image_root) || !std::filesystem::is_directory(image_root)) {
         return entries;
     }
+    
+    // Check if annotation directory exists
+    if (!std::filesystem::exists(annotation_root) || !std::filesystem::is_directory(annotation_root)) {
+        return entries;
+    }
+
+    // Reserve space for better performance
+    entries.reserve(std::distance(std::filesystem::directory_iterator(image_root), std::filesystem::directory_iterator{}));
 
     for (const auto& dirent : std::filesystem::directory_iterator(image_root)) {
         if (!dirent.is_regular_file()) continue;
 
         const auto& p = dirent.path();
         auto ext = p.extension().string();
+        
+        // Convert extension to lowercase for case-insensitive comparison
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) {
+            return std::tolower(c);
+        });
 
-        if (ext == ".jpg" || ext == ".png") { //jpg dataset given, png for dataset of the video
+        if (ext == ".jpg" || ext == ".jpeg" || ext == ".png") {
             const auto stem = p.stem().string();
             const auto ann = annotation_root / (stem + ".txt");
             entries.emplace_back(stem, p.string(), ann.string());
