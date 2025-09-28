@@ -40,6 +40,7 @@ class MatcherType{
     Type type;
 
 };
+
 class FeatureMatcher{
     private:
     /**
