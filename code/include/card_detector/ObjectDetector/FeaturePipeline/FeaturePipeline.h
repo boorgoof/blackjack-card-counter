@@ -4,24 +4,24 @@
 #define FEATUREPIPELINE_H
 
 #include "../ObjectDetector.h"
-#include "FeatureDetector.h"
+#include "FeatureExtractor.h"
 #include "FeatureMatcher.h"
 #include <opencv2/opencv.hpp>
-#include "../../Label.h"
+#include "../../../Label.h"
 #include "Features.h"
-#include "../../ImageFilter.h"
+
 
 /**
- * @brief FeaturePipeline class to detect objects in images using feature detection and matching.
+ * @brief FeaturePipeline class to detect objects in images using feature extraction and matching.
  *        The class derives from the abstract class ObjectDetector.
  */
 class FeaturePipeline : public ObjectDetector {
 
     private:
         /**
-        * @brief FeatureDetector pointer to the feature detector used by the pipeline.
+        * @brief FeatureExtractor pointer to the feature extractor used by the pipeline.
         */
-        std::unique_ptr<FeatureDetector> detector;
+        std::unique_ptr<FeatureExtractor> extractor;
         /**
          * @brief FeatureMatcher pointer to the feature matcher used by the pipeline.
          */
@@ -52,28 +52,28 @@ class FeaturePipeline : public ObjectDetector {
         void init_models_features();
 
         /**
-         * @brief  check and to update the compatibility between the detector and matcher.
+         * @brief  check and to update the compatibility between the extractor and matcher.
          */
-        void update_detector_matcher_compatibility();
+        void update_extractor_matcher_compatibility();
 
     public:
 
         /**
          * @brief This constructor initialize member variables, 
-         *        checks the compatibility between the detector and matcher, 
+         *        checks the compatibility between the extractor and matcher, 
          *        calculates all the models' features
          *        and sets the method's name and the filter's names.
-         * @param detector pointer to the feature detector used by the pipeline.
+         * @param extractor pointer to the feature extractor used by the pipeline.
          * @param matcher pointer to the feature matcher used by the pipeline.
          * @param dataset reference to the dataset used by the pipeline.
          * @param model_imagefilter pointer to the image filter used by the pipeline.
          * @param test_imagefilter pointer to the image filter used by the pipeline.
          */
-        FeaturePipeline(FeatureDetector* detector, FeatureMatcher* matcher, Dataset& dataset, std::unique_ptr<ImageFilter> model_imagefilter = nullptr, std::unique_ptr<ImageFilter> test_imagefilter = nullptr);
+        FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, Dataset& dataset, std::unique_ptr<ImageFilter> model_imagefilter = nullptr, std::unique_ptr<ImageFilter> test_imagefilter = nullptr);
         ~FeaturePipeline();
 
-        void addDetectorComponent(FeatureDetector* fd) {
-            this->detector.reset(fd);
+        void addExtractororComponent(FeatureExtractor* fd) {
+            this->extractor.reset(fd);
         }
         void addMatcherComponent(FeatureMatcher* fm) {
             this->matcher.reset(fm);
@@ -115,7 +115,7 @@ class FeaturePipeline : public ObjectDetector {
             const cv::Mat& img_model,
             const cv::Mat& mask_model,
             const cv::Mat& img_scene,
-            Object_Type object_type) const ;
+            Card_Type object_type) const ;
         
        
 };
