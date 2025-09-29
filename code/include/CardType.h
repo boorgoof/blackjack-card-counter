@@ -14,15 +14,17 @@ public:
         CLUBS = 1,    // C
         DIAMONDS = 2,   // D
         HEARTS = 3,     // H
-        UNKNOWN = -1
+        NOTHING = -1
     };
 
     enum class Rank {
         R2 = 1, R3 = 2, R4 = 3, R5 = 4, R6 = 5,
         R7 = 6, R8 = 7, R9 = 8,
         R10 = 9, J = 10, Q = 11, K = 12, A = 0,
-        UNKNOWN = -1
+        NOTHING = -1
     };
+
+    
 
     
     Card_Type(const std::string& card_text);
@@ -53,14 +55,18 @@ public:
 
 private:
    
-    Rank rank{Rank::UNKNOWN};
-    Suit suit{Suit::UNKNOWN};
+    Rank rank{Rank::NOTHING};
+    Suit suit{Suit::NOTHING};
 };
 
 std::ostream& operator<<(std::ostream& os, const Card_Type& c); 
 bool operator<(const Card_Type& l, const Card_Type& r);
 
 namespace Yolo_index_codec {
+
+  constexpr int numRanks     = 13;  
+  constexpr int numSuits     = 4;   
+  constexpr int noCardIndex  = numRanks * numSuits;  
 
   Card_Type yolo_index_to_card(int index);
   int card_to_yolo_index(const Card_Type& card); 
@@ -70,7 +76,7 @@ namespace Yolo_index_codec {
 
 namespace Blackjack {
 
-  enum class HiLo { Pos=+1, Neutral=0, Neg=-1, Unknown=9999 };
+  enum class HiLo { Pos=+1, Neutral=0, Neg=-1 };
   inline int HiLo_to_int(HiLo v) { return v==HiLo::Pos ? 1 : (v==HiLo::Neg ? -1 : 0); }
   
   inline HiLo rank_to_HiLo(Card_Type::Rank r) {
@@ -81,7 +87,7 @@ namespace Blackjack {
       case R::R2: case R::R3: case R::R4: case R::R5: case R::R6: return HiLo::Pos;
       case R::R7: case R::R8: case R::R9:                         return HiLo::Neutral;
       case R::R10: case R::J: case R::Q: case R::K: case R::A:    return HiLo::Neg;
-      default:                                                    return HiLo::Unknown;
+      default:                                                    return HiLo::Neutral;
     }
   }
 
