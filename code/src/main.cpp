@@ -11,6 +11,7 @@
 #include "../include/card_detector/SingleCardDetector.h"
 #include "../include/Dataset.h"
 #include "../include/StatisticsCalculation.h"
+#include "../include/FeatureDescriptorAlgorithm.h"
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -59,6 +60,11 @@ int main(int argc, char** argv) {
     //Dataset object creation
     Dataset single_cards_dataset(single_cards_dataset_path, false);
     Dataset::Iterator it = single_cards_dataset.begin();
+
+
+    const auto& descriptors = FeatureContainerFor<FeatureDescriptorAlgorithm::SIFT>::getInstance().get();
+    std::cout << "Loaded " << descriptors.size() << " descriptors." << std::endl;
+
 
     //depending on the dataset type, create the appropriate card detector (specific parameters will be decided later, in the actual implementation)
     std::unique_ptr<CardDetector> card_detector = nullptr;
