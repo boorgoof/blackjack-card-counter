@@ -18,165 +18,337 @@ float StatisticsCalculation::calc_IoU(const Label& true_label, const Label& pred
     return intersection_area / union_area;
 }
 
-
-std::vector<float> StatisticsCalculation::calc_dataset_meanIoU(const std::vector<std::vector<Label>>& true_labels,
-                                                                const std::vector<std::vector<Label>>& pred_labels) {
-    if (true_labels.size() != pred_labels.size()) {
-        throw std::invalid_argument("True and predicted labels vectors must have the same size");
+float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_labels,const std::vector<Label>& predicted_labels)
+{
+    
+    // Case with no objects in both true and predicted labels. We define mean IoU = 1.0
+    if (true_labels.empty() && predicted_labels.empty()) {
+        return 1.0f; 
     }
-    
-    std::vector<float> IoU_list;
-    IoU_list.reserve(true_labels.size());
-    
-    // calculate mean IoU for each image
-    for (size_t img_idx = 0; img_idx < true_labels.size(); ++img_idx) {
 
-        float image_iou = calc_image_meanIoU(true_labels[img_idx], pred_labels[img_idx]);
-        IoU_list.push_back(image_iou);
-
+    // Case with no objects in just one of true and predicted labels. We define mean IoU = 0.0
+    if (true_labels.empty() || predicted_labels.empty()) {
+        return 0.0f; 
     }
-    
-    return IoU_list;
-}
 
-// In one image, we can have multiple objects and some of them can be of the same class
-// What we have is a list of true labels and a list of predicted labels, and the goal to calculate the mean IoU for all objects in the image
-// But when we calculate IoU, we need to find for each predicted label the corresponding true label that it is predicting.
-// We cannot calculate IoU using one predicted label with a true labal which is not the one it is predicting.
-// What we do is to group the labels by class. Then
-// If there is just one predicted label in a class, we can directly calculate IoU
-// If there are multiple predicted labels in a class, we need to find the best matches between true and predicted labels
-float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_labels,
-                                                const std::vector<Label>& pred_labels) {
-
-    // If we have no objects in both, we consider it as a perfect match
-    if (true_labels.empty() && pred_labels.empty()) {
-        return 1.0f;
-    }
-    
-    // If one group of labels is empty, we consider no match
-    if (true_labels.empty() || pred_labels.empty()) {
-        return 0.0f;
-    }
-    
-    // If there are objects, initially we group them by class
-    std::map<Card_Type, std::vector<Label>> true_labels_per_class = StatisticsCalculation::Helper::group_labels_by_class(true_labels);
-    std::map<Card_Type, std::vector<Label>> pred_labels_per_class = StatisticsCalculation::Helper::group_labels_by_class(pred_labels);
-    
-    float tot_IoU = 0.0f;
-    int tot_predictions = 0;
-    
-    // we process each class separately
-    for (const auto& [card_type, true_class_labels] : true_labels_per_class) {
-        
-        auto it = pred_labels_per_class.find(card_type);
-
-        // if there are no predicted labels for this class, skip
-        if (it == pred_labels_per_class.end()) {
-            continue;
-        }
-        
-        // If there are predicted labels for this class, we find the best matches between true and predicted labels.
-        // Note the trivial case of just one predicted label in a class is also handled in the function: If there is just one predicted label in a class, we can directly calculate IoU
-        const std::vector<Label>& pred_class_labels = it->second;
-        std::vector<std::pair<int,int>> matches = StatisticsCalculation::Helper::find_best_labels_pairs(true_class_labels, pred_class_labels);
-        
-        // we sum IoU for each matched pair: true and predicted label 
-        for (const auto& [true_idx, pred_idx] : matches) {
-            float IoU = calc_IoU(true_class_labels[true_idx], pred_class_labels[pred_idx]);
-            tot_IoU += IoU;
-            tot_predictions++;
-        }
-    }
-    
-    return tot_predictions > 0 ? tot_IoU / tot_predictions : 0.0f;
-}
-
-// Group labels by their class (Card_Type)
-std::map<Card_Type, std::vector<Label>> StatisticsCalculation::Helper::group_labels_by_class(const std::vector<Label>& labels) {
-    
-    std::map<Card_Type, std::vector<Label>> labels_per_class;
-    
-    for (const auto& label : labels) {
-        labels_per_class[label.get_class_name()].push_back(label);
-    }
-    
-    return labels_per_class;
-}
-
-
-// One image can have multiple objects in the same class. 
-// So we need to find for each predicted label the corrisponding true label.
-// It return the list of index pairs (true_label_index, pred_label_index) 
-std::vector<std::pair<int,int>> StatisticsCalculation::Helper::find_best_labels_pairs(const std::vector<Label>& true_labels,
-                                                        const std::vector<Label>& pred_labels) {
-
-    std::vector<std::pair<int,int>> matches;
-    if (true_labels.empty() || pred_labels.empty()) {
-        return matches;
-    }
-    
-    // Trivial case: just one predicted label and one true label
-    if (true_labels.size() == 1 && pred_labels.size() == 1) {
-        matches.emplace_back(0, 0);
-        return matches;
-    }
-    
-    // General case: multiple true and predicted labels in the same class
     // 1) calculate IoU for each pair of true and predicted labels
-    std::vector<std::tuple<float, int, int>> all_candidates_pairs;
-    for (size_t i = 0; i < true_labels.size(); ++i) {
-        for (size_t j = 0; j < pred_labels.size(); ++j) {
-            float iou = StatisticsCalculation::calc_IoU(true_labels[i], pred_labels[j]);
-            all_candidates_pairs.emplace_back(iou, i, j);
+    std::vector<std::tuple<float,int,int>> all_candidates_pairs; 
+    all_candidates_pairs.reserve(true_labels.size() * predicted_labels.size());
+
+    for (int gt_idx = 0; gt_idx < static_cast<int>(true_labels.size()); ++gt_idx) {
+        for (int pred_idx = 0; pred_idx < static_cast<int>(predicted_labels.size()); ++pred_idx) {
+            
+            float IoU = StatisticsCalculation::calc_IoU(true_labels[gt_idx], predicted_labels[pred_idx]);
+            if (IoU > 0.0f) {
+                all_candidates_pairs.emplace_back(IoU, gt_idx, pred_idx);
+            }
         }
     }
-    
+
+    if (all_candidates_pairs.empty()) {
+        return 0.0f; 
+    }
+
     //2) Sort candidates by IoU in descending order
-    std::sort(all_candidates_pairs.begin(), all_candidates_pairs.end(), 
-              [](const auto& a, const auto& b) { return std::get<0>(a) > std::get<0>(b); });
-    
-    //3) Greedy assignment
+    std::sort(all_candidates_pairs.begin(), all_candidates_pairs.end(), [](const auto& a, const auto& b){ return std::get<0>(a) > std::get<0>(b); });
+
+    //3) Greedy assignment for matching true and predicted labels: one true label is matched with the predicted label with the highest IoU
+    std::vector<char> true_used(true_labels.size(), 0);
+    std::vector<char> pred_used(predicted_labels.size(), 0);
+
+    double sum_iou = 0.0;
+    //int predictions = 0;
+
+    for (const auto& candidate : all_candidates_pairs) {
+
+        int true_idx = std::get<1>(candidate);
+        int pred_idx = std::get<2>(candidate);
+        if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in a match
+
+        float IoU = std::get<0>(candidate);
+        sum_iou += static_cast<double>(IoU);
+        //predictions += 1;
+
+        true_used[true_idx] = pred_used[pred_idx] = 1;
+
+    }
+
+    int predictions = std::max(true_labels.size(), predicted_labels.size());
+    return (predictions > 0) ? static_cast<float>(sum_iou / predictions) : 0.0f;
+
+}
+
+std::vector<float> StatisticsCalculation::calc_dataset_meanIoU(const std::vector<std::vector<Label>>& true_labels_per_image,
+                                                                const std::vector<std::vector<Label>>& predicted_labels_per_image)
+{
+    if (true_labels_per_image.size() != predicted_labels_per_image.size()) {
+        throw std::invalid_argument("True and predicted label lists must have the same number of images.");
+    }
+
+    std::vector<float> mean_IoU_list;
+    mean_IoU_list.reserve(true_labels_per_image.size());
+
+    for (size_t img_idx = 0; img_idx < true_labels_per_image.size(); ++img_idx) {
+
+        float image_mean_iou = StatisticsCalculation::calc_image_meanIoU(true_labels_per_image[img_idx], predicted_labels_per_image[img_idx] );
+        mean_IoU_list.push_back(image_mean_iou);
+    }
+
+    return mean_IoU_list;
+}
+
+// usefull link: https://medium.com/mcd-unison/multiclass-confusion-matrix-clarity-without-confusion-88af1494c1d1
+cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& true_labels,
+                                                    const std::vector<Label>& pred_labels,
+                                                    int num_classes,
+                                                    float iou_threshold)
+{
+    cv::Mat multiclass_conf_matrix = cv::Mat::zeros(num_classes, num_classes, CV_32S); // rows: predicted class, cols: actual class
+    if (num_classes <= 0) return multiclass_conf_matrix;
+
+    const int no_object_index = num_classes - 1; // last row/column: case where there is no object in the image
+
+    // 1) calculate IoU for each pair of true and predicted labels
+    std::vector<std::tuple<float,int,int>> all_candidates_pairs;
+    all_candidates_pairs.reserve(true_labels.size() * pred_labels.size());
+
+    for (int i = 0; i < static_cast<int>(true_labels.size()); ++i) {
+        for (int j = 0; j < static_cast<int>(pred_labels.size()); ++j) {
+            float IoU = StatisticsCalculation::calc_IoU(true_labels[i], pred_labels[j]);
+            if (IoU >= iou_threshold) {
+                 all_candidates_pairs.emplace_back(IoU, i, j);
+            }
+        }
+    }
+
+    //2) Sort candidates by IoU in descending order
+    std::sort(all_candidates_pairs.begin(), all_candidates_pairs.end(), [](const auto& a, const auto& b) { return std::get<0>(a) > std::get<0>(b); });
+
+    //3) Greedy assignment for matching true and predicted labels: one true label is matched with the predicted label with the highest IoU
+    //   We handle the True Positive case and Mispredicted case (FP) 
     std::vector<bool> true_used(true_labels.size(), false);
     std::vector<bool> pred_used(pred_labels.size(), false);
     
-    for (const auto& [iou, true_idx, pred_idx] : all_candidates_pairs) {
+    for (const auto& candidate : all_candidates_pairs) {
+
+        int true_idx = std::get<1>(candidate);
+        int pred_idx = std::get<2>(candidate);
+        if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in a match
+                                                                  
+        int col_actual_class_index = Yolo_index_codec::card_to_yolo_index(true_labels[true_idx].get_class_name());
+        int row_predicted_class_index = Yolo_index_codec::card_to_yolo_index(pred_labels[pred_idx].get_class_name());
+
+        //CV_Assert(0 <= row_predicted_class_index && row_predicted_class_index < num_classes);
+        //CV_Assert(0 <= col_actual_class_index && col_actual_class_index < num_classes);
         
-        if (!true_used[true_idx] && !pred_used[pred_idx]) {
-            matches.emplace_back(true_idx, pred_idx);
-            true_used[true_idx] = true;
-            pred_used[pred_idx] = true;
+        multiclass_conf_matrix.at<int>(col_actual_class_index, row_predicted_class_index) += 1;
+
+        true_used[true_idx] = 1;
+        pred_used[pred_idx] = 1;
+    }
+
+
+    // 4) Undetected object (FN): we have a true label that does not have a corresponding predicted label: row = no_object_index, col = col_actual_class_index
+    for (int true_idx = 0; true_idx < (int)true_labels.size(); ++true_idx) {
+       
+        if (!true_used[true_idx]) {
+            
+            int col_actual_class_index = Yolo_index_codec::card_to_yolo_index(true_labels[true_idx].get_class_name());
+            
+            //CV_Assert(0 <= col_actual_class_index && col_actual_class_index < num_classes);
+            
+            multiclass_conf_matrix.at<int>(no_object_index, col_actual_class_index) += 1; 
         }
     }
+
+    // 5) Ghost prediction (FP but sightly different form Mispredicted case): riga = row_predicted_class_index, col = no_object_index
+    for (int pred_idx = 0; pred_idx < (int)pred_labels.size(); ++pred_idx) {
+        if (!pred_used[pred_idx]) {
+
+            int row_predicted_class_index = Yolo_index_codec::card_to_yolo_index(pred_labels[pred_idx].get_class_name());
+            
+            CV_Assert(0 <= row_predicted_class_index && row_predicted_class_index < num_classes);
+            
+            multiclass_conf_matrix.at<int>(row_predicted_class_index, no_object_index) += 1; // (pred class, no annotation)
+        }
+    }
+
+    return multiclass_conf_matrix;
+
+}
+
+cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<std::vector<Label>>& true_labels_dataset,
+                                const std::vector<std::vector<Label>>& pred_labels_dataset,
+                                int num_classes,
+                                float iou_threshold) {
+
+    if (true_labels_dataset.size() != pred_labels_dataset.size()) {
+        throw std::invalid_argument("calc_confusion_matrix: the two input vectors must have the same dimension.");
+    }
+
+    // multiclass confusion matrix
+    cv::Mat mcm = cv::Mat::zeros(num_classes, num_classes, CV_32S);
+    for (size_t i = 0; i < true_labels_dataset.size(); ++i) {
+        mcm += StatisticsCalculation::calc_confusion_matrix(true_labels_dataset[i], pred_labels_dataset[i], num_classes, iou_threshold);
+    }
+    return mcm;
+}
+
+// usefull link: https://medium.com/mcd-unison/multiclass-confusion-matrix-clarity-without-confusion-88af1494c1d1
+std::vector<float> StatisticsCalculation::calc_precision(const cv::Mat& confusion_matrix){
     
-    return matches;
+    CV_Assert(confusion_matrix.rows == confusion_matrix.cols);
+    CV_Assert(confusion_matrix.type() == CV_32S);
+
+    int matrix_dim = confusion_matrix.rows;
+    int label_classes = confusion_matrix.rows - 1 ;
+
+    std::vector<float> precision(label_classes, 0.0f); // precision = TP / (TP + FP)
+
+
+    for (int c = 0; c < label_classes; ++c) {
+
+        long long true_positive = confusion_matrix.at<int>(c, c);
+
+        long long row_sum = 0; // all predicted as class c
+        for (int j = 0; j < matrix_dim; ++j) {
+            row_sum += confusion_matrix.at<int>(c, j);
+        }
+
+        const long long false_positive = row_sum - true_positive;
+        const long long denom = true_positive + false_positive;
+        precision[c] = (denom > 0) ? static_cast<float>(static_cast<double>(true_positive) / static_cast<double>(denom)) : 0.0f;
+    }
+
+    return precision;
+}
+
+std::vector<float> StatisticsCalculation::calc_recall(const cv::Mat& confusion_matrix)
+{
+    CV_Assert(confusion_matrix.rows == confusion_matrix.cols);
+    CV_Assert(confusion_matrix.type() == CV_32S);
+
+    int matrix_dim = confusion_matrix.rows;
+    int label_classes = confusion_matrix.rows - 1 ;
+
+    std::vector<float> recall(label_classes, 0.0f);
+
+    for (int c = 0; c < label_classes; ++c) {
+
+        long long true_positive = confusion_matrix.at<int>(c, c);
+
+        long long col_sum = 0; // all actual class c
+        for (int i = 0; i < matrix_dim; ++i) {
+            col_sum += confusion_matrix.at<int>(i, c);
+        }
+
+        long long false_negative = col_sum - true_positive;
+        long long denom = true_positive + false_negative;
+        recall[c] = (denom > 0) ? static_cast<float>(static_cast<double>(true_positive) / static_cast<double>(denom)) : 0.0f;
+    }
+
+    return recall;
+}
+
+std::vector<float> StatisticsCalculation::calc_f1(const cv::Mat& confusion_matrix)
+{
+    int matrix_dim    = confusion_matrix.rows;
+    int num_label_classes = std::max(0, matrix_dim - 1);
+
+    std::vector<float> precisions = StatisticsCalculation::calc_precision(confusion_matrix);
+    std::vector<float> recalls = StatisticsCalculation::calc_recall(confusion_matrix);
+
+    std::vector<float> f1_scores(num_label_classes, 0.0f);
+
+    for (int c = 0; c < num_label_classes; ++c) {
+
+        double p = static_cast<double>(precisions[c]);
+        double r = static_cast<double>(recalls[c]);
+        double denom = p + r;
+
+        f1_scores[c] = (denom > 0.0) ? static_cast<float>(2.0 * p * r / denom) : 0.0f;
+    }
+    return f1_scores;
 }
 
 
-/*
+void StatisticsCalculation::print_confusion_matrix(const cv::Mat& confusion_matrix)
+{
+    CV_Assert(confusion_matrix.rows == confusion_matrix.cols);
+    CV_Assert(confusion_matrix.type() == CV_32S);
 
-cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<std::vector<Label>>& true_labels,
-                                                    const std::vector<std::vector<Label>>& pred_labels,
-                                                    int num_classes) {
-        
-    if (true_labels.size() != pred_labels.size()) {
-        throw std::invalid_argument("True and predicted labels vectors must have the same size");
+    int matrix_dim = confusion_matrix.rows;
+
+    std::cout << "Confusion Matrix (" << matrix_dim << " x " << matrix_dim << ") " << std::endl;
+    std::cout <<  "[rows = predicted, cols = ground truth]" << std::endl;
+
+    // Columns indices
+    int weight_cell = 8;
+    std::cout << std::setw(weight_cell) << "";
+    for (int j = 0; j < matrix_dim; ++j) std::cout << std::setw(weight_cell) <<  Yolo_index_codec::yolo_index_to_card(j);
+    std::cout << '\n';
+
+    // Rows
+    for (int i = 0; i < matrix_dim; ++i) {
+
+        std::cout << std::setw(weight_cell) << Yolo_index_codec::yolo_index_to_card(i);
+
+        for (int j = 0; j < matrix_dim; ++j) {
+            std::cout << std::setw(weight_cell) << confusion_matrix.at<int>(i, j);
+        }
+        std::cout << '\n';
     }
-    
-    cv::Mat confusion_matrix = cv::Mat::zeros(num_classes, num_classes, CV_32S);
-    
-    // Process each image
-    for (size_t img_idx = 0; img_idx < true_labels.size(); ++img_idx) {
-        cv::Mat single_image_matrix = calc_confusion_matrix(
-            true_labels[img_idx], 
-            pred_labels[img_idx], 
-            num_classes, 
-            0.5f  
-        );
-        
-        // Accumulate into total matrix
-        confusion_matrix += single_image_matrix;
+}
+
+void StatisticsCalculation::print_metrics(const std::vector<float>& precision,
+                                          const std::vector<float>& recall,
+                                          const std::vector<float>& f1_scores)
+{
+
+    CV_Assert(precision.size() == recall.size());
+    CV_Assert(precision.size() == f1_scores.size());
+
+    const size_t num_label_classes = precision.size();
+    if (num_label_classes == 0) {
+        std::cout << "No metrics to print: 0 classes." << std::endl;
+        return;
     }
+
+    std::cout.setf(std::ios::fixed);
+    std::cout << std::setprecision(4);
+
+    const int col_width_class = 8;
+    const int col_width_value = 12;
+
+
+    // header
+    std::cout << std::setw(col_width_class) << "Class"
+              << std::setw(col_width_value) << "Precision"
+              << std::setw(col_width_value) << "Recall"
+              << std::setw(col_width_value) << "F1" << '\n';
+
     
-    return confusion_matrix;
-}*/
+    double sum_precision = 0.0, sum_recall = 0.0, sum_f1 = 0.0;
+
+    // metrics values
+    for (size_t class_index = 0; class_index < num_label_classes; ++class_index) {
+        std::cout << std::setw(col_width_class) << class_index
+                  << std::setw(col_width_value) << precision[class_index]
+                  << std::setw(col_width_value) << recall[class_index]
+                  << std::setw(col_width_value) << f1_scores[class_index]
+                  << '\n';
+
+        sum_precision += precision[class_index];
+        sum_recall    += recall[class_index];
+        sum_f1        += f1_scores[class_index];
+    }
+
+    // mean meatrics values
+    std::cout << std::string(col_width_class + 3 * col_width_value, '-') << '\n';
+    std::cout << std::setw(col_width_class) << "Mean"
+              << std::setw(col_width_value) << static_cast<float>(sum_precision / num_label_classes)
+              << std::setw(col_width_value) << static_cast<float>(sum_recall / num_label_classes)
+              << std::setw(col_width_value) << static_cast<float>(sum_f1 / num_label_classes)
+              << '\n';
+
+}
