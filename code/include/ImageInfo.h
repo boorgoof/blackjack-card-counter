@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "Label.h"
+#include "Loaders.h"
 
 /**
  * @class ImageInfo
@@ -48,10 +49,7 @@ public:
      * @brief Load the image.
      * @return Loaded cv::Mat image.
      */
-    cv::Mat load_image() const {
-        return cv::imread(pathImage_, cv::IMREAD_COLOR);
-    }
-
+    cv::Mat load_image() const { return Loader::Image::load_image(pathImage_); }
     /**
      * @brief Overload the output stream operator for ImageInfo.
      * @param os Output stream.
