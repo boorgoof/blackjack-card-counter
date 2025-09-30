@@ -104,7 +104,8 @@ int main(int argc, char** argv) {
                                                  50, "Processing images: ", "Complete");
     }
 
-    std::cout << "Dataset: " << single_cards_dataset.get_path() << std::endl;
+    std::cout << "Dataset image path: " << single_cards_dataset.get_image_root() << std::endl;
+    std::cout << "Dataset annotation path: " << single_cards_dataset.get_annotation_root() << std::endl;
     std::cout << "Total images processed: " << std::distance(single_cards_dataset.begin(), single_cards_dataset.end()) << std::endl;
     std::cout << "Average loading time per image: " << total_loading_time.count() / std::distance(single_cards_dataset.begin(), single_cards_dataset.end()) << " ms" << std::endl;
     std::cout << "Average detection time per image: " << total_detection_time.count() / std::distance(single_cards_dataset.begin(), single_cards_dataset.end()) << " ms" << std::endl;
