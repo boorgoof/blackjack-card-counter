@@ -6,7 +6,7 @@
 
 int main() {
     // Initialize the card detector
-    RoughCardDetector detector = RoughCardDetector();
+    vision::RoughCardDetector detector{vision::PipelinePreset::DEFAULT};
     
     // Create dataset instance
     int i = 0;
