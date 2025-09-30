@@ -14,9 +14,9 @@ void RoughCardDetector::loadPreset(PipelinePreset preset) {
             break;
             
         case PipelinePreset::DEFAULT:
-            add_step(hsvWhiteThreshold);
-            add_step(filterBySize, 2000);
-            add_step(morphOpenClose, 5, 9);
+            add_step([](const cv::Mat& in) { return hsvWhiteThreshold(in); });
+            add_step([](const cv::Mat& mask) { return filterBySize(mask); });
+            add_step([](const cv::Mat& mask) { return morphOpenClose(mask); });
             break;
             
         case PipelinePreset::LOW_LIGHT:
