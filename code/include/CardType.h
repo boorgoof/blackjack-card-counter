@@ -14,14 +14,14 @@ public:
         CLUBS = 1,    // C
         DIAMONDS = 2,   // D
         HEARTS = 3,     // H
-        NOTHING = -1
+        UNKNOWN = -1
     };
 
     enum class Rank {
         R2 = 1, R3 = 2, R4 = 3, R5 = 4, R6 = 5,
         R7 = 6, R8 = 7, R9 = 8,
         R10 = 9, J = 10, Q = 11, K = 12, A = 0,
-        NOTHING = -1
+        UNKNOWN = -1
     };
 
     
@@ -55,8 +55,8 @@ public:
 
 private:
    
-    Rank rank{Rank::NOTHING};
-    Suit suit{Suit::NOTHING};
+    Rank rank{Rank::UNKNOWN};
+    Suit suit{Suit::UNKNOWN};
 };
 
 std::ostream& operator<<(std::ostream& os, const Card_Type& c); 
