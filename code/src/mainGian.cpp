@@ -29,13 +29,13 @@ int main() {
         cv::Mat currentMask = detector.getMask(imageFiles);
         
         // Method 2: Change mask type and get different masks
-        detector.setMaskType(vision::MaskType::POLYGON);
+        detector.loadMaskPreset(vision::MaskType::POLYGON);
         cv::Mat polygonMask = detector.getMask(imageFiles);
         
-        detector.setMaskType(vision::MaskType::CONVEX_HULL);
+        detector.loadMaskPreset(vision::MaskType::CONVEX_HULL);
         cv::Mat convexHullMask = detector.getMask(imageFiles);
         
-        detector.setMaskType(vision::MaskType::BOUNDING_BOX);
+        detector.loadMaskPreset(vision::MaskType::BOUNDING_BOX);
         cv::Mat boundingBoxMask = detector.getMask(imageFiles);
         
         // Display results
