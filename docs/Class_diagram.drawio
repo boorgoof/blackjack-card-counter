@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="Page-1" id="c4acf3e9-155e-7222-9cf6-157b1a14988f">
-        <mxGraphModel dx="3056" dy="2372" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
+        <mxGraphModel dx="2277" dy="1746" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -525,58 +525,58 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="60" value="&lt;div&gt;&lt;font style=&quot;font-size: 18px; color: rgb(153, 0, 0);&quot;&gt;CODE IN MAIN.cpp&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px; color: rgb(153, 0, 0);&quot;&gt;creating the instance of CardDetector&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 18px; color: rgb(153, 0, 0);&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;std::unique_ptr&amp;lt;CardDetector&amp;gt; = std::make_unique&amp;lt;SnapshotCardDetector&amp;gt;(new MaskCardExtractor(),&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;new FeatureMatchingDetector(FeatureType::SIFT, full_card))&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;Here MaskCardExtractor is an object but probably it makes more sense to use it as a lambda function (we&#39;ll see what is better).&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;So the card detector knows which MaskCardExtractor to use, which ObjectDetector to use and in which format to extract features (keypoints) from the images, and if the final BB has to be only of the card corners or of the full card.&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;The FeatureMatchingDetector doesn&#39;t directly store the features of the template cards (52 cards) but stores only a shared pointer. The real data is stored inside FeatureContainer&amp;lt;FeatureType&amp;gt; that is a template Singleton. When the FeatureMatcher is created it asks to FeatureContainer for the features of the specific type defined in its constructor (FeatureType::SIFT, the call to get the features is FeatureContainer&amp;lt;FeatureType::SIFT&amp;gt;::getInstance()) and stores them in a pointer (shared?).&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;Advantages:&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;1) no need to pass the template features in the function ObjectDetector.detect_object() since they are already in FeatureMatcher.&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;2) the actual data is stored in a Singleton class and so is accessible from anywhere in the code, there are no duplicates of this data and there is no need to load it multiple times.&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;Disadvantages:&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;1) make sure to handle pointer correctly (use smart pointers)&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;2) since template features in FeatureContainer are available to every code, keep them const as they might be asked by a class for a specific purpose but the actual content might have been modified by another class&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-640" y="600" width="710" height="430" as="geometry"/>
+                    <mxGeometry x="-840" y="580" width="710" height="430" as="geometry"/>
                 </mxCell>
-                <mxCell id="61" value="struct DescriptionTypeMap&amp;lt;FeatureDescriptionAlgorithm&amp;gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="61" value="struct DescriptionTypeMap&amp;lt;FeatureDescriptionAlgorithm&amp;gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="-230" y="1240" width="350" height="140" as="geometry">
                         <mxRectangle x="-230" y="1240" width="350" height="30" as="alternateBounds"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="62" value="for every algorithm name in FeatureDescriptionAlgorithm, associates the right data type (e.g. for SIFT uses cv::Mat)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="61">
+                <mxCell id="62" value="for every algorithm name in FeatureDescriptionAlgorithm, associates the right data type (e.g. for SIFT uses cv::Mat)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="61" vertex="1">
                     <mxGeometry y="26" width="350" height="44" as="geometry"/>
                 </mxCell>
-                <mxCell id="63" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="61">
+                <mxCell id="63" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="61" vertex="1">
                     <mxGeometry y="70" width="350" height="8" as="geometry"/>
                 </mxCell>
-                <mxCell id="64" value="to easier access, defines:&lt;div&gt;FeatureContainerFor that is the alias for&lt;/div&gt;&lt;div&gt;FeatureContainer&amp;lt;typename DescriptorTypeMap&amp;lt;Algo&amp;gt;::type&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="61">
+                <mxCell id="64" value="to easier access, defines:&lt;div&gt;FeatureContainerFor that is the alias for&lt;/div&gt;&lt;div&gt;FeatureContainer&amp;lt;typename DescriptorTypeMap&amp;lt;Algo&amp;gt;::type&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="61" vertex="1">
                     <mxGeometry y="78" width="350" height="62" as="geometry"/>
                 </mxCell>
-                <mxCell id="65" value="" style="fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;" vertex="1" parent="1">
+                <mxCell id="65" value="" style="fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;marginBottom=0;" parent="1" vertex="1">
                     <mxGeometry y="1080" width="200" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="66" value="enum" style="html=1;align=center;spacing=0;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" vertex="1" parent="65">
+                <mxCell id="66" value="enum" style="html=1;align=center;spacing=0;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" parent="65" vertex="1">
                     <mxGeometry width="200" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="67" value="FeatureDescriptorAlgorithm" style="html=1;align=center;spacing=0;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;fontStyle=1;" vertex="1" parent="65">
+                <mxCell id="67" value="FeatureDescriptorAlgorithm" style="html=1;align=center;spacing=0;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;fontStyle=1;" parent="65" vertex="1">
                     <mxGeometry y="20" width="200" height="14" as="geometry"/>
                 </mxCell>
-                <mxCell id="68" value="" style="line;strokeWidth=0.25;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="65">
+                <mxCell id="68" value="" style="line;strokeWidth=0.25;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="65" vertex="1">
                     <mxGeometry y="34" width="200" height="8" as="geometry"/>
                 </mxCell>
-                <mxCell id="69" value="SIFT" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" vertex="1" parent="65">
+                <mxCell id="69" value="SIFT" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" parent="65" vertex="1">
                     <mxGeometry y="42" width="200" height="16" as="geometry"/>
                 </mxCell>
-                <mxCell id="70" value="ORB" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" vertex="1" parent="65">
+                <mxCell id="70" value="ORB" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" parent="65" vertex="1">
                     <mxGeometry y="58" width="200" height="16" as="geometry"/>
                 </mxCell>
-                <mxCell id="71" value="" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" vertex="1" parent="65">
+                <mxCell id="71" value="" style="html=1;align=left;spacing=0;spacingLeft=8;verticalAlign=middle;strokeColor=none;fillColor=none;whiteSpace=wrap;" parent="65" vertex="1">
                     <mxGeometry y="74" width="200" height="6" as="geometry"/>
                 </mxCell>
-                <mxCell id="73" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;rounded=0;curved=0;" edge="1" parent="1" source="vDYaswoASGjLoRNCAMbZ-2" target="67">
+                <mxCell id="73" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;rounded=0;curved=0;" parent="1" source="vDYaswoASGjLoRNCAMbZ-2" target="67" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="400" y="1110"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="74" style="edgeStyle=none;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;rounded=0;curved=0;" edge="1" parent="1" source="62" target="71">
+                <mxCell id="74" style="edgeStyle=none;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;rounded=0;curved=0;" parent="1" source="62" target="71" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="150" y="1288"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="75" style="edgeStyle=none;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;rounded=0;curved=0;" edge="1" parent="1" source="62" target="53">
+                <mxCell id="75" style="edgeStyle=none;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;rounded=0;curved=0;" parent="1" source="62" target="53" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="150" y="1288"/>
@@ -584,19 +584,19 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="76" value="maps" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="75">
+                <mxCell id="76" value="maps" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="75" vertex="1" connectable="0">
                     <mxGeometry x="-0.7006" y="-2" relative="1" as="geometry">
                         <mxPoint x="9" y="-10" as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="77" style="edgeStyle=none;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;rounded=0;curved=0;" edge="1" parent="1" source="vDYaswoASGjLoRNCAMbZ-4" target="53">
+                <mxCell id="77" style="edgeStyle=none;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;rounded=0;curved=0;" parent="1" source="vDYaswoASGjLoRNCAMbZ-4" target="53" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="420" y="1189"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="78" value="stores a pointer to the map of feature descriptors" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="77">
+                <mxCell id="78" value="stores a pointer to the map of feature descriptors" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="77" vertex="1" connectable="0">
                     <mxGeometry x="0.2745" relative="1" as="geometry">
                         <mxPoint x="5" y="-42" as="offset"/>
                     </mxGeometry>
