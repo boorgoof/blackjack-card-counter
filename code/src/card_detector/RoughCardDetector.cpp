@@ -2,7 +2,8 @@
 
 namespace vision {
 
-RoughCardDetector::RoughCardDetector(PipelinePreset preset) {
+RoughCardDetector::RoughCardDetector(PipelinePreset preset, MaskType maskType) 
+    : maskType_(maskType) {
     loadPreset(preset);
 }
 
@@ -92,6 +93,17 @@ cv::Mat RoughCardDetector::getBoundingBoxesMask(const cv::Mat& img) const {
     return mask;
 }
 
+cv::Mat RoughCardDetector::getMask(const cv::Mat& img) const {
+    switch (maskType_) {
+        case MaskType::POLYGON:
+            return getCardPolygonMask(img);
+        case MaskType::CONVEX_HULL:
+            return getCardsConvexHullsMask(img);
+        case MaskType::BOUNDING_BOX:
+            return getBoundingBoxesMask(img);
+    }
+}
+
 }
 
 namespace {
@@ -112,7 +124,7 @@ cv::Mat filterBySize(const cv::Mat& maskIn, int minArea) {
     cv::findContours(maskIn, cs, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     cv::Mat out = cv::Mat::zeros(maskIn.size(), CV_8UC1);
-    for (auto& c : cs) {
+    for (const std::vector<cv::Point>& c : cs) {
         if (cv::contourArea(c) >= minArea) {
             cv::fillPoly(out, std::vector<std::vector<cv::Point>>{c}, cv::Scalar(255));
         }
