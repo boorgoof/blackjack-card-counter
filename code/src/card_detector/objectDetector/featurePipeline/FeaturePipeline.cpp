@@ -14,25 +14,9 @@ FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* ma
     : extractor{extractor}, matcher{matcher} {
 
     this->update_extractor_matcher_compatibility();
-
-    this->template_descriptors = FeatureContainerFor<FeatureDescriptorAlgorithm::SIFT>::getInstance().get();
+    this->template_descriptors = FeatureContainerFor(algoDescriptor)::getInstance().get();
     
-    /*
-    switch (algoDescriptor)
-    {
-        case FeatureDescriptorAlgorithm::SIFT:
-            this->template_descriptors = FeatureContainerFor<FeatureDescriptorAlgorithm::SIFT>::getInstance().get();
-            break;
-
-        case FeatureDescriptorAlgorithm::ORB:
-            this->template_descriptors = FeatureContainerFor<FeatureDescriptorAlgorithm::ORB>::getInstance().get();
-            break;
-
-        case FeatureDescriptorAlgorithm::HASH:
-            this->template_descriptors = FeatureContainerFor<FeatureDescriptorAlgorithm::HASH>::getInstance().get();
-            break;
-    }*/
-
+    
     std::string method_name = ExtractorType::toString(extractor->getType()) + "-" + MatcherType::toString(matcher->getType());
     this->set_method_name(method_name);
 }
