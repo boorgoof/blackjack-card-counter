@@ -21,7 +21,8 @@ class ExtractorType{
     };
 
     static std::vector<ExtractorType::Type> getExtractorTypes() {
-        return { /*ExtractorType::Type::SIFT,*/ 
+        return { 
+            ExtractorType::Type::SIFT,
             ExtractorType::Type::ORB};
     }
 
