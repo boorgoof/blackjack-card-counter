@@ -33,12 +33,14 @@ enum class PipelinePreset {
  */
 class RoughCardDetector {
 private:
+
     /**
      * @brief steps_: A vector of functions representing the processing steps in the pipeline.
      */
     std::vector<std::function<cv::Mat(const cv::Mat&)>> steps_;
 
 public:
+
     /**
      * @brief Constructor: Initializes the pipeline based on the specified preset.
      * @param preset: Predefined pipeline configuration (default: NONE - empty pipeline)
@@ -93,26 +95,34 @@ public:
     }
 
     /**
-     * @brief getCardsMask: Processes the input image through the pipeline and returns a binary mask
-     *                      where detected card-like objects are white (255) and the background is black (0).
-     * @param img: Input BGR image (cv::Mat).
-     * @return cv::Mat: Binary mask of detected cards.
-     */
-    cv::Mat getCardsMask(const cv::Mat& img) const;
-
-    /**
      * @brief getCardsPolygon: Extracts the polygonal contours of detected card-like objects.
      * @param img: Input BGR image (cv::Mat).
      * @return std::vector<std::vector<cv::Point>>: List of polygons representing detected cards.
      */
     std::vector<std::vector<cv::Point>> getCardsPolygon(const cv::Mat& img) const;
 
+        /**
+     * @brief getMask: Processes the input image through the pipeline and returns a binary mask
+     * where detected card-like objects are white (255) and the background is black (0).
+     * @param img: Input BGR image (cv::Mat).
+     * @return cv::Mat: Binary mask of detected cards.
+     */
+    cv::Mat getCardPolygonMask(const cv::Mat& img) const;
+
     /**
      * @brief getConvexHulls: Extracts the convex hulls of detected card-like objects.
      * @param img: Input BGR image (cv::Mat).
      * @return std::vector<std::vector<cv::Point>>: List of convex hulls representing detected cards.
      */
-    std::vector<std::vector<cv::Point>> getConvexHulls(const cv::Mat& img) const;
+    std::vector<std::vector<cv::Point>> getCardsConvexHulls(const cv::Mat& img) const;
+
+    /**
+     * @brief getConvexHullsMask: Processes the input image through the pipeline and returns a binary mask
+     * where the convex hulls of detected card-like objects are white (255) and the background is black (0).
+     * @param img: Input BGR image (cv::Mat).
+     * @return cv::Mat: Binary mask of convex hulls of detected cards.
+     */
+    cv::Mat getCardsConvexHullsMask(const cv::Mat& img) const;
 
     /**
      * @brief getCardsBoundingBox: Extracts the bounding boxes of detected card-like objects.
@@ -120,6 +130,14 @@ public:
      * @return std::vector<cv::Rect>: List of bounding boxes representing detected cards.
      */
     std::vector<cv::Rect> getCardsBoundingBox(const cv::Mat& img) const;
+
+    /**
+     * @brief getBoundingBoxesMask: Processes the input image through the pipeline and returns a binary mask
+     * where the bounding boxes of detected card-like objects are white (255) and the background is black (0).
+     * @param img: Input BGR image (cv::Mat).
+     * @return cv::Mat: Binary mask of bounding boxes of detected cards.
+     */
+    cv::Mat getBoundingBoxesMask(const cv::Mat& img) const;
 };
 
 } 
@@ -135,8 +153,7 @@ namespace {
  * @param beta: Brightness adjustment factor (default: 10.0).
  * @return cv::Mat: Binary mask where white regions are 255 and others are 0.
  */
-cv::Mat hsvWhiteThreshold(const cv::Mat& bgr, cv::Scalar lo = {0, 0, 180}, cv::Scalar hi = {179, 20, 255},
-                          double alpha = 1.2, double beta = 10.0);
+cv::Mat hsvWhiteThreshold(const cv::Mat& bgr, cv::Scalar lo = {0, 0, 180}, cv::Scalar hi = {179, 20, 255}, double alpha = 1.2, double beta = 10.0);
 
 /**
  * @brief filterBySize: Filters out small contours from a binary mask based on a minimum area threshold.

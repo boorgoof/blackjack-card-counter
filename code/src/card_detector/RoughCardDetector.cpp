@@ -33,26 +33,28 @@ void RoughCardDetector::loadPreset(PipelinePreset preset) {
     }
 }
 
-cv::Mat RoughCardDetector::getCardsMask(const cv::Mat& img) const {
-    cv::Mat cur = img;
-    for (const auto& step : steps_) cur = step(cur);
-    return cur;
+cv::Mat RoughCardDetector::getCardPolygonMask(const cv::Mat& img) const {
+    cv::Mat current = img.clone();
+    for (size_t stepIndex = 0; stepIndex < steps_.size(); ++stepIndex) {
+        const std::function<cv::Mat(const cv::Mat&)>& currentStep = steps_[stepIndex];
+        cv::Mat processedImage = currentStep(current);
+        current = processedImage;
+    }
+    return current;
 }
 
-std::vector<std::vector<cv::Point>>
-RoughCardDetector::getCardsPolygon(const cv::Mat& img) const {
-    cv::Mat mask = getCardsMask(img);
+std::vector<std::vector<cv::Point>> RoughCardDetector::getCardsPolygon(const cv::Mat& img) const {
+    cv::Mat mask = getCardPolygonMask(img);
     std::vector<std::vector<cv::Point>> polys;
     cv::findContours(mask, polys, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
     return polys;
 }
 
-std::vector<std::vector<cv::Point>>
-RoughCardDetector::getConvexHulls(const cv::Mat& img) const {
-    auto polys = getCardsPolygon(img);
+std::vector<std::vector<cv::Point>> RoughCardDetector::getCardsConvexHulls(const cv::Mat& img) const {
+    std::vector<std::vector<cv::Point>> polys = getCardsPolygon(img);
     std::vector<std::vector<cv::Point>> hulls;
     hulls.reserve(polys.size());
-    for (const auto& p : polys) {
+    for (const std::vector<cv::Point>& p : polys) {
         if (p.empty()) continue;
         std::vector<cv::Point> h;
         cv::convexHull(p, h);
@@ -61,22 +63,40 @@ RoughCardDetector::getConvexHulls(const cv::Mat& img) const {
     return hulls;
 }
 
-std::vector<cv::Rect>
-RoughCardDetector::getCardsBoundingBox(const cv::Mat& img) const {
-    auto polys = getCardsPolygon(img);
+cv::Mat RoughCardDetector::getCardsConvexHullsMask(const cv::Mat& img) const {
+    std::vector<std::vector<cv::Point>> points = getCardsConvexHulls(img);
+    cv::Mat mask = cv::Mat::zeros(img.size(), CV_8UC1);
+    for (const std::vector<cv::Point>& h : points) {
+        cv::fillPoly(mask, std::vector<std::vector<cv::Point>>{h}, cv::Scalar(255));
+    }
+    return mask;
+}
+
+std::vector<cv::Rect> RoughCardDetector::getCardsBoundingBox(const cv::Mat& img) const {
+    std::vector<std::vector<cv::Point>> polys = getCardsPolygon(img);
     std::vector<cv::Rect> boxes;
     boxes.reserve(polys.size());
-    for (const auto& p : polys) boxes.emplace_back(cv::boundingRect(p));
+    for (const std::vector<cv::Point>& p : polys) {
+        cv::Rect boundingBox = cv::boundingRect(p);
+        boxes.emplace_back(boundingBox);
+    }
     return boxes;
+}
+
+cv::Mat RoughCardDetector::getBoundingBoxesMask(const cv::Mat& img) const {
+    std::vector<cv::Rect> boxes = getCardsBoundingBox(img);
+    cv::Mat mask = cv::Mat::zeros(img.size(), CV_8UC1);
+    for (const cv::Rect& b : boxes) {
+        cv::rectangle(mask, b, cv::Scalar(255), cv::FILLED);
+    }
+    return mask;
 }
 
 }
 
 namespace {
 
-cv::Mat hsvWhiteThreshold(const cv::Mat& bgr, cv::Scalar lo, cv::Scalar hi,
-                          double alpha, double beta)
-{
+cv::Mat hsvWhiteThreshold(const cv::Mat& bgr, cv::Scalar lo, cv::Scalar hi, double alpha, double beta) {
     cv::Mat enhanced; 
     cv::convertScaleAbs(bgr, enhanced, alpha, beta);
     cv::Mat hsv; 
@@ -86,8 +106,7 @@ cv::Mat hsvWhiteThreshold(const cv::Mat& bgr, cv::Scalar lo, cv::Scalar hi,
     return mask;
 }
 
-cv::Mat filterBySize(const cv::Mat& maskIn, int minArea)
-{
+cv::Mat filterBySize(const cv::Mat& maskIn, int minArea) {
     CV_Assert(maskIn.type() == CV_8UC1);
     std::vector<std::vector<cv::Point>> cs;
     cv::findContours(maskIn, cs, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
@@ -101,8 +120,7 @@ cv::Mat filterBySize(const cv::Mat& maskIn, int minArea)
     return out;
 }
 
-cv::Mat morphOpenClose(const cv::Mat& maskIn, int openSize, int closeSize)
-{
+cv::Mat morphOpenClose(const cv::Mat& maskIn, int openSize, int closeSize) {
     CV_Assert(maskIn.type() == CV_8UC1);
     cv::Mat mask = maskIn.clone();
     cv::morphologyEx(mask, mask, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_RECT, {openSize, openSize}));
