@@ -55,53 +55,14 @@ private:
     /**
      * @brief maskType_: The type of mask to generate when getMask() is called.
      */
-    MaskType maskType_;
+    std::function<cv::Mat(const cv::Mat&)> maskType_;
 
     /**
-     * @brief getCardsPolygon: Extracts the polygonal contours of detected card-like objects.
-     * Uses the pipeline to process the image and then finds contours from the resulting binary mask.
-     * @param img: Input BGR image (cv::Mat).
-     * @return std::vector<std::vector<cv::Point>>: List of polygons representing detected cards.
+     * @brief applyPipeline: Applies the entire pipeline to an input image.
+     * @param img: Input image to process through the pipeline.
+     * @return cv::Mat: Processed image after applying all pipeline steps.
      */
-    std::vector<std::vector<cv::Point>> getCardsPolygon(const cv::Mat& img) const;
-
-        /**
-     * @brief getCardPolygonMask: Processes the input image through the pipeline and returns a binary mask
-     * where detected card-like objects are white (255) and the background is black (0).
-     * @param img: Input BGR image (cv::Mat).
-     * @return cv::Mat: Binary mask of detected cards (CV_8UC1).
-     */
-    cv::Mat getCardPolygonMask(const cv::Mat& img) const;
-
-    /**
-     * @brief getCardsConvexHulls: Extracts the convex hulls of detected card-like objects.
-     * @param img: Input BGR image (cv::Mat).
-     * @return std::vector<std::vector<cv::Point>>: List of convex hulls representing detected cards.
-     */
-    std::vector<std::vector<cv::Point>> getCardsConvexHulls(const cv::Mat& img) const;
-
-    /**
-     * @brief getCardsConvexHullsMask: Processes the input image through the pipeline and returns a binary mask
-     * where the convex hulls of detected card-like objects are white (255) and the background is black (0).
-     * @param img: Input BGR image (cv::Mat).
-     * @return cv::Mat: Binary mask of convex hulls of detected cards (CV_8UC1).
-     */
-    cv::Mat getCardsConvexHullsMask(const cv::Mat& img) const;
-
-    /**
-     * @brief getCardsBoundingBox: Extracts the bounding boxes of detected card-like objects.
-     * @param img: Input BGR image (cv::Mat).
-     * @return std::vector<cv::Rect>: List of bounding boxes representing detected cards.
-     */
-    std::vector<cv::Rect> getCardsBoundingBox(const cv::Mat& img) const;
-
-    /**
-     * @brief getBoundingBoxesMask: Processes the input image through the pipeline and returns a binary mask
-     * where the bounding boxes of detected card-like objects are white (255) and the background is black (0).
-     * @param img: Input BGR image (cv::Mat).
-     * @return cv::Mat: Binary mask of bounding boxes of detected cards (CV_8UC1).
-     */
-    cv::Mat getBoundingBoxesMask(const cv::Mat& img) const;
+    cv::Mat applyPipeline(const cv::Mat& img) const;
 
 
 public:
@@ -166,24 +127,20 @@ public:
      * @param img: Input BGR image (cv::Mat).
      * @return cv::Mat: Binary mask where detected card regions are white (255) and background is black (0) (CV_8UC1).
      */
-    cv::Mat getMask(const cv::Mat& img) const;
+    cv::Mat getMask(const cv::Mat& img) const { return maskType_(img); }
 
     /**
      * @brief setMaskType: Changes the mask type used by getMask().
      * @param maskType: New mask type to use (POLYGON, CONVEX_HULL, or BOUNDING_BOX).
      */
-    void setMaskType(MaskType maskType) { maskType_ = maskType; }
+    void setMaskType(std::function<cv::Mat(const cv::Mat&)> func) { maskType_ = func; }
 
-    /**
-     * @brief getMaskType: Returns the current mask type.
-     * @return MaskType: Current mask type setting.
-     */
-    MaskType getMaskType() const { return maskType_; }
+    void loadMaskPreset(MaskType maskType);
 };
 
 } 
 
-namespace {
+namespace preprocessing {
 
 /**
  * @brief hsvWhiteThreshold: Applies HSV thresholding to isolate white regions in the image.
@@ -213,5 +170,48 @@ cv::Mat filterBySize(const cv::Mat& maskIn, int minArea = 2000);
  */
 cv::Mat morphOpenClose(const cv::Mat& maskIn, int openSize = 5, int closeSize = 9);
 
+// Simple wrapper functions that use default parameters
+cv::Mat hsvWhiteThresholdDefault(const cv::Mat& bgr) { return hsvWhiteThreshold(bgr); }
+cv::Mat filterBySizeDefault(const cv::Mat& maskIn) { return filterBySize(maskIn); }
+cv::Mat morphOpenCloseDefault(const cv::Mat& maskIn) { return morphOpenClose(maskIn); }
+
+}
+
+namespace mask {
+    
+/**
+ * @brief getCardsPolygon: Extracts the polygonal contours from a binary mask.
+ * @param mask: Input binary mask (CV_8UC1).
+ * @return std::vector<std::vector<cv::Point>>: List of polygons representing detected cards.
+ */
+std::vector<std::vector<cv::Point>> getCardsPolygon(const cv::Mat& mask);
+
+/**
+ * @brief getCardsConvexHulls: Extracts the convex hulls from detected polygons.
+ * @param mask: Input binary mask (CV_8UC1).
+ * @return std::vector<std::vector<cv::Point>>: List of convex hulls representing detected cards.
+ */
+std::vector<std::vector<cv::Point>> getCardsConvexHulls(const cv::Mat& mask);
+
+/**
+ * @brief getCardsConvexHullsMask: Creates a mask filled with convex hulls from input mask.
+ * @param mask: Input binary mask (CV_8UC1).
+ * @return cv::Mat: Binary mask with convex hulls filled.
+ */
+cv::Mat getCardsConvexHullsMask(const cv::Mat& mask);
+
+/**
+ * @brief getCardsBoundingBox: Extracts bounding boxes from detected polygons.
+ * @param mask: Input binary mask (CV_8UC1).
+ * @return std::vector<cv::Rect>: List of bounding boxes representing detected cards.
+ */
+std::vector<cv::Rect> getCardsBoundingBox(const cv::Mat& mask);
+
+/**
+ * @brief getBoundingBoxesMask: Creates a mask filled with bounding boxes from input mask.
+ * @param mask: Input binary mask (CV_8UC1).
+ * @return cv::Mat: Binary mask with bounding boxes filled.
+ */
+cv::Mat getBoundingBoxesMask(const cv::Mat& mask);
 }
 #endif
