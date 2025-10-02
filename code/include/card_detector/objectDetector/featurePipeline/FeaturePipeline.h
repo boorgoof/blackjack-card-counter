@@ -37,32 +37,6 @@ class FeaturePipeline : public ObjectDetector {
          */
         void update_extractor_matcher_compatibility();
 
-    public:
-
-        /**
-         * @brief This constructor initialize member variables, checks the compatibility between the extractor and matcher,
-         *        and sets the method's name and the filter's names.
-         * 
-         * @param extractor pointer to the feature extractor used by the pipeline.
-         * @param matcher pointer to the feature matcher used by the pipeline.
-         */
-        FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const FeatureDescriptorAlgorithm& algoDescriptor);
-        ~FeaturePipeline();
-
-        void addExtractororComponent(FeatureExtractor* fd) {
-            this->extractor.reset(fd);
-        }
-        void addMatcherComponent(FeatureMatcher* fm) {
-            this->matcher.reset(fm);
-        }
-
-
-        /**
-         * @brief detect objects in the scene image.
-         * @param src_img the scene (test) image
-         * @param out_labels the output vector of labels that will contain the detected objects
-         */
-        void detect_objects(const cv::Mat& src_img, std::vector<Label>& out_labels) override;
 
         /**
         * @brief find the label (so the bounding box) of the object in the scene image.
@@ -82,8 +56,35 @@ class FeaturePipeline : public ObjectDetector {
             const cv::Mat& mask_model,
             const cv::Mat& img_scene,
             Card_Type object_type) const ;
-        
-       
+
+    public:
+
+        /**
+         * @brief This constructor initialize member variables, checks the compatibility between the extractor and matcher,
+         *        and sets the method's name and the filter's names.
+         * 
+         * @param extractor pointer to the feature extractor used by the pipeline.
+         * @param matcher pointer to the feature matcher used by the pipeline.
+         */
+        FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const FeatureDescriptorAlgorithm& algoDescriptor);
+        ~FeaturePipeline();
+
+        void setExtractororComponent(FeatureExtractor* fd) {
+            this->extractor.reset(fd);
+        }
+        void setMatcherComponent(FeatureMatcher* fm) {
+            this->matcher.reset(fm);
+        }
+
+
+        /**
+         * @brief detect objects in the scene image.
+         * @param src_img the scene (test) image
+         * @param out_labels the output vector of labels that will contain the detected objects
+         */
+        void detect_objects(const cv::Mat& src_img, std::vector<Label>& out_labels) override;
+
+              
 };
 
 #endif // FEATUREPIPELINE_H
