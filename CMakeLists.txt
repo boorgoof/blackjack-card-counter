@@ -36,9 +36,9 @@ add_executable(stats_test code/test/testStatsCalculation.cpp
                     code/src/StatisticsCalculation.cpp)
 
 
-set_property(TARGET main PROPERTY CXX_STANDARD 17)
-set_property(TARGET testGian PROPERTY CXX_STANDARD 17)
-set_property(TARGET stats_test PROPERTY CXX_STANDARD 17)
+set_property(TARGET main PROPERTY CXX_STANDARD 20)
+set_property(TARGET testGian PROPERTY CXX_STANDARD 20)
+set_property(TARGET stats_test PROPERTY CXX_STANDARD 20)
 
 target_link_libraries(main ${OpenCV_LIBS})
 target_link_libraries(stats_test ${OpenCV_LIBS})

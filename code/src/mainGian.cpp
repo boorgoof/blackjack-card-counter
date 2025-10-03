@@ -5,8 +5,8 @@
 #include "../include/ImageInfo.h"
 
 int main() {
-    // Initialize the card detector
-    RoughCardDetector detector = RoughCardDetector();
+    // Initialize the card detector with default preset and polygon mask type
+    vision::RoughCardDetector detector{vision::PipelinePreset::DEFAULT, vision::MaskType::POLYGON};
     
     // Create dataset instance
     int i = 0;
@@ -22,46 +22,32 @@ int main() {
             std::cout << "Could not load image: " << image.get_pathImage() << std::endl;
             continue;
         }
-        
-        // Test getCardsPolygon
-        std::vector<std::vector<cv::Point>> polygons = detector.getCardsPolygon(imageFiles);
-        cv::Mat polygonImage = imageFiles.clone();
-        
-        // Draw polygons
-        for (size_t i = 0; i < polygons.size(); ++i) {
-            cv::Scalar color(0, 255, 0); // Green color
-            
-            // Draw actual polygon using all points
-            cv::polylines(polygonImage, polygons[i], true, color, 2);
-            
-        }
 
-        // Test getConvexHulls
-        std::vector<std::vector<cv::Point>> convexHulls = detector.getConvexHulls(imageFiles);
-        cv::Mat convexHullImage = imageFiles.clone();
-        for (size_t i = 0; i < convexHulls.size(); ++i) {
-            cv::Scalar color(0, 0, 255); // Red color for convex hull
-            cv::polylines(convexHullImage, convexHulls[i], true, color, 2);
-        }
-
-        // Display convex hull image
-        cv::imshow("Convex Hulls", convexHullImage);
+        // === ADD MASK TESTING ===
         
-        // Test getCardsBoundingBox
-        std::vector<cv::Rect> boundingBoxes = detector.getCardsBoundingBox(imageFiles);
-        cv::Mat boundingBoxImage = imageFiles.clone();
+        // Method 1: Use the detector's current mask type (set in constructor)
+        cv::Mat currentMask = detector.getMask(imageFiles);
         
-        // Draw bounding boxes
-        for (size_t i = 0; i < boundingBoxes.size(); ++i) {
-            cv::Scalar color(255, 0, 0); // Blue color for bounding boxes
-            cv::rectangle(boundingBoxImage, boundingBoxes[i], color, 2);
-        }
+        // Method 2: Change mask type and get different masks
+        detector.loadMaskPreset(vision::MaskType::POLYGON);
+        cv::Mat polygonMask = detector.getMask(imageFiles);
+        
+        detector.loadMaskPreset(vision::MaskType::CONVEX_HULL);
+        cv::Mat convexHullMask = detector.getMask(imageFiles);
+        
+        detector.loadMaskPreset(vision::MaskType::BOUNDING_BOX);
+        cv::Mat boundingBoxMask = detector.getMask(imageFiles);
+        
         // Display results
         cv::imshow("Original Image", imageFiles);
-        cv::imshow("Polygons", polygonImage);
-        cv::imshow("Bounding Boxes", boundingBoxImage);
-        
-        std::cout << "Found " << polygons.size() << " card polygons" << std::endl;
+        cv::imshow("Polygon mask", polygonMask);
+        cv::imshow("Convex Hull Mask", convexHullMask);
+        cv::imshow("Bounding Box Mask", boundingBoxMask);
+
+        // For debugging: print mask sizes
+        std::cout << "Polygon mask size: " << polygonMask.size() << std::endl;
+        std::cout << "Convex hull mask size: " << convexHullMask.size() << std::endl;
+        std::cout << "Bounding box mask size: " << boundingBoxMask.size() << std::endl;
         
         cv::waitKey(0);
     }
