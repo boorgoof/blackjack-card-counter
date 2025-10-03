@@ -4,7 +4,7 @@
 #include "../ObjectDetector.h"
 #include "FeatureExtractor.h"
 #include "FeatureMatcher.h"
-#include "Features.h"
+
 
 #include "../../../Label.h"
 #include "../../../FeatureContainer.h"
@@ -66,7 +66,16 @@ class FeaturePipeline : public ObjectDetector {
          * @param extractor pointer to the feature extractor used by the pipeline.
          * @param matcher pointer to the feature matcher used by the pipeline.
          */
-        FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const FeatureDescriptorAlgorithm& algoDescriptor);
+        FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher);
+
+        /**
+         * @brief This constructor initialize member variables, checks the compatibility between the extractor and matcher,
+         *        and sets the method's name and the filter's names.
+         * 
+         * @param extractor 
+         * @param matcher 
+         */
+        FeaturePipeline(ExtractorType::Type extractor, MatcherType::Type matcher);
         ~FeaturePipeline();
 
         void setExtractororComponent(FeatureExtractor* fd) {
@@ -82,7 +91,7 @@ class FeaturePipeline : public ObjectDetector {
          * @param src_img the scene (test) image
          * @param out_labels the output vector of labels that will contain the detected objects
          */
-        void detect_objects(const cv::Mat& src_img, std::vector<Label>& out_labels) override;
+        void detect_objects(const cv::Mat& src_img, const cv::Mat &src_mask, std::vector<Label>& out_labels) override;
 
               
 };
