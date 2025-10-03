@@ -67,7 +67,7 @@ cv::Mat Loader::Image::load_image(const std::string &image_path)
     return cv::imread(image_path, cv::IMREAD_COLOR);
 }
 
-const std::map<Card_Type, cv::InputArray>& Loader::TemplateCard::load_template_feature_cards(const std::string &template_cards_folder_path, const FeatureDescriptorAlgorithm descriptor_algorithm, const FeatureExtractor& extractor)
+const std::map<Card_Type, Feature*>& Loader::TemplateCard::load_template_feature_cards(const std::string &template_cards_folder_path, const FeatureDescriptorAlgorithm descriptor_algorithm, const FeatureExtractor& extractor)
 {
     //check if the folder exists
     if (!std::filesystem::exists(template_cards_folder_path)) {
@@ -81,7 +81,7 @@ const std::map<Card_Type, cv::InputArray>& Loader::TemplateCard::load_template_f
     }
 
     //for each filename in the folder, load the image and compute the feature descriptor
-    std::map<Card_Type, cv::InputArray> template_feature_cards;
+    std::map<Card_Type, Feature*> template_feature_cards;
     for (const auto & entry : std::filesystem::directory_iterator(template_cards_folder_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();
@@ -95,8 +95,7 @@ const std::map<Card_Type, cv::InputArray>& Loader::TemplateCard::load_template_f
             }
 
             //use FeatureExtractor object to compute the feature descriptor
-            cv::InputArray features = extractor.detect_and_compute(Loader::Image::load_image(file_path));
-            template_feature_cards[ctype] = features;
+            template_feature_cards[ctype] = extractor.detect_and_compute(Loader::Image::load_image(file_path));
         }
     }
 
