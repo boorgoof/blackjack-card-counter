@@ -66,6 +66,7 @@ class FeaturePipeline : public ObjectDetector {
          * @param extractor pointer to the feature extractor used by the pipeline.
          * @param matcher pointer to the feature matcher used by the pipeline.
          */
+        FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const FeatureDescriptorAlgorithm algoDescriptor);
         FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher);
 
         /**
@@ -75,6 +76,7 @@ class FeaturePipeline : public ObjectDetector {
          * @param extractor 
          * @param matcher 
          */
+        FeaturePipeline(ExtractorType::Type extractor, MatcherType::Type matcher, const FeatureDescriptorAlgorithm algoDescriptor);
         FeaturePipeline(ExtractorType::Type extractor, MatcherType::Type matcher);
         ~FeaturePipeline();
 
