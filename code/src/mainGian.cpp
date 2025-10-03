@@ -9,7 +9,7 @@ int main() {
     vision::RoughCardDetector detector{vision::PipelinePreset::DEFAULT, vision::MaskType::POLYGON};
     
     // Create dataset instance
-    int i = 1;
+    int i = 0;
     Dataset dataset = (i == 0) ? 
         Dataset(std::string("../data/datasets/videos/images/"), std::string("../data/datasets/videos/labels/"), false) :
         Dataset(std::string("../data/datasets/single_cards/Images/Images"), std::string("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/"), false);

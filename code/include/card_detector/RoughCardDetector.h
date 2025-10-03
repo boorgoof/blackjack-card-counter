@@ -151,7 +151,7 @@ namespace preprocessing {
  * @param beta: Brightness adjustment factor (default: 10.0).
  * @return cv::Mat: Binary mask where white regions are 255 and others are 0.
  */
-cv::Mat hsvWhiteThreshold(const cv::Mat& bgr, cv::Scalar lo = {0, 0, 180}, cv::Scalar hi = {179, 20, 255}, double alpha = 1.2, double beta = 10.0);
+cv::Mat hsvWhiteThreshold(const cv::Mat& bgr, const cv::Scalar& lo = {0, 0, 180}, const cv::Scalar& hi = {179, 20, 255}, double alpha = 1.2, double beta = 10.0);
 
 /**
  * @brief filterBySize: Filters out small contours from a binary mask based on a minimum area threshold.
@@ -169,11 +169,6 @@ cv::Mat filterBySize(const cv::Mat& maskIn, int minArea = 2000);
  * @return cv::Mat: Processed binary mask after morphological operations.
  */
 cv::Mat morphOpenClose(const cv::Mat& maskIn, int openSize = 5, int closeSize = 9);
-
-// Simple wrapper functions that use default parameters
-cv::Mat hsvWhiteThresholdDefault(const cv::Mat& bgr) { return hsvWhiteThreshold(bgr); }
-cv::Mat filterBySizeDefault(const cv::Mat& maskIn) { return filterBySize(maskIn); }
-cv::Mat morphOpenCloseDefault(const cv::Mat& maskIn) { return morphOpenClose(maskIn); }
 
 }
 

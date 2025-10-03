@@ -2,12 +2,12 @@
 
 namespace vision {
 
-RoughCardDetector::RoughCardDetector(PipelinePreset preset, MaskType maskType) {
+RoughCardDetector::RoughCardDetector(const PipelinePreset preset, const MaskType maskType) {
     loadPreset(preset);
     loadMaskPreset(maskType);
 }
 
-void RoughCardDetector::loadPreset(PipelinePreset preset) {
+void RoughCardDetector::loadPreset(const PipelinePreset preset) {
     clearPipeline();
     
     switch (preset) {
@@ -15,9 +15,9 @@ void RoughCardDetector::loadPreset(PipelinePreset preset) {
             break;
             
         case PipelinePreset::DEFAULT:
-            add_step(preprocessing::hsvWhiteThresholdDefault);
-            add_step(preprocessing::filterBySizeDefault);
-            add_step(preprocessing::morphOpenCloseDefault);
+            add_step(preprocessing::hsvWhiteThreshold, cv::Scalar(0,0,180), cv::Scalar(179,20,255), 1.2, 10.0);
+            add_step(preprocessing::filterBySize, 2000);
+            add_step(preprocessing::morphOpenClose, 5, 9);
             break;
             
         case PipelinePreset::LOW_LIGHT:
@@ -34,7 +34,7 @@ void RoughCardDetector::loadPreset(PipelinePreset preset) {
     }
 }
 
-void RoughCardDetector::loadMaskPreset(MaskType maskType) {
+void RoughCardDetector::loadMaskPreset(const MaskType maskType) {
     switch (maskType) {
         case MaskType::POLYGON:
             maskType_ = [this](const cv::Mat& img) { 
@@ -72,7 +72,7 @@ cv::Mat RoughCardDetector::applyPipeline(const cv::Mat& img) const {
 
 namespace preprocessing {
 
-cv::Mat hsvWhiteThreshold(const cv::Mat& bgr, cv::Scalar lo, cv::Scalar hi, double alpha, double beta) {
+cv::Mat hsvWhiteThreshold(const cv::Mat& bgr, const cv::Scalar& lo, const cv::Scalar& hi, double alpha, double beta) {
     cv::Mat enhanced; 
     cv::convertScaleAbs(bgr, enhanced, alpha, beta);
     cv::Mat hsv; 
