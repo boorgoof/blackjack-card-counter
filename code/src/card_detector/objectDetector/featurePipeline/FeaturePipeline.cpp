@@ -1,5 +1,4 @@
-#include "../../../../include/card_detector/ObjectDetector/FeaturePipeline/FeaturePipeline.h"
-
+#include "../../../../include/card_detector/objectDetector/featurePipeline/FeaturePipeline.h"
 
 void FeaturePipeline::update_extractor_matcher_compatibility() {
     if (this->extractor->getType() == ExtractorType::Type::ORB && this->matcher->getType() == MatcherType::Type::FLANN) {
@@ -10,65 +9,65 @@ void FeaturePipeline::update_extractor_matcher_compatibility() {
 FeaturePipeline::~FeaturePipeline() {}
 
 
-FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const FeatureDescriptorAlgorithm& algoDescriptor)
-    : extractor{extractor}, matcher{matcher} {
-
+FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const FeatureDescriptorAlgorithm algoDescriptor)
+    : extractor{extractor}, matcher{matcher}, template_descriptors{ FeatureDescriptorAlgorithmUtils::get_templates_descriptors(algoDescriptor) }
+{      
     this->update_extractor_matcher_compatibility();
-    this->template_descriptors = FeatureContainerFor(algoDescriptor)::getInstance().get();
-    
     
     std::string method_name = ExtractorType::toString(extractor->getType()) + "-" + MatcherType::toString(matcher->getType());
     this->set_method_name(method_name);
 }
 
-void FeaturePipeline::detect_objects(const cv::Mat &src_img, std::vector<Label> &out_labels) {
+void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_mask, std::vector<Label> &out_labels) {
 
     out_labels.clear();
 
-    //models' features are already detected and stored in the pipeline (they always remain the same for every test image, so they are detected only once)
+    //extracts test image features
+    std::vector<cv::KeyPoint> src_img_keypoints;
+    cv::Mat src_img_descriptors;
+    this->extractor->extractFeatures(src_img, src_mask, src_img_keypoints, src_img_descriptors);
 
-    cv::Mat src_img_filtered = src_img.clone();
-    //test image filtering if the filter component is present
-    if (this->test_imagefilter != nullptr) {
-        src_img_filtered = this->test_imagefilter->apply_filters(src_img);
-    }
+    //the template descriptors are already extracted and passed to the pipeline (they always remain the same for every test image, so they are detected only once)
 
-    //detects test image features
-    
-    std::vector<cv::KeyPoint> keypoints;
-    cv::Mat descriptors;
-    this->detector->detectFeatures(src_img_filtered, keypoints, descriptors);
-    SceneFeatures src_features(keypoints, descriptors);
+    //matches test image features with every template's features and store them in out_matches
+    std::map<Card_Type, std::vector<cv::DMatch>> out_matches;
+    for(const auto& kv : this->template_descriptors){
 
-    //matches test image features with every models' features and store them in out_matches
-    std::vector<std::vector<cv::DMatch>> out_matches;
-    for(ModelFeatures model_features : this->models_features){
-        std::vector<cv::DMatch> out_matches_t;
+        Card_Type card = kv.first;               
+        const cv::Mat& template_descriptor = kv.second.getMat();;
 
+        std::vector<cv::DMatch> card_matches;
         try{
-            this->matcher->matchFeatures(model_features.descriptors, src_features.descriptors, out_matches_t);
+            this->matcher->matchFeatures(template_descriptor, src_img_descriptors, card_matches);
         }
-        catch (const CustomErrors::InvalidArgumentError& e) {
-            std::cerr << "Warning: Error in matching features: " << e.what() << std::endl;
-            continue; // Skip this model and continue with the next one
+        catch(const cv::Exception& e){
+            std::cerr << "Error during feature matching: " << e.what() << std::endl;
+            continue;
         }
-        out_matches.push_back(out_matches_t);
+
+        out_matches[card] = std::move(card_matches);
     }
 
-    //finds the best model (the one with the most matches)
-    int best_model_idx = -1;
+    Card_Type best_card{Card_Type("UNKNOWN")};
     size_t best_score = 0;
-    for (size_t i = 0; i < out_matches.size(); ++i) {
-        if (out_matches[i].size() > best_score) {
-            best_score = out_matches[i].size();
-            best_model_idx = static_cast<int>(i);
+    bool found = false;
+
+    for (const auto& [card, matches] : out_matches) {
+        if (matches.size() > best_score) {
+            best_score = matches.size();
+            best_card  = card;
+            found = true;
         }
     }
 
-    if(best_model_idx == -1){
+    if (!found) {
         std::cerr << "Warning: no suitable model found" << std::endl;
-        return;
-    }
+        return ;
+    } 
+
+    const auto& best_matches = out_matches.at(best_card);
+
+    
     //calculates bounding box of the object found in the test image
     cv::Mat imgModel = Utils::Loader::load_image(this->dataset.get_models()[best_model_idx].first);
     cv::Mat maskModel = Utils::Loader::load_image(this->dataset.get_models()[best_model_idx].second);

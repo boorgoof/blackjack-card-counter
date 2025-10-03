@@ -2,7 +2,6 @@
 #define FEATURE_EXTRACTOR_H
 
 #include <opencv2/opencv.hpp>
-#include "Features.h"
 class ImageFilter;
 
 /**
