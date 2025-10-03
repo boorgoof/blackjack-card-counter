@@ -6,7 +6,7 @@
 #include <map>
 #include <opencv2/opencv.hpp>
 #include "CardType.h"
-#include "FeatureDescriptorAlgorithm.h"
+#include "features/Feature.h"
 
 namespace Loader {
     namespace Annotation {
@@ -21,7 +21,7 @@ namespace Loader {
     };
 
     namespace TemplateCard {
-        std::map<Card_Type, cv::InputArray> load_template_feature_cards(const std::string& template_cards_folder_path, FeatureDescriptorAlgorithm descriptor_algorithm, const FeatureExtractor& extractor=nullptr);
+        std::map<Card_Type, Feature*> load_template_feature_cards(const std::string& template_cards_folder_path, FeatureDescriptorAlgorithm descriptor_algorithm, const FeatureExtractor& extractor=nullptr);
     }
 
 }
