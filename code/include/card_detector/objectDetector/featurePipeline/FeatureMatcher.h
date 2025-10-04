@@ -13,21 +13,21 @@ class MatcherType{
     /**
      * @brief enum to represent the different types of matchers.
      */
-    enum class Type{
+    enum MatcherAlgorithm{
         FLANN,
         BRUTEFORCE
     };
 
-    static std::vector<MatcherType::Type> getMatcherTypes() {
-        return { MatcherType::Type::FLANN,
-                MatcherType::Type::BRUTEFORCE};
+    static std::vector<MatcherAlgorithm> getMatcherTypes() {
+        return {MatcherAlgorithm::FLANN,
+                MatcherAlgorithm::BRUTEFORCE};
     }
 
    
-    static std::string toString(Type type) {
+    static std::string toString(MatcherAlgorithm type) {
         switch (type) {
-            case Type::FLANN: return "FLANN";
-            case Type::BRUTEFORCE: return "BRUTEFORCE";
+            case MatcherAlgorithm::FLANN: return "FLANN";
+            case MatcherAlgorithm::BRUTEFORCE: return "BRUTEFORCE";
             default: throw std::invalid_argument("No matcher type");
         }
     }
@@ -36,7 +36,7 @@ class MatcherType{
     /**
      * @brief the type of the matcher
      */
-    Type type;
+    MatcherAlgorithm type;
 
 };
 
@@ -45,7 +45,7 @@ class FeatureMatcher{
     /**
      * @brief the type of the matcher
      */
-    MatcherType::Type type;
+    MatcherType::MatcherAlgorithm type;
     /**
      * @brief the OpenCV feature matcher
      */
@@ -53,8 +53,8 @@ class FeatureMatcher{
     void init();
 
     public:
-    FeatureMatcher(const MatcherType::Type& type) : type{type} {this->init();}
-    FeatureMatcher(const MatcherType::Type& type, cv::DescriptorMatcher* matcher) : type{type}, features_matcher{cv::Ptr<cv::DescriptorMatcher>(matcher)} {}
+    FeatureMatcher(const MatcherType::MatcherAlgorithm& type) : type{type} {this->init();}
+    FeatureMatcher(const MatcherType::MatcherAlgorithm& type, cv::DescriptorMatcher* matcher) : type{type}, features_matcher{cv::Ptr<cv::DescriptorMatcher>(matcher)} {}
     //destructor
     ~FeatureMatcher();
 
@@ -71,8 +71,8 @@ class FeatureMatcher{
         this->features_matcher = new_matcher;
     }
 
-    const MatcherType::Type& getType() const {return type;}
-    void setType(const MatcherType::Type& type) {this->type = type;}
+    const MatcherType::MatcherAlgorithm& getType() const {return type;}
+    void setType(const MatcherType::MatcherAlgorithm& type) {this->type = type;}
 
    
 };
