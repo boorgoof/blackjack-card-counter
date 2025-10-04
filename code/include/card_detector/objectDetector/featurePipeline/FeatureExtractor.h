@@ -14,22 +14,23 @@ class ExtractorType{
     /**
      * @brief enum to represent the different types of extractors.
      */
-    enum class Type{
+    enum FeatureDescriptorAlgorithm{
         SIFT,
-        ORB
+        ORB,
+        HASH
     };
 
-    static std::vector<ExtractorType::Type> getExtractorTypes() {
+    static std::vector<FeatureDescriptorAlgorithm> getExtractorTypes() {
         return { 
-            ExtractorType::Type::SIFT,
-            ExtractorType::Type::ORB};
+            ExtractorType::SIFT,
+            ExtractorType::ORB};
     }
 
    
-    static std::string toString(Type type) {
+    static std::string toString(FeatureDescriptorAlgorithm type) {
         switch (type) {
-            case Type::SIFT: return "SIFT";
-            case Type::ORB: return "ORB";
+            case SIFT: return "SIFT";
+            case ORB: return "ORB";
             default: throw std::invalid_argument("Unknown Extractor type");
         }
     }
@@ -38,7 +39,7 @@ class ExtractorType{
     /**
      * @brief the type of the Extractor
      */
-    Type type;
+    FeatureDescriptorAlgorithm type;
 
 };
 
@@ -48,7 +49,7 @@ class FeatureExtractor{
     /**
      * @brief the type of the Extractor
      */
-    ExtractorType::Type type;
+    ExtractorType::FeatureDescriptorAlgorithm extractor_type;
 
     /**
      * @brief the OpenCV feature Extractor
@@ -58,7 +59,7 @@ class FeatureExtractor{
     void init();
 
     public:
-    FeatureExtractor(const ExtractorType::Type& type) : type{type} {this->init();}
+    FeatureExtractor(const ExtractorType::FeatureDescriptorAlgorithm& type) : extractor_type{type} {this->init();}
     ~FeatureExtractor();
     
     /**
@@ -77,8 +78,8 @@ class FeatureExtractor{
         this->features_extractor = new_extractor;
     }
 
-    const ExtractorType::Type& getType() const {return type;}
-    void setType(const ExtractorType::Type& type) {this->type = type;}
+    const ExtractorType::FeatureDescriptorAlgorithm& getType() const {return extractor_type;}
+    void setType(const ExtractorType::FeatureDescriptorAlgorithm& type) {this->extractor_type = type;}
 
     
 

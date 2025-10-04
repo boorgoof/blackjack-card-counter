@@ -4,11 +4,11 @@
 #include <opencv2/opencv.hpp>
 #include <map>
 #include "CardType.h"
-#include "FeatureDescriptorAlgorithm.h"
+#include "../FeatureExtractor.h"
 #include "Feature.h"
 
 
-template<FeatureDescriptorAlgorithm alg>
+template<ExtractorType::FeatureDescriptorAlgorithm alg>
 class FeatureContainer {
 public:
     static FeatureContainer<alg>& getInstance() {
@@ -33,7 +33,7 @@ private:
 };
 
 namespace FeatureDescriptorAlgorithmUtils {
-    const std::map<Card_Type, Feature*>& get_templates_features(const FeatureDescriptorAlgorithm alg);
+    const std::map<Card_Type, Feature*>& get_templates_features(const ExtractorType::FeatureDescriptorAlgorithm descriptorAlgorithm);
 }
 
 #endif // FEATURECONTAINER_H

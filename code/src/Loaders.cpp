@@ -67,7 +67,7 @@ cv::Mat Loader::Image::load_image(const std::string &image_path)
     return cv::imread(image_path, cv::IMREAD_COLOR);
 }
 
-const std::map<Card_Type, Feature*>& Loader::TemplateCard::load_template_feature_cards(const std::string &template_cards_folder_path, const FeatureDescriptorAlgorithm descriptor_algorithm, const FeatureExtractor& extractor)
+const std::map<Card_Type, Feature*>& Loader::TemplateCard::load_template_feature_cards(const std::string &template_cards_folder_path, ExtractorType::FeatureDescriptorAlgorithm descriptor_algorithm, const FeatureExtractor& extractor)
 {
     //check if the folder exists
     if (!std::filesystem::exists(template_cards_folder_path)) {

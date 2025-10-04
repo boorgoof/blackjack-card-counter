@@ -2,7 +2,6 @@
 #include <iostream>
 #include <filesystem>
 #include "../include/Label.h"
-#include "../include/CardType.h"
 #include "../include/Utils.h"
 #include "../include/Loaders.h"
 #include "../include/ImageFilter.h"
@@ -11,7 +10,8 @@
 #include "../include/card_detector/SingleCardDetector.h"
 #include "../include/Dataset.h"
 #include "../include/StatisticsCalculation.h"
-#include "../include/FeatureDescriptorAlgorithm.h"
+#include "../include/card_detector/objectDetector/featurePipeline/features/FeatureContainer.h"
+
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     Dataset::Iterator it = single_cards_dataset.begin();
 
 
-    const auto& descriptors = FeatureContainerFor<FeatureDescriptorAlgorithm::SIFT>::getInstance().get();
+    const auto& descriptors = FeatureContainer<ExtractorType::SIFT>::getInstance().get_features();
     std::cout << "Loaded " << descriptors.size() << " descriptors." << std::endl;
 
 

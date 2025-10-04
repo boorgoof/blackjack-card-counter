@@ -1,116 +1,132 @@
 #include "../../../../include/card_detector/objectDetector/featurePipeline/FeaturePipeline.h"
+#include "../../../../include/card_detector/objectDetector/featurePipeline/features/FeatureContainer.h"
+#include "../../../../include/card_detector/objectDetector/featurePipeline/features/KeypointFeature.h"
+#include "../../../../include/Loaders.h"
 
 void FeaturePipeline::update_extractor_matcher_compatibility() {
-    if (this->extractor->getType() == ExtractorType::Type::ORB && this->matcher->getType() == MatcherType::Type::FLANN) {
-        this->matcher = std::make_unique<FeatureMatcher>(FeatureMatcher(MatcherType::Type::FLANN, new cv::FlannBasedMatcher(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2))));
+    if (this->extractor->getType() == ExtractorType::ORB && this->matcher->getType() == MatcherType::FLANN) {
+        this->matcher = std::make_unique<FeatureMatcher>(FeatureMatcher(MatcherType::FLANN, new cv::FlannBasedMatcher(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2))));
     }
 }
 
 FeaturePipeline::~FeaturePipeline() {}
 
 
-FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const FeatureDescriptorAlgorithm algoDescriptor)
-    : extractor{extractor}, matcher{matcher}, template_descriptors{ FeatureDescriptorAlgorithmUtils::get_templates_descriptors(algoDescriptor) }
+FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& template_cards_folder_path)
+    : extractor{extractor}, matcher{matcher}, template_features{ FeatureDescriptorAlgorithmUtils::get_templates_features(extractor->getType()) }
 {      
     this->update_extractor_matcher_compatibility();
     
+    FeatureContainer<ExtractorType::SIFT>::getInstance().set(Loader::TemplateCard::load_template_feature_cards(template_cards_folder_path, extractor->getType()));  //todo fix
+
     std::string method_name = ExtractorType::toString(extractor->getType()) + "-" + MatcherType::toString(matcher->getType());
     this->set_method_name(method_name);
 }
+
+
 
 void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_mask, std::vector<Label> &out_labels) {
 
     out_labels.clear();
 
-    //extracts test image features
+    //1) Extracts test image features
     std::vector<cv::KeyPoint> src_img_keypoints;
     cv::Mat src_img_descriptors;
     this->extractor->extractFeatures(src_img, src_mask, src_img_keypoints, src_img_descriptors);
 
-    //the template descriptors are already extracted and passed to the pipeline (they always remain the same for every test image, so they are detected only once)
+    //2) The template descriptors are already extracted and passed to the pipeline in the constuctor(they always remain the same for every test image, so they are detected only once)
 
-    //matches test image features with every template's features and store them in out_matches
+    //3) Matches test image features with every template's features and store them in out_matches
     std::map<Card_Type, std::vector<cv::DMatch>> out_matches;
-    for(const auto& kv : this->template_descriptors){
 
-        Card_Type card = kv.first;               
-        const cv::Mat& template_descriptor = kv.second.getMat();;
+    for (const auto& [card, feature] : this->template_features) {
+        
+        if (!feature) continue;
 
-        std::vector<cv::DMatch> card_matches;
-        try{
-            this->matcher->matchFeatures(template_descriptor, src_img_descriptors, card_matches);
-        }
-        catch(const cv::Exception& e){
-            std::cerr << "Error during feature matching: " << e.what() << std::endl;
+        const KeypointFeature* keypoint_features = dynamic_cast<const KeypointFeature*>(feature);
+        if (!keypoint_features) {
+            std::cerr << "The dynamic cast from Feature* to KeypointFeature is not possible for the card" << card << "\n";
             continue;
         }
 
-        out_matches[card] = std::move(card_matches);
+        // get the descriptors of the template
+        const cv::Mat& templ_desciptors = keypoint_features->getDescriptors();
+        if (templ_desciptors.empty() || src_img_descriptors.empty()) continue;
+
+        // obtains the matches between the template and the test image
+        std::vector<cv::DMatch> matches_templ_img;
+        try {
+
+            this->matcher->matchFeatures(templ_desciptors, src_img_descriptors,  matches_templ_img);
+
+        } catch (const cv::Exception& e) {
+            std::cerr << "Error during feature matching: " << e.what() << '\n';
+            continue;
+        }
+
+        out_matches.emplace(card, std::move( matches_templ_img));
     }
 
+    // 4) find the best template (the one with the highest number of matches with the test image)
     Card_Type best_card{Card_Type("UNKNOWN")};
     size_t best_score = 0;
-    bool found = false;
+    bool template_found = false;
 
     for (const auto& [card, matches] : out_matches) {
         if (matches.size() > best_score) {
             best_score = matches.size();
             best_card  = card;
-            found = true;
+            template_found = true;
         }
     }
-
-    if (!found) {
-        std::cerr << "Warning: no suitable model found" << std::endl;
+    if (!template_found) {
+        std::cerr << "Warning: no good template found for the test image during the feature matching" << std::endl;
         return ;
     } 
+    const std::vector<cv::DMatch>& best_matches = out_matches.at(best_card);
 
-    const auto& best_matches = out_matches.at(best_card);
-
-    
-    //calculates bounding box of the object found in the test image
-    cv::Mat imgModel = Utils::Loader::load_image(this->dataset.get_models()[best_model_idx].first);
-    cv::Mat maskModel = Utils::Loader::load_image(this->dataset.get_models()[best_model_idx].second);
-    Label labelObj = findBoundingBox(out_matches[best_model_idx],  this->models_features[best_model_idx].keypoints, src_features.keypoints, imgModel,  maskModel, src_img_filtered, this->dataset.get_type());
+    //5) Calculates bounding box of the object found in the test image
+    Label labelObj = findBoundingBox(best_matches,  , src_img_keypoints, ,  , src_img, best_card);
     
     out_labels.push_back(labelObj);
 }
 
 Label FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
-    const std::vector<cv::KeyPoint>& model_keypoint,
+    const std::vector<cv::KeyPoint>& template_keypoint,
     const std::vector<cv::KeyPoint>& scene_keypoint,
-    const cv::Mat& img_model,
-    const cv::Mat& mask_model,
+    const cv::Mat& img_template,
+    const cv::Mat& mask_template,
     const cv::Mat& img_scene,
-    Object_Type object_type) const 
+    Card_Type card_template) const 
 {
     const int minMatches = 4;
 
     if (matches.size() < minMatches) {
-        std::cout << "Warning: not enough matches are found - " << matches.size() << "/" << minMatches << std::endl;
-        return Label(object_type, cv::Rect());
+        std::cout << "Warning: not enough matches are found: " << matches.size() << ". Min: " << minMatches << std::endl;
+        return Label(card_template, cv::Rect());
     }
 
-    cv::Mat cropped_imgModel = img_model(cv::boundingRect(mask_model)); // crop the image to remove the white background of the mask
-    cv::Mat cropped_maskModel = mask_model(cv::boundingRect(mask_model)); // crop the mask to remove the white background of the mask
+    cv::Mat cropped_imgTemplate = img_template(cv::boundingRect(mask_template)); // crop the image to remove the white background of the mask
+    cv::Mat cropped_maskTemplate = mask_template(cv::boundingRect(mask_template)); // crop the mask to remove the white background of the mask
 
-    std::vector<cv::Point2f> scene_pts, model_pts;
+    // 1) take the matched keypoints from the template and scene images
+    std::vector<cv::Point2f> scene_pts, template_pts;
     for (const auto& match : matches) {
-        model_pts.push_back(model_keypoint[match.queryIdx].pt);
+        template_pts.push_back(template_keypoint[match.queryIdx].pt);
         scene_pts.push_back(scene_keypoint[match.trainIdx].pt);
     }
     
-    
+    // 2) find the homography matrix between the template and the scene
     cv::Mat homography_mask;
-    cv::Mat H = cv::findHomography(model_pts, scene_pts, cv::RANSAC, 5.0, homography_mask);
+    cv::Mat H = cv::findHomography(template_pts, scene_pts, cv::RANSAC, 5.0, homography_mask);
     if (H.empty()){
         std::cerr << "Warning: homography matrix empty" << std::endl;
-        return Label(object_type, cv::Rect());
+        return Label(card_template, cv::Rect());
     }
     
 
-    cv::Rect mask_rect = cv::boundingRect(cropped_maskModel);
-    std::vector<cv::Point2f> model_corners = {
+    cv::Rect mask_rect = cv::boundingRect(cropped_maskTemplate);
+    std::vector<cv::Point2f> template_corners = {
         {static_cast<float>(mask_rect.x), static_cast<float>(mask_rect.y)},
         {static_cast<float>(mask_rect.x + mask_rect.width), static_cast<float>(mask_rect.y)},
         {static_cast<float>(mask_rect.x + mask_rect.width), static_cast<float>(mask_rect.y + mask_rect.height)},
@@ -118,7 +134,7 @@ Label FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
     };
     
     std::vector<cv::Point2f> scene_corners;     //corners of the detected object in the scene (not a horizontal/vertical rectangle, but commonly rotated)
-    cv::perspectiveTransform(model_corners, scene_corners, H);
+    cv::perspectiveTransform(template_corners, scene_corners, H);
     
     
     std::vector<cv::Point2i> scene_corners_int;
@@ -148,7 +164,7 @@ Label FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
     cv::waitKey(0);
     */
    
-    return Label(object_type, sceneBB);
+    return Label(card_template, sceneBB);
 }
 
 

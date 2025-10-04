@@ -7,8 +7,8 @@
 
 
 #include "../../../Label.h"
-#include "../../../FeatureContainer.h"
-#include "../../../FeatureDescriptorAlgorithm.h"
+#include "features/FeatureContainer.h"
+#include "FeatureDescriptorAlgorithm.h"
 
 #include <opencv2/opencv.hpp>
 
@@ -30,8 +30,7 @@ class FeaturePipeline : public ObjectDetector {
          */
         std::unique_ptr<FeatureMatcher> matcher;
     
-        const std::map<Card_Type, cv::InputArray>& template_descriptors;
-
+        const std::map<Card_Type, Feature*>& template_features; 
         /**
          * @brief  check and to update the compatibility between the extractor and matcher.
          */
@@ -48,14 +47,14 @@ class FeaturePipeline : public ObjectDetector {
         * @param img_scene the scene (test) image
         * @param object_type the object type to find
         * @return the Label that containt the bounding box of the object in the scene
-        */
-        Label findBoundingBox(const std::vector<cv::DMatch>& matches,
+        */  
+        Label FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
             const std::vector<cv::KeyPoint>& model_keypoint,
             const std::vector<cv::KeyPoint>& scene_keypoint,
-            const cv::Mat& img_model,
-            const cv::Mat& mask_model,
+            const cv::Mat& img_template,
+            const cv::Mat& mask_template,
             const cv::Mat& img_scene,
-            Card_Type object_type) const ;
+            Card_Type card_template) const;
 
     public:
 
@@ -66,18 +65,16 @@ class FeaturePipeline : public ObjectDetector {
          * @param extractor pointer to the feature extractor used by the pipeline.
          * @param matcher pointer to the feature matcher used by the pipeline.
          */
-        FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const FeatureDescriptorAlgorithm algoDescriptor);
-        FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher);
+        FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& template_cards_folder_path);
 
         /**
          * @brief This constructor initialize member variables, checks the compatibility between the extractor and matcher,
          *        and sets the method's name and the filter's names.
          * 
          * @param extractor 
-         * @param matcher 
+         * @param matcher
          */
-        FeaturePipeline(ExtractorType::Type extractor, MatcherType::Type matcher, const FeatureDescriptorAlgorithm algoDescriptor);
-        FeaturePipeline(ExtractorType::Type extractor, MatcherType::Type matcher);
+        FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm extractor, MatcherType::MatcherAlgorithm matcher, const std::string& template_cards_folder_path);
         ~FeaturePipeline();
 
         void setExtractororComponent(FeatureExtractor* fd) {

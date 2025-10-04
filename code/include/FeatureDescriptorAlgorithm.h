@@ -1,4 +1,4 @@
-#ifndef FEATUREDESCRIPTORALGORITHM_H
+/*#ifndef FEATUREDESCRIPTORALGORITHM_H
 #define FEATUREDESCRIPTORALGORITHM_H
 
 enum class FeatureDescriptorAlgorithm {
@@ -7,4 +7,4 @@ enum class FeatureDescriptorAlgorithm {
     HASH
 };
 
-#endif // FEATUREDESCRIPTORALGORITHM_H
+#endif // FEATUREDESCRIPTORALGORITHM_H*/
