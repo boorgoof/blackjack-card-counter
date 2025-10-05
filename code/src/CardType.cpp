@@ -17,8 +17,8 @@ Card_Type::Card_Type(const std::string& card_text) {
 void Card_Type::set_type(const std::string& card_text) {
 
     if (card_text.size() < 2) {
-        rank = Rank::NOTHING; 
-        suit = Suit::NOTHING; 
+        rank = Rank::UNKNOWN; 
+        suit = Suit::UNKNOWN; 
         return;
     }
     std::string str_norm = Utils::String::normalize(card_text);

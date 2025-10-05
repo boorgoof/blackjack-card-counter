@@ -5,11 +5,11 @@ FeatureExtractor::~FeatureExtractor() {
 }
 
 void FeatureExtractor::init(){
-    switch (this->type) {
-        case ExtractorType::Type::SIFT:
+    switch (this->extractor_type) {
+        case ExtractorType::FeatureDescriptorAlgorithm::SIFT:
             this->features_extractor = cv::SIFT::create();
             break;
-        case ExtractorType::Type::ORB:
+        case ExtractorType::FeatureDescriptorAlgorithm::ORB:
             this->features_extractor = cv::ORB::create();
             break;
         default:
@@ -17,13 +17,13 @@ void FeatureExtractor::init(){
     }
 }
 
-
-void FeatureExtractor::extractFeatures(const cv::Mat& img, const cv::Mat& mask, std::vector<cv::KeyPoint>& keypoints, cv::Mat& descriptors) const {
+void FeatureExtractor::extractFeatures(const cv::Mat& img, const cv::Mat& mask, KeypointFeature& feature) const {
     
-    
-    keypoints.clear(); // clear the output vector of keypoints we don't want computeOnly
-    // descriptors.release(); detectAndCompute overwrites them
-    
+    std::vector<cv::KeyPoint> keypoints;
+    cv::Mat descriptors;
     this->features_extractor->detectAndCompute(img, mask.empty() ? cv::noArray() : mask, keypoints, descriptors);
+
+    feature.setKeypoints(keypoints);
+    feature.setDescriptors(descriptors);
 }
 

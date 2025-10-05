@@ -7,12 +7,12 @@
 
 float StatisticsCalculation::calc_IoU(const Label& true_label, const Label& pred_label) {
     
-    // Insection area
+    // Intersection area
     cv::Rect intersectionRect = pred_label.get_bounding_box() & true_label.get_bounding_box();
     double intersection_area = intersectionRect.area();
 
     // Union area
-    double union_area = true_label.get_bounding_box().area() + true_label.get_bounding_box().area() - intersection_area;
+    double union_area = true_label.get_bounding_box().area() + pred_label.get_bounding_box().area() - intersection_area;
 
     // IoU
     return intersection_area / union_area;
