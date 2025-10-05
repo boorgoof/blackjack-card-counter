@@ -8,7 +8,6 @@
 
 #include "../../../Label.h"
 #include "features/FeatureContainer.h"
-#include "FeatureDescriptorAlgorithm.h"
 
 #include <opencv2/opencv.hpp>
 
@@ -30,7 +29,7 @@ class FeaturePipeline : public ObjectDetector {
          */
         std::unique_ptr<FeatureMatcher> matcher;
     
-        const std::map<Card_Type, Feature*>& template_features; 
+        std::shared_ptr<const std::map<Card_Type, Feature*>> template_features; 
         /**
          * @brief  check and to update the compatibility between the extractor and matcher.
          */

@@ -7,6 +7,7 @@
 #include "../FeatureExtractor.h"
 #include "Feature.h"
 
+//TODO: adapt this class and overall architecture to support different feature extractors other than keypoint-based ones (e.g. image hash)
 
 template<ExtractorType::FeatureDescriptorAlgorithm alg>
 class FeatureContainer {
@@ -16,11 +17,11 @@ public:
         return inst;
     }
 
-    void set(std::map<Card_Type, Feature*>&& newMap) {
-        features_ = std::move(newMap);
-    }
+    const std::map<Card_Type, Feature*>& get_features(const std::string& template_cards_folder_path, const FeatureExtractor& extractor) const {
+        if (!features_) {
+            features_ = Loader::TemplateCard::load_template_feature_cards(template_cards_folder_path, extractor);
+        }
 
-    const std::map<Card_Type, Feature*>& get_features() const {
         return features_;
     }
 
@@ -32,8 +33,9 @@ private:
     std::map<Card_Type, Feature*> features_;
 };
 
-namespace FeatureDescriptorAlgorithmUtils {
-    const std::map<Card_Type, Feature*>& get_templates_features(const ExtractorType::FeatureDescriptorAlgorithm descriptorAlgorithm);
+namespace Utils {
+    namespace FeatureContainer {
+        const std::map<Card_Type, Feature*>& get_templates_features(const std::string& template_cards_folder_path = nullptr, const FeatureExtractor& extractor = nullptr);
+    }
 }
-
 #endif // FEATURECONTAINER_H
