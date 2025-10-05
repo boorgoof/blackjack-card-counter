@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     Dataset::Iterator it = single_cards_dataset.begin();
 
 
-    const auto& descriptors = FeatureContainer<ExtractorType::SIFT>::getInstance().get_features();
+    const auto& descriptors = FeatureContainer::get_templates_features(ExtractorType::FeatureDescriptorAlgorithm::ORB);
     std::cout << "Loaded " << descriptors.size() << " descriptors." << std::endl;
 
 

@@ -8,7 +8,6 @@
 #include "CardType.h"
 #include "card_detector/objectDetector/featurePipeline/features/Feature.h"
 #include "card_detector/objectDetector/featurePipeline/FeatureExtractor.h"
-#include "FeatureDescriptorAlgorithm.h"
 
 namespace Loader {
     namespace Annotation {
@@ -23,7 +22,7 @@ namespace Loader {
     };
 
     namespace TemplateCard {
-        std::map<Card_Type, Feature*> load_template_feature_cards(const std::string& template_cards_folder_path, ExtractorType::FeatureDescriptorAlgorithm descriptor_algorithm, const FeatureExtractor& extractor=nullptr); 
+        std::map<Card_Type, Feature*> load_template_feature_cards(const std::string& template_cards_folder_path, const FeatureExtractor& extractor);
     }
 
 }

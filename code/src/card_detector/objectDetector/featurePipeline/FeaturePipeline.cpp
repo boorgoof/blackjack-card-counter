@@ -13,11 +13,9 @@ FeaturePipeline::~FeaturePipeline() {}
 
 
 FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& template_cards_folder_path)
-    : extractor{extractor}, matcher{matcher}, template_features{ FeatureDescriptorAlgorithmUtils::get_templates_features(extractor->getType()) }
-{      
+    : extractor{extractor}, matcher{matcher}, template_features{Utils::FeatureContainer::get_templates_features(template_cards_folder_path, extractor)}
+{
     this->update_extractor_matcher_compatibility();
-    
-    FeatureContainer<ExtractorType::SIFT>::getInstance().set(Loader::TemplateCard::load_template_feature_cards(template_cards_folder_path, extractor->getType()));  //todo fix
 
     std::string method_name = ExtractorType::toString(extractor->getType()) + "-" + MatcherType::toString(matcher->getType());
     this->set_method_name(method_name);
