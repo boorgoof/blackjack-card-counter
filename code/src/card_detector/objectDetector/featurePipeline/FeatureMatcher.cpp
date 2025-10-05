@@ -7,10 +7,10 @@ FeatureMatcher::~FeatureMatcher() {
 
 void FeatureMatcher::init(){
     switch (this->type) {
-        case MatcherType::Type::FLANN:
+        case MatcherType::MatcherAlgorithm::FLANN:
             this->features_matcher = cv::FlannBasedMatcher::create();
             break;
-        case MatcherType::Type::BRUTEFORCE:
+        case MatcherType::MatcherAlgorithm::BRUTEFORCE:
             this->features_matcher = cv::BFMatcher::create(cv::NORM_L2);
             break;
         default: 

@@ -11,6 +11,8 @@ class KeypointFeature : public Feature {
         std::vector<cv::KeyPoint> keypoints_;
         std::vector<cv::Point2f> rect_points_;
     public:
+
+        KeypointFeature() = default;
         KeypointFeature(const std::vector<cv::KeyPoint>& keypoints, const cv::Mat& descriptors, const std::vector<cv::Point2f>& rect_points)
             : keypoints_(keypoints), descriptors_(descriptors), rect_points_(rect_points) {}
 

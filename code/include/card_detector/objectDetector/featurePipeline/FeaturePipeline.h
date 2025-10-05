@@ -47,13 +47,12 @@ class FeaturePipeline : public ObjectDetector {
         * @param object_type the object type to find
         * @return the Label that containt the bounding box of the object in the scene
         */  
-        Label FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
-            const std::vector<cv::KeyPoint>& model_keypoint,
-            const std::vector<cv::KeyPoint>& scene_keypoint,
-            const cv::Mat& img_template,
-            const cv::Mat& mask_template,
-            const cv::Mat& img_scene,
-            Card_Type card_template) const;
+        bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
+                                      const KeypointFeature* templFeatures,       
+                                      const KeypointFeature& imgFeatures,        
+                                      Card_Type card_template,
+                                      Label& out_label, // todo modify to objtype maybe do a virtual class
+                                      std::vector<unsigned char>& out_inlier_mask) const;
 
     public:
 
@@ -93,5 +92,6 @@ class FeaturePipeline : public ObjectDetector {
 
               
 };
+
 
 #endif // FEATUREPIPELINE_H

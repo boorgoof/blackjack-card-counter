@@ -2,6 +2,7 @@
 #define FEATURE_EXTRACTOR_H
 
 #include <opencv2/opencv.hpp>
+#include "features/KeypointFeature.h"
 class ImageFilter;
 
 /**
@@ -69,9 +70,9 @@ class FeatureExtractor{
      * @param keypoints the output vector of keypoints
      * @param descriptors the output matrix of descriptors
      */
-    void extractFeatures(const cv::Mat& img, const cv::Mat& mask, std::vector<cv::KeyPoint>& keypoints, cv::Mat& descriptors) const;
+    void extractFeatures(const cv::Mat& img, const cv::Mat& mask, KeypointFeature& feature) const;
     
-     
+
 
     void updateExtractor(cv::Ptr<cv::Feature2D> new_extractor) {
         this->features_extractor.release();
