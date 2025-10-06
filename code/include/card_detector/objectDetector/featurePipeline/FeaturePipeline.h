@@ -50,9 +50,11 @@ class FeaturePipeline : public ObjectDetector {
         bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
                                       const KeypointFeature* templFeatures,       
                                       const KeypointFeature& imgFeatures,        
-                                      Card_Type card_template,
+                                      const Card_Type& card_template,
                                       Label& out_label, // todo modify to objtype maybe do a virtual class
                                       std::vector<unsigned char>& out_inlier_mask) const;
+
+        void nmsLabels(std::vector<Label>& labels, double iou_thresh) const;
 
     public:
 
