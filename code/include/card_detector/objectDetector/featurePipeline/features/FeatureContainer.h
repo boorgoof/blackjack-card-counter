@@ -3,7 +3,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <map>
-#include "CardType.h"
+#include "../../../../CardType.h"
 #include "../FeatureExtractor.h"
 #include "Feature.h"
 

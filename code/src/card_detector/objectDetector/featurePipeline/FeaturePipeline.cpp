@@ -121,7 +121,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
 bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
                                       const KeypointFeature* templFeatures,       
                                       const KeypointFeature& imgFeatures,        
-                                      Card_Type card_template,
+                                      const Card_Type& card_template,
                                       Label& out_label,
                                       std::vector<unsigned char>& out_inlier_mask) const
 {
@@ -161,7 +161,7 @@ bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
 }
 
 
-static void nmsLabels(std::vector<Label>& labels, double iou_thresh) {
+void FeaturePipeline::nmsLabels(std::vector<Label>& labels, double iou_thresh) const {
 
     // Sort labels by area in descending order // TODO sarebbe meglio ordinare per score, non lo ho attualmente in caso gli inliers?
     std::sort(labels.begin(), labels.end(), [](const Label& a, const Label& b){
