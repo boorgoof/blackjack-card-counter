@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     Dataset::Iterator it = single_cards_dataset.begin();
 
     // todo fix
-    std::string template_cards_folder_path = "./data/template_cards";
+    std::string template_cards_folder_path = datasets_path  + "/../template/crop_template";
     const auto& descriptors = Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, FeatureExtractor(ExtractorType::SIFT));
     std::cout << "Loaded " << descriptors.size() << " descriptors." << std::endl;
 
