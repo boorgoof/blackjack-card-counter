@@ -34,10 +34,11 @@ public:
     const Suit& get_suit() const { return this->suit; }
     const std::string get_type() const { return this->to_string(); }
     
-
     void set_rank(const Rank& r) { this->rank = r; }
     void set_suit(const Suit& s) { this->suit = s; }
     void set_type(const std::string& card_text);
+
+    bool isValid() const { return this->rank != Rank::UNKNOWN && this->suit != Suit::UNKNOWN; } 
 
     std::string to_string() const;
 
@@ -51,8 +52,7 @@ public:
     static std::map<Rank, std::string> map_rank_to_string;
     static std::map<Suit, std::string> map_suit_to_string;
 
-     
-
+   
 private:
    
     Rank rank{Rank::UNKNOWN};

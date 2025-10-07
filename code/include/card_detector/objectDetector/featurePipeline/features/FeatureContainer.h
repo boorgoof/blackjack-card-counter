@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <map>
 #include "../../../../CardType.h"
+#include "../../../../Loaders.h"
 #include "../FeatureExtractor.h"
 #include "Feature.h"
 
@@ -17,25 +18,26 @@ public:
         return inst;
     }
 
-    const std::map<Card_Type, Feature*>& get_features(const std::string& template_cards_folder_path, const FeatureExtractor& extractor) const {
+    const std::map<Card_Type, Feature*>& get_features(const std::string& template_cards_folder_path, const FeatureExtractor& extractor){
         if (!features_) {
-            features_ = Loader::TemplateCard::load_template_feature_cards(template_cards_folder_path, extractor);
+            features_ = std::unique_ptr<const std::map<Card_Type, Feature*>>(Loader::TemplateCard::load_template_feature_cards(template_cards_folder_path, extractor));
         }
 
-        return features_;
+        return *features_;
     }
 
 private:
+
     FeatureContainer() = default;
     FeatureContainer(const FeatureContainer&) = delete;
     FeatureContainer& operator=(const FeatureContainer&) = delete;
 
-    std::map<Card_Type, Feature*> features_;
+    std::unique_ptr<const std::map<Card_Type, Feature*>> features_;
 };
 
 namespace Utils {
-    namespace FeatureContainer {
-        const std::map<Card_Type, Feature*>& get_templates_features(const std::string& template_cards_folder_path = nullptr, const FeatureExtractor& extractor = nullptr);
+    namespace FeatureContainerSingleton {
+        const std::map<Card_Type, Feature*>& get_templates_features(const std::string& template_cards_folder_path, const FeatureExtractor& extractor);
     }
 }
 #endif // FEATURECONTAINER_H

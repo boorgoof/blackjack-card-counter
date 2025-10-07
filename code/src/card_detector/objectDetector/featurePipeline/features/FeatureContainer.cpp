@@ -1,6 +1,6 @@
 #include "../../../../../include/card_detector/objectDetector/featurePipeline/features/FeatureContainer.h"
 
-const std::map<Card_Type, Feature*>& FeatureContainer::get_templates_features(const std::string& template_cards_folder_path, const FeatureExtractor& extractor) {
+const std::map<Card_Type, Feature*>& Utils::FeatureContainerSingleton::get_templates_features(const std::string& template_cards_folder_path, const FeatureExtractor& extractor) {
     switch (extractor.getType()) {
         case ExtractorType::SIFT:
             return FeatureContainer<ExtractorType::SIFT>::getInstance().get_features(template_cards_folder_path, extractor);

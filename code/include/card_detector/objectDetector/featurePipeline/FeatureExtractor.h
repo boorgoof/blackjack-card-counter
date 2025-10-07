@@ -63,17 +63,8 @@ class FeatureExtractor{
     FeatureExtractor(const ExtractorType::FeatureDescriptorAlgorithm& type) : extractor_type{type} {this->init();}
     ~FeatureExtractor();
     
-    /**
-     * @brief extract features of an image
-     * @param img the image to extract features from
-     * @param mask the mask that select the areas of the image to extract keypoints from
-     * @param keypoints the output vector of keypoints
-     * @param descriptors the output matrix of descriptors
-     */
-    void extractFeatures(const cv::Mat& img, const cv::Mat& mask, KeypointFeature& feature) const;
+    Feature* extractFeatures(const cv::Mat& img, const cv::Mat& mask) const;
     
-
-
     void updateExtractor(cv::Ptr<cv::Feature2D> new_extractor) {
         this->features_extractor.release();
         this->features_extractor = new_extractor;
