@@ -17,13 +17,14 @@ void FeatureExtractor::init(){
     }
 }
 
-void FeatureExtractor::extractFeatures(const cv::Mat& img, const cv::Mat& mask, KeypointFeature& feature) const {
+Feature* FeatureExtractor::extractFeatures(const cv::Mat& img, const cv::Mat& mask) const {
     
     std::vector<cv::KeyPoint> keypoints;
     cv::Mat descriptors;
     this->features_extractor->detectAndCompute(img, mask.empty() ? cv::noArray() : mask, keypoints, descriptors);
 
-    feature.setKeypoints(keypoints);
-    feature.setDescriptors(descriptors);
+    std::vector<cv::Point2f> rect_points = {cv::Point2f(0,0), cv::Point2f(static_cast<float>(img.cols-1),0), cv::Point2f(static_cast<float>(img.cols-1),static_cast<float>(img.rows-1)), cv::Point2f(0,static_cast<float>(img.rows-1))};
+    return new KeypointFeature(keypoints, descriptors, rect_points);
+    
 }
 

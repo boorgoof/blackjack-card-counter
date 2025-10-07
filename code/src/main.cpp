@@ -61,8 +61,9 @@ int main(int argc, char** argv) {
     Dataset single_cards_dataset(single_cards_dataset_path, false);
     Dataset::Iterator it = single_cards_dataset.begin();
 
-
-    const auto& descriptors = FeatureContainer::get_templates_features(ExtractorType::FeatureDescriptorAlgorithm::ORB);
+    // todo fix
+    std::string template_cards_folder_path = "./data/template_cards";
+    const auto& descriptors = Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, FeatureExtractor(ExtractorType::SIFT));
     std::cout << "Loaded " << descriptors.size() << " descriptors." << std::endl;
 
 

@@ -1,8 +1,9 @@
 #include "../include/Loaders.h"
-#include <fstream>
+
 #include <opencv2/opencv.hpp>
 #include <filesystem>
-#include "Loaders.h"
+#include <fstream>
+
 
 std::vector<Label> Loader::Annotation::load_yolo_image_annotations(const std::string& annotation_file_path, const int image_width, const int image_height){
 
@@ -67,37 +68,31 @@ cv::Mat Loader::Image::load_image(const std::string &image_path)
     return cv::imread(image_path, cv::IMREAD_COLOR);
 }
 
-const std::map<Card_Type, Feature*>& Loader::TemplateCard::load_template_feature_cards(const std::string &template_cards_folder_path, const FeatureExtractor& extractor)
+std::map<Card_Type, Feature*>* Loader::TemplateCard::load_template_feature_cards(const std::string &template_cards_folder_path, const FeatureExtractor& extractor)
 {
-    if (!template_cards_folder_path) {
-        throw std::runtime_error("Template cards folder path is null");
-    }
+    
     //check if the folder exists
     if (!std::filesystem::exists(template_cards_folder_path)) {
         throw std::runtime_error("Template cards folder not found: " + template_cards_folder_path);
     }
 
-    //create a FeatureExtractor object given the descriptor algorithm enumerator (a map between descriptor algorithm and the actual implementation will be created later to accustom every need )
-    if (!extractor) {
-        throw std::runtime_error("FeatureExtractor is null");
-    }
-
+   
     //for each filename in the folder, load the image and compute the feature descriptor
-    std::map<Card_Type, Feature*> template_feature_cards;
+    std::map<Card_Type, Feature*>* template_feature_cards = new std::map<Card_Type, Feature*>();
     for (const auto & entry : std::filesystem::directory_iterator(template_cards_folder_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();
             std::string file_name = entry.path().filename().string();
 
             //extract the card type from the filename (name is [letter][number].png, e.g. CA.png for Ace of Clubs, HK.png for King of Hearts, etc.)
-            Card_Type ctype(Card_Type::map_string_to_rank(file_name.substr(0, file_name.find_last_of('.'))), Card_Type::map_string_to_suit(file_name.substr(0, file_name.find_last_of('.'))));
-            if (ctype == Card_Type::UNKNOWN) {
+            Card_Type ctype(Card_Type::string_to_rank(file_name.substr(0, file_name.find_last_of('.'))), Card_Type::string_to_suit(file_name.substr(0, file_name.find_last_of('.'))));
+            if (!ctype.isValid()) {
                 std::cerr << "Unknown card type in template card filename: " << file_name << std::endl;
                 continue;
             }
 
             //TODO: in FeatureExtractor, return a Feature* object when calling detect_and_compute(image). The actual type of the object will depend on the FeatureExtractor used (for now we only have class KeypointFeature)
-            template_feature_cards[ctype] = extractor.detect_and_compute(Loader::Image::load_image(file_path));
+            (*template_feature_cards)[ctype] = extractor.extractFeatures(Loader::Image::load_image(file_path), cv::Mat());
         }
     }
 

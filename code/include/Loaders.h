@@ -22,7 +22,7 @@ namespace Loader {
     };
 
     namespace TemplateCard {
-        std::map<Card_Type, Feature*> load_template_feature_cards(const std::string& template_cards_folder_path, const FeatureExtractor& extractor);
+        std::map<Card_Type, Feature*>* load_template_feature_cards(const std::string& template_cards_folder_path, const FeatureExtractor& extractor);
     }
 
 }

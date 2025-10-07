@@ -14,7 +14,7 @@ FeaturePipeline::~FeaturePipeline() {}
 
 
 FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& template_cards_folder_path)
-    : extractor{extractor}, matcher{matcher}, template_features{std::make_shared<const std::map<Card_Type, Feature*>>(Utils::FeatureContainer::get_templates_features(template_cards_folder_path, *extractor))}
+    : extractor{extractor}, matcher{matcher}, template_features{std::make_shared<const std::map<Card_Type, Feature*>>(Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *extractor))}
 {
     this->update_extractor_matcher_compatibility();
 
@@ -37,8 +37,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
     out_labels.clear();
 
     //1) Extracts test image features
-    KeypointFeature imageFeatures;
-    this->extractor->extractFeatures(src_img, src_mask, imageFeatures);
+    std::unique_ptr<KeypointFeature> imageFeatures(dynamic_cast<KeypointFeature*>(this->extractor->extractFeatures(src_img, src_mask)));
 
     //2) The template descriptors are already extracted and passed to the pipeline in the constuctor(they always remain the same for every test image, so they are detected only once)
 
@@ -56,12 +55,12 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
 
         // get the descriptors of the template
         const cv::Mat& templ_desciptors = templFeatures->getDescriptors();
-        if (templ_desciptors.empty() || imageFeatures.getDescriptors().empty()) continue;
+        if (templ_desciptors.empty() || imageFeatures->getDescriptors().empty()) continue;
 
         // obtains the matches between the template and the test image
         std::vector<cv::DMatch> matches;
         try {
-            this->matcher->matchFeatures(templ_desciptors, imageFeatures.getDescriptors(),  matches);
+            this->matcher->matchFeatures(templ_desciptors, imageFeatures->getDescriptors(),  matches);
         } catch (const cv::Exception& e) {
             std::cerr << "Error during feature matching: " << e.what() << '\n';
             continue;
@@ -80,7 +79,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
             const bool bboxFound = this->findBoundingBox(
                 matches,
                 templFeatures,            
-                imageFeatures,            
+                *imageFeatures,            
                 card,
                 label,
                 inlier_mask
