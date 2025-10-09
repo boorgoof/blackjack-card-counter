@@ -11,7 +11,7 @@
 #include "../include/Dataset.h"
 #include "../include/StatisticsCalculation.h"
 #include "../include/card_detector/objectDetector/featurePipeline/features/FeatureContainer.h"
-
+#include "../include/card_detector/objectDetector/featurePipeline/FeaturePipeline.h"
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -61,11 +61,7 @@ int main(int argc, char** argv) {
     Dataset single_cards_dataset(single_cards_dataset_path, false);
     Dataset::Iterator it = single_cards_dataset.begin();
 
-    // todo fix
-    std::string template_cards_folder_path = datasets_path  + "/../template/crop_template";
-    const auto& descriptors = Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, FeatureExtractor(ExtractorType::SIFT));
-    std::cout << "Loaded " << descriptors.size() << " descriptors." << std::endl;
-
+    const std::string template_cards_folder_path = "../data/template/crop_template";
 
     //depending on the dataset type, create the appropriate card detector (specific parameters will be decided later, in the actual implementation)
     std::unique_ptr<CardDetector> card_detector = nullptr;
@@ -73,7 +69,7 @@ int main(int argc, char** argv) {
     if (single_cards_dataset.is_sequential()) {
         card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
     } else {
-        card_detector = std::make_unique<SingleCardDetector>(detect_full_card, visualize);
+        card_detector = std::make_unique<SingleCardDetector>(RoughCardDetector(), new FeaturePipeline(ExtractorType::SIFT, MatcherType::FLANN), detect_full_card, visualize);
     }
 
     ImageFilter img_filter;
