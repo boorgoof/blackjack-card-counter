@@ -8,6 +8,7 @@
 #include "../include/card_detector/CardDetector.h"
 #include "../include/card_detector/SequentialCardDetector.h"
 #include "../include/card_detector/SingleCardDetector.h"
+#include "../include/card_detector/RoughCardDetector.h"
 #include "../include/Dataset.h"
 #include "../include/StatisticsCalculation.h"
 #include "../include/card_detector/objectDetector/featurePipeline/features/FeatureContainer.h"
@@ -69,7 +70,7 @@ int main(int argc, char** argv) {
     if (single_cards_dataset.is_sequential()) {
         card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
     } else {
-        card_detector = std::make_unique<SingleCardDetector>(RoughCardDetector(), new FeaturePipeline(ExtractorType::SIFT, MatcherType::FLANN), detect_full_card, visualize);
+        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_cards_folder_path), detect_full_card, visualize);
     }
 
     ImageFilter img_filter;

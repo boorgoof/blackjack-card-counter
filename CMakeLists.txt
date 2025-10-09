@@ -16,6 +16,7 @@ add_executable(main
     code/src/card_detector/CardDetector.cpp
     code/src/card_detector/SequentialCardDetector.cpp
     code/src/card_detector/SingleCardDetector.cpp
+    code/src/card_detector/RoughCardDetector.cpp
 
     code/src/card_detector/objectDetector/ObjectDetector.cpp
     code/src/card_detector/objectDetector/featurePipeline/FeatureExtractor.cpp
@@ -23,6 +24,6 @@ add_executable(main
     code/src/card_detector/objectDetector/featurePipeline/FeaturePipeline.cpp
     code/src/card_detector/objectDetector/featurePipeline/features/FeatureContainer.cpp)
 
-set_property(TARGET main PROPERTY CXX_STANDARD 17)
+set_property(TARGET main PROPERTY CXX_STANDARD 20)
 target_link_libraries(main ${OpenCV_LIBS})
 

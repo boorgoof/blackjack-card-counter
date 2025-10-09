@@ -5,8 +5,9 @@
 #include "../../../../include/Loaders.h"
 
 void FeaturePipeline::update_extractor_matcher_compatibility() {
-    if (this->extractor->getType() == ExtractorType::ORB && this->matcher->getType() == MatcherType::FLANN) {
-        this->matcher = std::make_unique<FeatureMatcher>(FeatureMatcher(MatcherType::FLANN, new cv::FlannBasedMatcher(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2))));
+    if (this->extractor_->getType() == ExtractorType::ORB && this->matcher_->getType() == MatcherType::FLANN) {
+        this->matcher_.release();
+        this->matcher_ = std::make_unique<FeatureMatcher>(FeatureMatcher(MatcherType::FLANN, new cv::FlannBasedMatcher(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2))));
     }
 }
 
@@ -14,11 +15,20 @@ FeaturePipeline::~FeaturePipeline() {}
 
 
 FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& template_cards_folder_path)
-    : extractor{extractor}, matcher{matcher}, template_features{std::make_shared<const std::map<Card_Type, Feature*>>(Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *extractor))}
+    : extractor_{extractor}, matcher_{matcher}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *extractor)}
 {
     this->update_extractor_matcher_compatibility();
 
     std::string method_name = ExtractorType::toString(extractor->getType()) + "-" + MatcherType::toString(matcher->getType());
+    this->set_method_name(method_name);
+}
+
+FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, const std::string& template_cards_folder_path)
+    : extractor_{std::make_unique<FeatureExtractor>(extractor)}, matcher_{std::make_unique<FeatureMatcher>(matcher)}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *this->extractor_)}
+{
+    this->update_extractor_matcher_compatibility();
+
+    std::string method_name = ExtractorType::toString(extractor) + "-" + MatcherType::toString(matcher);
     this->set_method_name(method_name);
 }
 
@@ -37,13 +47,13 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
     out_labels.clear();
 
     //1) Extracts test image features
-    std::unique_ptr<KeypointFeature> imageFeatures(dynamic_cast<KeypointFeature*>(this->extractor->extractFeatures(src_img, src_mask)));
+    std::unique_ptr<KeypointFeature> imageFeatures(dynamic_cast<KeypointFeature*>(this->extractor_->extractFeatures(src_img, src_mask)));
 
     //2) The template descriptors are already extracted and passed to the pipeline in the constuctor(they always remain the same for every test image, so they are detected only once)
 
     //3) For each template, match its descriptors with the test image descriptors and find the bounding boxes of the object in the test image
     std::map<Card_Type, std::vector<cv::DMatch>> out_matches;
-    for (const auto& [card, feature] : *this->template_features) {
+    for (const auto& [card, feature] : this->template_features_) {
         
         if (!feature) continue;
 
@@ -60,7 +70,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
         // obtains the matches between the template and the test image
         std::vector<cv::DMatch> matches;
         try {
-            this->matcher->matchFeatures(templ_desciptors, imageFeatures->getDescriptors(),  matches);
+            this->matcher_->matchFeatures(templ_desciptors, imageFeatures->getDescriptors(),  matches);
         } catch (const cv::Exception& e) {
             std::cerr << "Error during feature matching: " << e.what() << '\n';
             continue;
@@ -78,8 +88,8 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
 
             const bool bboxFound = this->findBoundingBox(
                 matches,
-                templFeatures,            
-                *imageFeatures,            
+                templFeatures,
+                *imageFeatures,
                 card,
                 label,
                 inlier_mask
