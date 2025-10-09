@@ -1,5 +1,5 @@
 #ifndef LOADERS_H
-#define LOARDERS_H
+#define LOADERS_H
 
 #include <string>
 #include "Label.h"
