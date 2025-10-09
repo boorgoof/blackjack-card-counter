@@ -96,6 +96,14 @@ std::map<Card_Type, Feature*>* Loader::TemplateCard::load_template_feature_cards
                     continue;
                 }
                 (*template_feature_cards)[card_type] = extractor.extractFeatures(Loader::Image::load_image(file_path), cv::Mat());
+
+                //display the template image and its keypoints
+                cv::Mat img_keypoints;
+                cv::drawKeypoints(Loader::Image::load_image(file_path), dynamic_cast<const KeypointFeature*>((*template_feature_cards)[card_type])->getKeypoints(), img_keypoints);
+                cv::imshow("Template: " + file_name, img_keypoints);
+                cv::waitKey(1000);
+
+
             } else {
                 std::cerr << "Invalid template card filename: " << file_name << std::endl;
                 continue;

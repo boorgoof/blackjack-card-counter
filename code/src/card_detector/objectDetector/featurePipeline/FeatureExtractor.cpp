@@ -7,7 +7,7 @@ FeatureExtractor::~FeatureExtractor() {
 void FeatureExtractor::init(){
     switch (this->extractor_type) {
         case ExtractorType::FeatureDescriptorAlgorithm::SIFT:
-            this->features_extractor = cv::SIFT::create();
+            this->features_extractor = cv::SIFT::create(10, 3, 0.09, 10, 1.6);
             break;
         case ExtractorType::FeatureDescriptorAlgorithm::ORB:
             this->features_extractor = cv::ORB::create();

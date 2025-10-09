@@ -23,13 +23,13 @@ class FeaturePipeline : public ObjectDetector {
         /**
         * @brief FeatureExtractor pointer to the feature extractor used by the pipeline.
         */
-        std::unique_ptr<FeatureExtractor> extractor;
+        std::unique_ptr<FeatureExtractor> extractor_;
         /**
          * @brief FeatureMatcher pointer to the feature matcher used by the pipeline.
          */
-        std::unique_ptr<FeatureMatcher> matcher;
+        std::unique_ptr<FeatureMatcher> matcher_;
     
-        std::shared_ptr<const std::map<Card_Type, Feature*>> template_features; 
+        const std::map<Card_Type, Feature*>& template_features_;
         /**
          * @brief  check and to update the compatibility between the extractor and matcher.
          */
@@ -74,14 +74,14 @@ class FeaturePipeline : public ObjectDetector {
          * @param extractor 
          * @param matcher
          */
-        FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm extractor, MatcherType::MatcherAlgorithm matcher, const std::string& template_cards_folder_path);
+        FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, const std::string& template_cards_folder_path);
         ~FeaturePipeline();
 
         void setExtractororComponent(FeatureExtractor* fd) {
-            this->extractor.reset(fd);
+            this->extractor_.reset(fd);
         }
         void setMatcherComponent(FeatureMatcher* fm) {
-            this->matcher.reset(fm);
+            this->matcher_.reset(fm);
         }
 
 
