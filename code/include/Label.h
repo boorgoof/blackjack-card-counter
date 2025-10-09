@@ -12,6 +12,7 @@ class Label {
     
     public:
 
+        Label() : class_name_{Card_Type("UNKNOWN")}, boundingbox_{cv::Rect()} {}
         Label(const Card_Type& card, const cv::Rect& bbox, float conf = 0.f)
             : class_name_{card}, boundingbox_{bbox} {}
 

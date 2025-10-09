@@ -1,7 +1,5 @@
 #include "../../include/card_detector/RoughCardDetector.h"
 
-namespace vision {
-
 RoughCardDetector::RoughCardDetector(const PipelinePreset preset, const MaskType maskType) {
     loadPreset(preset);
     loadMaskPreset(maskType);
@@ -66,8 +64,6 @@ cv::Mat RoughCardDetector::applyPipeline(const cv::Mat& img) const {
         current = processedImage;
     }
     return current;
-}
-
 }
 
 namespace preprocessing {

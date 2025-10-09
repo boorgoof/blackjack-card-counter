@@ -13,7 +13,6 @@ namespace Utils{
 
     namespace String{
         std::string normalize(const std::string& str); 
-
     }
 
     namespace Path{

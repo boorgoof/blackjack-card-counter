@@ -2,15 +2,17 @@
 #include <iostream>
 #include <filesystem>
 #include "../include/Label.h"
-#include "../include/CardType.h"
 #include "../include/Utils.h"
 #include "../include/Loaders.h"
 #include "../include/ImageFilter.h"
 #include "../include/card_detector/CardDetector.h"
 #include "../include/card_detector/SequentialCardDetector.h"
 #include "../include/card_detector/SingleCardDetector.h"
+#include "../include/card_detector/RoughCardDetector.h"
 #include "../include/Dataset.h"
 #include "../include/StatisticsCalculation.h"
+#include "../include/card_detector/objectDetector/featurePipeline/features/FeatureContainer.h"
+#include "../include/card_detector/objectDetector/featurePipeline/FeaturePipeline.h"
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -60,13 +62,15 @@ int main(int argc, char** argv) {
     Dataset single_cards_dataset(single_cards_dataset_path, false);
     Dataset::Iterator it = single_cards_dataset.begin();
 
+    const std::string template_cards_folder_path = "../data/template/crop_template";
+
     //depending on the dataset type, create the appropriate card detector (specific parameters will be decided later, in the actual implementation)
     std::unique_ptr<CardDetector> card_detector = nullptr;
     bool detect_full_card = false; //depending on the dataset, we may want to detect the full card or just a part of it (e.g., the rank and suit in the corner)
     if (single_cards_dataset.is_sequential()) {
         card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
     } else {
-        card_detector = std::make_unique<SingleCardDetector>(detect_full_card, visualize);
+        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_cards_folder_path), detect_full_card, visualize);
     }
 
     ImageFilter img_filter;
