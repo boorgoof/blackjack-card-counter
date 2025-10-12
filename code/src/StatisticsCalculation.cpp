@@ -137,8 +137,8 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& t
         int pred_idx = std::get<2>(candidate);
         if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in trueRect match
                                                                   
-        int col_actual_class_index = Yolo_index_codec::card_to_yolo_index(true_labels[true_idx].get_class_name());
-        int row_predicted_class_index = Yolo_index_codec::card_to_yolo_index(pred_labels[pred_idx].get_class_name());
+        int col_actual_class_index = Yolo_index_codec::card_to_yolo_index(*dynamic_cast<const Card_Type*>(true_labels[true_idx].get_object()));
+        int row_predicted_class_index = Yolo_index_codec::card_to_yolo_index(*dynamic_cast<const Card_Type*>(pred_labels[pred_idx].get_object()));
 
         //CV_Assert(0 <= row_predicted_class_index && row_predicted_class_index < num_classes);
         //CV_Assert(0 <= col_actual_class_index && col_actual_class_index < num_classes);
@@ -155,7 +155,7 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& t
        
         if (!true_used[true_idx]) {
             
-            int col_actual_class_index = Yolo_index_codec::card_to_yolo_index(true_labels[true_idx].get_class_name());
+            int col_actual_class_index = Yolo_index_codec::card_to_yolo_index(*dynamic_cast<const Card_Type*>(true_labels[true_idx].get_object()));
             
             //CV_Assert(0 <= col_actual_class_index && col_actual_class_index < num_classes);
             
@@ -167,7 +167,7 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& t
     for (int pred_idx = 0; pred_idx < (int)pred_labels.size(); ++pred_idx) {
         if (!pred_used[pred_idx]) {
 
-            int row_predicted_class_index = Yolo_index_codec::card_to_yolo_index(pred_labels[pred_idx].get_class_name());
+            int row_predicted_class_index = Yolo_index_codec::card_to_yolo_index(*dynamic_cast<const Card_Type*>(pred_labels[pred_idx].get_object()));
             
             CV_Assert(0 <= row_predicted_class_index && row_predicted_class_index < num_classes);
             

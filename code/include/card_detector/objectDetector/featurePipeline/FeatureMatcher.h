@@ -7,8 +7,7 @@
  * @brief Class to represent the type of a matcher (e.g. FLANN, BRUTEFORCE).
  */
 class MatcherType{
-
-    public:
+public:
 
     /**
      * @brief enum to represent the different types of matchers.
@@ -32,7 +31,7 @@ class MatcherType{
         }
     }
        
-    private:
+private:
     /**
      * @brief the type of the matcher
      */
@@ -41,7 +40,8 @@ class MatcherType{
 };
 
 class FeatureMatcher{
-    private:
+
+private:
     /**
      * @brief the type of the matcher
      */
@@ -52,7 +52,7 @@ class FeatureMatcher{
     cv::Ptr<cv::DescriptorMatcher> features_matcher;
     void init();
 
-    public:
+public:
     FeatureMatcher(const MatcherType::MatcherAlgorithm& type) : type{type} {this->init();}
     FeatureMatcher(const MatcherType::MatcherAlgorithm& type, cv::DescriptorMatcher* matcher) : type{type}, features_matcher{cv::Ptr<cv::DescriptorMatcher>(matcher)} {}
     //destructor

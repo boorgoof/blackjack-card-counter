@@ -51,15 +51,15 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
 
     //2) The template descriptors are already extracted and passed to the pipeline in the constuctor(they always remain the same for every test image, so they are detected only once)
 
-    //3) For each template, match its descriptors with the test image descriptors and find the bounding boxes of the object in the test image
-    std::map<Card_Type, std::vector<cv::DMatch>> out_matches;
-    for (const auto& [card, feature] : this->template_features_) {
+    //3) For each template, match its descriptors with the test image descriptors and find the bounding boxes of the templ_object in the test image
+    std::map<ObjectType* , std::vector<cv::DMatch>> out_matches;
+    for (const auto& [templ_object, templ_feature] : this->template_features_) {
         
-        if (!feature) continue;
+        if (!templ_feature) continue;
 
-        const KeypointFeature* templFeatures = dynamic_cast<const KeypointFeature*>(feature);
+        const KeypointFeature* templFeatures = dynamic_cast<const KeypointFeature*>(templ_feature);
         if (!templFeatures) {
-            std::cerr << "The dynamic cast from Feature* to KeypointFeature is not possible for the card" << card << "\n";
+            std::cerr << "The dynamic cast from Feature* to KeypointFeature is not possible for the object" << templ_object->get_id() << "\n";
             continue;
         }
 
@@ -84,13 +84,12 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
              // cv.findHomography() returns a mask which specifies the inlier and outlier points
              // https://docs.opencv.org/4.x/d1/de0/tutorial_py_feature_homography.html?utm_source=chatgpt.com
             std::vector<unsigned char> inlier_mask;
-            Label label;
+            Label label(templ_object->clone(), cv::Rect(), 0.f); 
 
             const bool bboxFound = this->findBoundingBox(
                 matches,
-                templFeatures,
+                *templFeatures,
                 *imageFeatures,
-                card,
                 label,
                 inlier_mask
             );
@@ -103,7 +102,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
             if (inliers < numMinInliers) break;
 
             // If we have enough inlier, we accept the label for one instance. 
-            out_labels.push_back(label);
+            out_labels.push_back(std::move(label));
             ++intances_found;
 
             // then we removes the the inliers used so that another instance can be found in the next iteration.
@@ -128,21 +127,19 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
 
 
 bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
-                                      const KeypointFeature* templFeatures,       
+                                      const KeypointFeature& templFeatures,       
                                       const KeypointFeature& imgFeatures,        
-                                      const Card_Type& card_template,
                                       Label& out_label,
                                       std::vector<unsigned char>& out_inlier_mask) const
 {
-    if (!templFeatures) return false;
     if (matches.size() < 4) return false; // need at least 4 matches to compute homography
 
-    const auto& templ_kp   = templFeatures->getKeypoints();
-    const auto& image_kp   = imgFeatures.getKeypoints();
-    const auto& templ_rect_corners   = templFeatures->getRectPoints(); 
+    const std::vector<cv::KeyPoint>& templ_kp   = templFeatures.getKeypoints();
+    const std::vector<cv::KeyPoint>& image_kp   = imgFeatures.getKeypoints();
+    const std::vector<cv::Point2f>& templ_rect_corners   = templFeatures.getRectPoints(); 
 
     if (templ_rect_corners.size() != 4) {
-        std::cerr << "Rect points must be 4 (the corners of the template) for card: " << card_template << "\n";
+        std::cerr << "Rect points must be 4 (the corners of the template) for templ_object: " << out_label.get_object()->get_id() << "\n";
         return false;
     }
 
@@ -150,7 +147,7 @@ bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
     std::vector<cv::Point2f> templ_pts, image_pts;
     templ_pts.reserve(matches.size());
     image_pts.reserve(matches.size());
-    for (const auto& m : matches) {
+    for (const cv::DMatch& m : matches) {
         templ_pts.push_back(templ_kp[m.queryIdx].pt);
         image_pts.push_back(image_kp[m.trainIdx].pt);
     }
@@ -159,13 +156,14 @@ bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
     cv::Mat H = cv::findHomography(templ_pts, image_pts, cv::RANSAC, numRansacReprojErr, out_inlier_mask);
     if (H.empty()) return false;
 
-    //3) project the 4 corners of the template into the scene image. So we obtain the bounding box of the object in the scene
+    //3) project the 4 corners of the template into the scene image. So we obtain the bounding box of the templ_object in the scene
     std::vector<cv::Point2f> image_corners;
     cv::perspectiveTransform(templ_rect_corners, image_corners, H);
     cv::Rect bbox = cv::boundingRect(image_corners);
     if (bbox.area() <= 0) return false;
 
-    out_label = Label(card_template, bbox);
+    out_label.set_bounding_box(bbox);
+    out_label.set_confidence(0.0f); // TODO
     return true;
 }
 
@@ -178,14 +176,15 @@ void FeaturePipeline::nmsLabels(std::vector<Label>& labels, double iou_thresh) c
     });
 
     std::vector<Label> toKeep;
-    for (const auto& candidate : labels) {
+    for (Label& candidate : labels) {
         bool suppress = false;
         for (const auto& kept : toKeep) {
             if (StatisticsCalculation::calc_IoU(candidate, kept) >= iou_thresh) {
-                suppress = true; break;
+                suppress = true;
+                break;
             }
         }
-        if (!suppress) toKeep.push_back(candidate);
+        if (!suppress) toKeep.push_back(std::move(candidate));
     }
     labels.swap(toKeep);
 }

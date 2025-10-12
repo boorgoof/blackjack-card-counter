@@ -64,15 +64,14 @@ std::map<std::string, Card_Type::Suit> Card_Type::map_string_to_suit = {
 std::map<Card_Type::Rank, std::string> Card_Type::map_rank_to_string = Utils::Map::createInverseMap(Card_Type::map_string_to_rank);
 std::map<Card_Type::Suit, std::string> Card_Type::map_suit_to_string = Utils::Map::createInverseMap(Card_Type::map_string_to_suit);
 
-
-
-std::string Card_Type::to_string() const {
+std::string Card_Type::get_id() const {
 
     const std::string r = map_rank_to_string[this->rank];
     const std::string s = map_suit_to_string[this->suit];
     
-    return r + s; // ex: "10H", 10 of Hearts
+    return r + s; // for example: "10H", 10 of Hearts
 }
+
 
 const Card_Type::Rank Card_Type::string_to_rank(const std::string& s) {
     auto it = map_string_to_rank.find(s);
@@ -85,16 +84,24 @@ const Card_Type::Suit Card_Type::string_to_suit(const std::string& s) {
 }
 
 
-bool operator<(const Card_Type& l, const Card_Type& r) {
-    if (l.get_suit() != r.get_suit())
-        return l.get_suit() < r.get_suit();
-    return l.get_rank() < r.get_rank();
+bool Card_Type::operator<(const ObjectType& other) const {
+
+    Card_Type other_card = dynamic_cast<const Card_Type&>(other);
+    
+    if (this->get_suit() != other_card.get_suit())
+        return this->get_suit() < other_card.get_suit();
+    return this->get_rank() < other_card.get_rank();
 }
 
-std::ostream& operator<<(std::ostream& os, const Card_Type& c) {
-    return os << c.to_string();
+bool Card_Type::operator==(const ObjectType& other) const {
+
+    Card_Type other_card = dynamic_cast<const Card_Type&>(other);
+    return this->get_rank() == other_card.get_rank() && this->get_suit() == other_card.get_suit();
 }
 
+std::ostream &operator<<(std::ostream &os, const Card_Type &card) {
+    return os << card.get_id();
+}
 
 Card_Type Yolo_index_codec::yolo_index_to_card(int index){
     if (index < 0 || index >= 52) {
@@ -111,5 +118,4 @@ int Yolo_index_codec::card_to_yolo_index(const Card_Type& card){
     int index = static_cast<int>(card.get_rank()) * numSuits + static_cast<int>(card.get_suit());
     return index;
 }
-
 
