@@ -7,6 +7,7 @@ add_executable(main
 
     code/src/main.cpp
     code/src/Utils.cpp
+    code/src/ObjectType.cpp
     code/src/CardType.cpp
     code/src/Loaders.cpp
     code/src/Dataset.cpp

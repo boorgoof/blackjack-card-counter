@@ -12,29 +12,29 @@
  */
 class ObjectDetector{
 
-    public:
+public:
 
-        ObjectDetector() = default;
+    ObjectDetector() = default;
 
-        ObjectDetector(ObjectDetector&&) = delete;
-        ObjectDetector& operator=(ObjectDetector&&) = delete; //TODO
-        virtual ~ObjectDetector() = 0;
+    ObjectDetector(ObjectDetector&&) = delete;
+    ObjectDetector& operator=(ObjectDetector&&) = delete; //TODO
+    virtual ~ObjectDetector() = 0;
 
-        
-        /**
-         * @brief detect objects in a scene image
-         * @param src_img the scene image to detect objects from
-         * @param src_mask the mask of the scene image (the area of interest where to search for objects)
-         * @param out_labels the output vector of detected labels
-         */
-        virtual void detect_objects(const cv::Mat& src_img,  const cv::Mat &src_mask, std::vector<Label>& out_labels) = 0;
-
-        void set_method_name(const std::string& method_name) { this->method_name = method_name; }
-        const std::string& get_method_name() const { return this->method_name; }
-        
-    private:
     
-        std::string method_name;
+    /**
+     * @brief detect objects in a scene image
+     * @param src_img the scene image to detect objects from
+     * @param src_mask the mask of the scene image (the area of interest where to search for objects)
+     * @param out_labels the output vector of detected labels
+     */
+    virtual void detect_objects(const cv::Mat& src_img,  const cv::Mat &src_mask, std::vector<Label>& out_labels) = 0;
+
+    void set_method_name(const std::string& method_name) { this->method_name = method_name; }
+    const std::string& get_method_name() const { return this->method_name; }
+    
+private:
+
+    std::string method_name;
 
 };
 

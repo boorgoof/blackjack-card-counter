@@ -31,7 +31,7 @@ std::vector<Label> Loader::Annotation::load_yolo_image_annotations(const std::st
             Card_Type card = Yolo_index_codec::yolo_index_to_card(class_id);
             cv::Rect bbox = yoloNorm_to_rect(x_center, y_center, width, height, image_width, image_height);
             
-            labels.emplace_back(card, bbox);
+            labels.emplace_back(std::make_unique<Card_Type>(card), bbox);
 
         } else {
             std::cerr << "Error in line: " << line << std::endl;
@@ -69,17 +69,17 @@ cv::Mat Loader::Image::load_image(const std::string &image_path)
     return cv::imread(image_path, cv::IMREAD_COLOR);
 }
 
-std::map<Card_Type, Feature*>* Loader::TemplateCard::load_template_feature_cards(const std::string &template_cards_folder_path, const FeatureExtractor& extractor)
+std::map<ObjectType*, Feature*>* Loader::TemplateObject::load_template_feature(const std::string &template_folder_path, const FeatureExtractor& extractor)
 {
     
     //check if the folder exists
-    if (!std::filesystem::exists(template_cards_folder_path)) {
-        throw std::runtime_error("Template cards folder not found: " + template_cards_folder_path);
+    if (!std::filesystem::exists(template_folder_path)) {
+        throw std::runtime_error("Template cards folder not found: " + template_folder_path);
     }
     
     //for each filename in the folder, load the image and compute the feature descriptor
-    std::map<Card_Type, Feature*>* template_feature_cards = new std::map<Card_Type, Feature*>();
-    for (const auto & entry : std::filesystem::directory_iterator(template_cards_folder_path)) {
+    std::map<ObjectType*, Feature*>* template_feature_cards = new std::map<ObjectType*, Feature*>();
+    for (const auto & entry : std::filesystem::directory_iterator(template_folder_path)) {
         if (entry.is_regular_file()) {
             std::string file_path = entry.path().string();
             std::string file_name = entry.path().filename().string();
@@ -90,12 +90,12 @@ std::map<Card_Type, Feature*>* Loader::TemplateCard::load_template_feature_cards
             std::regex card_regex("([CDHS])((10)|[A23456789TJQK])\\.png");
             std::smatch match;
             if (std::regex_search(file_name, match, card_regex)) {
-                Card_Type card_type = Card_Type(Card_Type::string_to_rank(match[2].str()), Card_Type::string_to_suit(match[1].str()));
-                if (!card_type.isValid()) {
+                Card_Type* card_type = new Card_Type(Card_Type::string_to_rank(match[2].str()), Card_Type::string_to_suit(match[1].str()));
+                if (!card_type->isValid()) {
                     std::cerr << "Unknown card type in template card filename: " << file_name << std::endl;
                     continue;
                 }
-                (*template_feature_cards)[card_type] = extractor.extractFeatures(Loader::Image::load_image(file_path), cv::Mat());
+                template_feature_cards->insert({card_type, extractor.extractFeatures(Loader::Image::load_image(file_path), cv::Mat())});
 
                 //display the template image and its keypoints
                 cv::Mat img_keypoints;

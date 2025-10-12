@@ -9,8 +9,7 @@ class ImageFilter;
  * @brief Class to represent the type of a extractor (e.g. SIFT, ORB, SURF).
  */
 class ExtractorType{
-
-    public:
+public:
 
     /**
      * @brief enum to represent the different types of extractors.
@@ -36,7 +35,7 @@ class ExtractorType{
         }
     }
            
-    private:
+private:
     /**
      * @brief the type of the Extractor
      */
@@ -45,8 +44,7 @@ class ExtractorType{
 };
 
 class FeatureExtractor{
-
-    private:
+private:
     /**
      * @brief the type of the Extractor
      */
@@ -59,7 +57,7 @@ class FeatureExtractor{
 
     void init();
 
-    public:
+public:
     FeatureExtractor(const ExtractorType::FeatureDescriptorAlgorithm& type) : extractor_type{type} {this->init();}
     ~FeatureExtractor();
     
