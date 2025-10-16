@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cctype>
 #include <stdexcept>
+#include "CardType.h"
 
 
    
@@ -72,6 +73,9 @@ std::string Card_Type::get_id() const {
     return r + s; // for example: "10H", 10 of Hearts
 }
 
+int Card_Type::get_id_number() const{
+    return Yolo_index_codec::card_to_yolo_index(this->get_id());
+}
 
 const Card_Type::Rank Card_Type::string_to_rank(const std::string& s) {
     auto it = map_string_to_rank.find(s);

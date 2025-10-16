@@ -16,6 +16,7 @@ public:
 
     virtual std::unique_ptr<ObjectType> clone() const = 0;
     virtual std::string get_id() const = 0;
+    virtual int get_id_number() const = 0;
     virtual bool isValid() const = 0;
 
     virtual bool operator<(const ObjectType& other) const = 0;

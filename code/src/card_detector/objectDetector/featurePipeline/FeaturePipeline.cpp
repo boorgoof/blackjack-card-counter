@@ -5,10 +5,16 @@
 #include "../../../../include/Loaders.h"
 
 void FeaturePipeline::update_extractor_matcher_compatibility() {
+    /*
     if (this->extractor_->getType() == ExtractorType::ORB && this->matcher_->getType() == MatcherType::FLANN) {
         this->matcher_.release();
         this->matcher_ = std::make_unique<FeatureMatcher>(FeatureMatcher(MatcherType::FLANN, new cv::FlannBasedMatcher(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2))));
+    }*/
+   if (this->extractor_->getType() == ExtractorType::ORB && this->matcher_->getType() == MatcherType::FLANN) {
+        this->matcher_.release();
+        this->matcher_ = std::make_unique<FeatureMatcher>(MatcherType::BRUTEFORCE_HAMMING,cv::BFMatcher::create(cv::NORM_HAMMING));
     }
+    
 }
 
 FeaturePipeline::~FeaturePipeline() {}
@@ -35,19 +41,24 @@ FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm
 
 
 namespace {
-    constexpr size_t minMatchesForRANSAC = 25; // matches needed to apply RANSAC 
-    constexpr size_t numMinInliers = 15; // min inliers to validate the found bbox 
+    constexpr size_t minMatchesForRANSAC = 4; // matches needed to apply RANSAC 
+    constexpr size_t numMinInliers = 4; // min inliers to validate the found bbox 
     constexpr double nmsIoU = 0.30; // non-maxima suppression IoU threshold
     constexpr double numRansacReprojErr = 3.0;
-    constexpr size_t numMaxInstancesPerTemplate = 50;
+    constexpr size_t numMaxInstancesPerTemplate = 16;
 }
 
+/*
 void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_mask, std::vector<Label> &out_labels) {
 
     out_labels.clear();
 
     //1) Extracts test image features
     std::unique_ptr<KeypointFeature> imageFeatures(dynamic_cast<KeypointFeature*>(this->extractor_->extractFeatures(src_img, src_mask)));
+    if (!imageFeatures) {
+        std::cerr << "The dynamic cast from Feature* to KeypointFeature is not possible for the img ";
+        return;
+    }
 
     //2) The template descriptors are already extracted and passed to the pipeline in the constuctor(they always remain the same for every test image, so they are detected only once)
 
@@ -116,13 +127,207 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
     }
 
     if (out_labels.empty()) {
-        std::cerr << "No instances found.\n";
+        std::cerr << " Warning: No instances found.\n";
         return;
     }
 
     //4) Apply Non-Maxima Suppression to the found bounding boxes to remove overlapping boxe
     nmsLabels(out_labels, nmsIoU);
      
+}*/
+
+void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_mask, std::vector<Label> &out_labels) {
+
+    out_labels.clear();
+
+    // --- TOGGLE VELOCE: metti a 0 per spegnere
+    #define DBG_VIZ 1
+
+    //1) Extracts test image features
+    std::unique_ptr<KeypointFeature> imageFeatures(dynamic_cast<KeypointFeature*>(this->extractor_->extractFeatures(src_img, src_mask)));
+
+    // === VIZ: input, mask, overlay, keypoints immagine ===
+    #if DBG_VIZ
+    if (!src_img.empty()) {
+        cv::namedWindow("IMG input", cv::WINDOW_NORMAL);
+        cv::imshow("IMG input", src_img);
+    }
+    if (!src_mask.empty()) {
+        cv::namedWindow("MASK", cv::WINDOW_NORMAL);
+        cv::imshow("MASK", src_mask);
+
+        // overlay maschera (ciano) sull'immagine
+        if (!src_img.empty()) {
+            cv::Mat img3, maskU, colorMask, overlay;
+            if (src_img.channels()==1) cv::cvtColor(src_img, img3, cv::COLOR_GRAY2BGR); else img3 = src_img.clone();
+            src_mask.convertTo(maskU, CV_8U);
+            colorMask = cv::Mat::zeros(img3.size(), img3.type());
+            std::vector<cv::Mat> ch(3);
+            ch[0] = cv::Mat::zeros(img3.size(), CV_8U);
+            ch[1] = maskU; // G
+            ch[2] = maskU; // R
+            cv::merge(ch, colorMask);
+            cv::addWeighted(img3, 1.0, colorMask, 0.35, 0.0, overlay);
+            cv::namedWindow("IMG+MASK overlay", cv::WINDOW_NORMAL);
+            cv::imshow("IMG+MASK overlay", overlay);
+        }
+    }
+
+    if (imageFeatures) {
+        cv::Mat img_kp_vis;
+        const auto& img_kps = imageFeatures->getKeypoints();
+        if (!src_img.empty()) {
+            cv::drawKeypoints(src_img, img_kps, img_kp_vis, cv::Scalar::all(-1),
+                              cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        } else {
+            // se non hai l’immagine, crea una tela nera minimale
+            float maxx=1, maxy=1; for (const auto& k: img_kps){ maxx=std::max(maxx,k.pt.x); maxy=std::max(maxy,k.pt.y); }
+            cv::Mat canvas = cv::Mat::zeros((int)std::ceil(maxy)+20, (int)std::ceil(maxx)+20, CV_8UC3);
+            cv::drawKeypoints(canvas, img_kps, img_kp_vis, cv::Scalar::all(-1),
+                              cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        }
+        cv::namedWindow("IMG keypoints", cv::WINDOW_NORMAL);
+        cv::imshow("IMG keypoints", img_kp_vis);
+    }
+
+    cv::waitKey(0);
+
+    #endif
+    // === /VIZ ===
+
+    //2) template descriptors già in constructor
+
+    //3) per ogni template...
+    std::map<ObjectType* , std::vector<cv::DMatch>> out_matches;
+    for (const auto& [templ_object, templ_feature] : this->template_features_) {
+        
+        if (!templ_feature) continue;
+
+        const KeypointFeature* templFeatures = dynamic_cast<const KeypointFeature*>(templ_feature);
+        if (!templFeatures) {
+            std::cerr << "The dynamic cast from Feature* to KeypointFeature is not possible for the object" << templ_object->get_id() << "\n";
+            continue;
+        }
+
+        
+        // === VIZ: keypoints del template su una tela ===
+        #if DBG_VIZ
+        {
+            const auto& tkps = templFeatures->getKeypoints();
+            // canvas abbastanza grande per contenere i kp del template
+            float maxx=1, maxy=1; for (const auto& k: tkps){ maxx=std::max(maxx,k.pt.x); maxy=std::max(maxy,k.pt.y); }
+            cv::Mat templCanvas = cv::Mat::zeros((int)std::ceil(maxy)+20, (int)std::ceil(maxx)+20, CV_8UC3);
+            cv::Mat templ_kp_vis;
+            cv::drawKeypoints(templCanvas, tkps, templ_kp_vis, cv::Scalar::all(-1),
+                              cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+            std::string winName = "TEMPLATE keypoints id=" + templ_object->get_id();
+            if(templ_object->get_id() == "10C"){
+                cv::namedWindow(winName, cv::WINDOW_NORMAL);
+                cv::imshow(winName, templ_kp_vis);
+                cv::waitKey(0);
+            }
+           
+        }
+        #endif
+        
+
+        // === /VIZ ===
+
+        // get the descriptors of the template
+        const cv::Mat& templ_desciptors = templFeatures->getDescriptors();
+        if (templ_desciptors.empty() || imageFeatures->getDescriptors().empty()) continue;
+
+        // obtains the matches between the template and the test image
+        std::vector<cv::DMatch> matches;
+        try {
+            this->matcher_->matchFeatures(templ_desciptors, imageFeatures->getDescriptors(),  matches);
+        } catch (const cv::Exception& e) {
+            std::cerr << "Error during feature matching: " << e.what() << '\n';
+            continue;
+        }
+
+        
+        #if DBG_VIZ
+        {
+            // riduci per visualizzazione
+            std::vector<cv::DMatch> mm = matches;
+            if (mm.size() > 500) mm.resize(500);
+
+            // ridisegno canvas template
+            const auto& tkps = templFeatures->getKeypoints();
+            float maxx=1, maxy=1; for (const auto& k: tkps){ maxx=std::max(maxx,k.pt.x); maxy=std::max(maxy,k.pt.y); }
+            cv::Mat templCanvas = cv::Mat::zeros((int)std::ceil(maxy)+20, (int)std::ceil(maxx)+20, CV_8UC3);
+
+            cv::Mat vis_matches;
+            cv::drawMatches(templCanvas, tkps,
+                            src_img.empty()? templCanvas : src_img, imageFeatures->getKeypoints(),
+                            mm, vis_matches,
+                            cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
+                            cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+            if(templ_object->get_id() == "10C"){
+                cv::namedWindow("MATCHES (primi 500)", cv::WINDOW_NORMAL);
+                cv::imshow("MATCHES (primi 500)", vis_matches);
+                cv::waitKey(0);
+            }
+        }
+        #endif
+        std::cout<< templ_object->get_id() <<"numero di matches: " << matches.size() << std::endl;
+        
+
+        // find instances...
+        size_t intances_found= 0;
+        while (matches.size() >= minMatchesForRANSAC && intances_found < numMaxInstancesPerTemplate) {
+
+            std::vector<unsigned char> inlier_mask;
+            Label label(templ_object->clone(), cv::Rect(), 0.f); 
+
+            const bool bboxFound = this->findBoundingBox(
+                matches,
+                *templFeatures,
+                *imageFeatures,
+                label,
+                inlier_mask
+            );
+            if (!bboxFound) break;
+
+            size_t inliers = 0;
+            for (size_t i = 0; i < inlier_mask.size(); ++i) if (inlier_mask[i]) ++inliers;
+            if (inliers < numMinInliers) break;
+
+            out_labels.push_back(std::move(label));
+            ++intances_found;
+
+            // rimuovi inlier
+            std::vector<cv::DMatch> remaining; remaining.reserve(matches.size());
+            for (size_t i = 0; i < matches.size(); ++i) {
+                if (!inlier_mask[i]) remaining.push_back(matches[i]);
+            }
+            matches.swap(remaining);
+        }
+    }
+
+    if (out_labels.empty()) {
+        std::cerr << " Warning: No instances found.\n";
+        return;
+    }
+
+    //4) NMS
+    nmsLabels(out_labels, nmsIoU);
+
+    // === VIZ: (opzionale) disegna le bbox finali sulla IMG ===
+    #if DBG_VIZ
+    if (!src_img.empty()) {
+        cv::Mat final_vis;
+        if (src_img.channels()==1) cv::cvtColor(src_img, final_vis, cv::COLOR_GRAY2BGR); else final_vis = src_img.clone();
+        for (const auto& L : out_labels) {
+            cv::rectangle(final_vis, L.get_bounding_box(), cv::Scalar(0,255,0), 2);
+        }
+        
+        cv::namedWindow("DETECTIONS dopo NMS", cv::WINDOW_NORMAL);
+        cv::imshow("DETECTIONS dopo NMS", final_vis);
+        cv::waitKey(0);
+    }
+    #endif
 }
 
 

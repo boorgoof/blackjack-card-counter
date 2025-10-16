@@ -39,6 +39,7 @@ public:
   std::unique_ptr<ObjectType> clone() const { return std::make_unique<Card_Type>(*this); }
 
   std::string get_id() const;
+  int get_id_number() const;
   bool isValid() const { return this->rank != Rank::UNKNOWN && this->suit != Suit::UNKNOWN; } 
   
   const Rank& get_rank() const { return this->rank; }
