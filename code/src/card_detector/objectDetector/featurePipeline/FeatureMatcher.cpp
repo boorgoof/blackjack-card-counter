@@ -10,8 +10,8 @@ void FeatureMatcher::init(){
         case MatcherType::MatcherAlgorithm::FLANN:
             this->features_matcher = cv::FlannBasedMatcher::create();
             break;
-        case MatcherType::MatcherAlgorithm::BRUTEFORCE:
-            this->features_matcher = cv::BFMatcher::create(cv::NORM_L2);
+        case MatcherType::MatcherAlgorithm::BRUTEFORCE_HAMMING:
+            this->features_matcher = cv::BFMatcher::create(cv::NORM_HAMMING);
             break;
         default: 
            throw std::invalid_argument("Invalid featureMatcher type");

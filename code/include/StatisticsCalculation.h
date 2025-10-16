@@ -109,7 +109,7 @@ namespace StatisticsCalculation {
      * 
      * @param confusion_matrix Confusion matrix to print
      */
-    void print_confusion_matrix(const cv::Mat& confusion_matrix);
+    void print_card_confusion_matrix(const cv::Mat& confusion_matrix);
     
     /**
      * @brief Utility function to print metrics

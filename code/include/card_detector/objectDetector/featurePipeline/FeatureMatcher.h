@@ -14,19 +14,19 @@ public:
      */
     enum MatcherAlgorithm{
         FLANN,
-        BRUTEFORCE
+        BRUTEFORCE_HAMMING
     };
 
     static std::vector<MatcherAlgorithm> getMatcherTypes() {
         return {MatcherAlgorithm::FLANN,
-                MatcherAlgorithm::BRUTEFORCE};
+                MatcherAlgorithm::BRUTEFORCE_HAMMING};
     }
 
    
     static std::string toString(MatcherAlgorithm type) {
         switch (type) {
             case MatcherAlgorithm::FLANN: return "FLANN";
-            case MatcherAlgorithm::BRUTEFORCE: return "BRUTEFORCE";
+            case MatcherAlgorithm::BRUTEFORCE_HAMMING: return "BRUTEFORCE_HAMMING";
             default: throw std::invalid_argument("No matcher type");
         }
     }
