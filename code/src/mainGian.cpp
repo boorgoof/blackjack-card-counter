@@ -1,20 +1,25 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "../include/card_detector/RoughCardDetector.h"
-#include "../include/Dataset.h"
+#include "../include/Dataset/Dataset.h"
+#include "../include/Dataset/ImageDataset.h"
 #include "../include/ImageInfo.h"
+#include <memory>
 
 int main() {
     // Initialize the card detector with default preset and polygon mask type
     vision::RoughCardDetector detector{vision::PipelinePreset::DEFAULT, vision::MaskType::POLYGON};
     
-    // Create dataset instance
+    // Create dataset instance (polymorphic)
     int i = 0;
-    Dataset dataset = (i == 0) ? 
-        Dataset(std::string("../data/datasets/videos/images/"), std::string("../data/datasets/videos/labels/"), false) :
-        Dataset(std::string("../data/datasets/single_cards/Images/Images"), std::string("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/"), false);
+    std::unique_ptr<Dataset> dataset;
+    if (i == 0) {
+        dataset = std::make_unique<ImageDataset>(std::string("../data/datasets/videos/images/"), std::string("../data/datasets/videos/labels/"), false);
+    } else {
+        dataset = std::make_unique<ImageDataset>(std::string("../data/datasets/single_cards/Images/Images"), std::string("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/"), false);
+    }
 
-    for (auto it = dataset.begin(); it != dataset.end(); ++it) {
+    for (auto it = dataset->begin(); it != dataset->end(); ++it) {
         ImageInfo& image = *it;
         cv::Mat imageFiles = cv::imread(image.get_pathImage());
         
@@ -23,18 +28,15 @@ int main() {
             continue;
         }
 
-        // === ADD MASK TESTING ===
-        
-        // Method 1: Use the detector's current mask type (set in constructor)
         cv::Mat currentMask = detector.getMask(imageFiles);
-        
+            
         // Method 2: Change mask type and get different masks
         detector.loadMaskPreset(vision::MaskType::POLYGON);
         cv::Mat polygonMask = detector.getMask(imageFiles);
-        
+            
         detector.loadMaskPreset(vision::MaskType::CONVEX_HULL);
         cv::Mat convexHullMask = detector.getMask(imageFiles);
-        
+            
         detector.loadMaskPreset(vision::MaskType::BOUNDING_BOX);
         cv::Mat boundingBoxMask = detector.getMask(imageFiles);
         
