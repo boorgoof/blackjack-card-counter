@@ -8,21 +8,21 @@
 #include <algorithm>
 #include <cctype>
 
-ImageDataset::ImageDataset(const std::string& dataset_path, const bool is_sequential)
+ImageDataset::ImageDataset(const std::string& dataset_path)
     : ImageDataset(std::filesystem::path(dataset_path) / "Images" / "Images",
-                   std::filesystem::path(dataset_path) / "YOLO_Annotations" / "YOLO_Annotations",
-                   is_sequential) {
+                   std::filesystem::path(dataset_path) / "YOLO_Annotations" / "YOLO_Annotations") {
+
 }
 
-ImageDataset::ImageDataset(const std::string& image_dir, const std::string& annotation_dir, const bool is_sequential)
-    : ImageDataset(std::filesystem::path(image_dir), std::filesystem::path(annotation_dir), is_sequential) {
+ImageDataset::ImageDataset(const std::string& image_dir, const std::string& annotation_dir)
+    : ImageDataset(std::filesystem::path(image_dir), std::filesystem::path(annotation_dir)) {
 }
 
-ImageDataset::ImageDataset(std::filesystem::path image_root, std::filesystem::path annotation_root, const bool is_sequential)
+ImageDataset::ImageDataset(std::filesystem::path image_root, std::filesystem::path annotation_root)
     : image_root_{image_root},
       annotation_root_{annotation_root},
       entries_{build_entries(image_root, annotation_root)},
-      is_sequential_{is_sequential} {
+      is_sequential_{false} {
 }
 
 Dataset::Iterator ImageDataset::begin() const {

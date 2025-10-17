@@ -19,7 +19,7 @@ public:
      * @param dataset_path Base path containing "Images/Images" and "YOLO_Annotations/YOLO_Annotations" subdirectories.
      * @param is_sequential Whether this is a sequential dataset (default: false).
      */
-    ImageDataset(const std::string& dataset_path, const bool is_sequential = false);
+    ImageDataset(const std::string& dataset_path);
     
     /**
      * @brief Construct from separate image and annotation directories.
@@ -27,7 +27,7 @@ public:
      * @param annotation_dir Path to the directory containing annotations.
      * @param is_sequential Whether this is a sequential dataset (default: false).
      */
-    ImageDataset(const std::string& image_dir, const std::string& annotation_dir, const bool is_sequential = false);
+    ImageDataset(const std::string& image_dir, const std::string& annotation_dir);
     
     /**
      * @brief Construct from filesystem paths.
@@ -35,7 +35,7 @@ public:
      * @param annotation_root Path to the directory containing annotations.
      * @param is_sequential Whether this is a sequential dataset (default: false).
      */
-    ImageDataset(std::filesystem::path image_root, std::filesystem::path annotation_root, const bool is_sequential = false);
+    ImageDataset(std::filesystem::path image_root, std::filesystem::path annotation_root);
 
     /**
      * @brief Default destructor.
