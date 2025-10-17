@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     Dataset single_cards_dataset(single_cards_dataset_path, false);
     Dataset::Iterator it = single_cards_dataset.begin();
 
-    const std::string template_cards_folder_path = "../data/template/crop_template";
+    const std::string template_cards_folder_path = "../data/template/complete_template";
 
     //depending on the dataset type, create the appropriate card detector (specific parameters will be decided later, in the actual implementation)
     std::unique_ptr<CardDetector> card_detector = nullptr;

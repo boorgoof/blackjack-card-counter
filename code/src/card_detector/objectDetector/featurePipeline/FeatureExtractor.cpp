@@ -7,10 +7,10 @@ FeatureExtractor::~FeatureExtractor() {
 void FeatureExtractor::init(){
     switch (this->extractor_type) {
         case ExtractorType::FeatureDescriptorAlgorithm::SIFT:
-            this->features_extractor = cv::SIFT::create(3500, 3, 0.02, 12, 1.6);
+            this->features_extractor = cv::SIFT::create(); //3500, 3, 0.02, 12, 1.6
             break;
         case ExtractorType::FeatureDescriptorAlgorithm::ORB:
-            this->features_extractor = cv::ORB::create(2000, 1.2f, 8, 31, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
+            this->features_extractor = cv::ORB::create();
             break;
         default:
             throw std::invalid_argument("Invalid featureExtractor type");

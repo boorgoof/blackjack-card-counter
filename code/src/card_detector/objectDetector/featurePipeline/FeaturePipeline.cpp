@@ -4,6 +4,7 @@
 #include "../../../../include/StatisticsCalculation.h"
 #include "../../../../include/Loaders.h"
 
+
 void FeaturePipeline::update_extractor_matcher_compatibility() {
     /*
     if (this->extractor_->getType() == ExtractorType::ORB && this->matcher_->getType() == MatcherType::FLANN) {
@@ -19,19 +20,30 @@ void FeaturePipeline::update_extractor_matcher_compatibility() {
 
 FeaturePipeline::~FeaturePipeline() {}
 
-
-FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& template_cards_folder_path)
-    : extractor_{extractor}, matcher_{matcher}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *extractor)}
+FeaturePipeline::FeaturePipeline(FeatureExtractor *extractor, FeatureMatcher *matcher, const std::string &templates_folder_path, size_t minMatchesForRANSAC, size_t numMinInliers, double nmsIoU, double numRansacReprojErr, size_t numMaxInstancesPerTemplate)
+    : extractor_{extractor}, matcher_{matcher}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(templates_folder_path, *extractor)}
 {
+    minMatchesForRANSAC_ = minMatchesForRANSAC;
+    numMinInliers_ = numMinInliers;
+    nmsIoU_ = nmsIoU;
+    numRansacReprojErr_ = numRansacReprojErr;
+    numMaxInstancesPerTemplate_ = numMaxInstancesPerTemplate;
+
     this->update_extractor_matcher_compatibility();
 
     std::string method_name = ExtractorType::toString(extractor->getType()) + "-" + MatcherType::toString(matcher->getType());
     this->set_method_name(method_name);
 }
 
-FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, const std::string& template_cards_folder_path)
-    : extractor_{std::make_unique<FeatureExtractor>(extractor)}, matcher_{std::make_unique<FeatureMatcher>(matcher)}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *this->extractor_)}
+FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, const std::string &templates_folder_path, size_t minMatchesForRANSAC, size_t numMinInliers, double nmsIoU, double numRansacReprojErr, size_t numMaxInstancesPerTemplate)
+    : extractor_{std::make_unique<FeatureExtractor>(extractor)}, matcher_{std::make_unique<FeatureMatcher>(matcher)}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(templates_folder_path, *this->extractor_)}
 {
+    minMatchesForRANSAC_ = minMatchesForRANSAC;
+    numMinInliers_ = numMinInliers;
+    nmsIoU_ = nmsIoU;
+    numRansacReprojErr_ = numRansacReprojErr;
+    numMaxInstancesPerTemplate_ = numMaxInstancesPerTemplate;
+
     this->update_extractor_matcher_compatibility();
 
     std::string method_name = ExtractorType::toString(extractor) + "-" + MatcherType::toString(matcher);
@@ -39,14 +51,6 @@ FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm
 }
 
 
-
-namespace {
-    constexpr size_t minMatchesForRANSAC = 4; // matches needed to apply RANSAC 
-    constexpr size_t numMinInliers = 4; // min inliers to validate the found bbox 
-    constexpr double nmsIoU = 0.30; // non-maxima suppression IoU threshold
-    constexpr double numRansacReprojErr = 3.0;
-    constexpr size_t numMaxInstancesPerTemplate = 16;
-}
 
 /*
 void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_mask, std::vector<Label> &out_labels) {
@@ -89,7 +93,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
 
         // find for the current template all the instances in the test image
         size_t intances_found= 0;
-        while (matches.size() >= minMatchesForRANSAC && intances_found < numMaxInstancesPerTemplate) {
+        while (matches.size() >= this->minMatchesForRANSAC_ && intances_found < this->numMaxInstancesPerTemplate_) {
 
              // note: good matches which provide correct estimation are called inliers and remaining are called outliers.
              // cv.findHomography() returns a mask which specifies the inlier and outlier points
@@ -110,7 +114,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
             // are less than the min threshold the estimate is considered too weak: we break the loop 
             size_t inliers = 0;
             for (size_t i = 0; i < inlier_mask.size(); ++i) if (inlier_mask[i]) ++inliers;
-            if (inliers < numMinInliers) break;
+            if (inliers < this->numMinInliers_) break;
 
             // If we have enough inlier, we accept the label for one instance. 
             out_labels.push_back(std::move(label));
@@ -132,9 +136,10 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
     }
 
     //4) Apply Non-Maxima Suppression to the found bounding boxes to remove overlapping boxe
-    nmsLabels(out_labels, nmsIoU);
+    nmsLabels(out_labels, this->nmsIoU_);
      
 }*/
+
 
 void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_mask, std::vector<Label> &out_labels) {
 
@@ -208,6 +213,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
             std::cerr << "The dynamic cast from Feature* to KeypointFeature is not possible for the object" << templ_object->get_id() << "\n";
             continue;
         }
+        std::cout<< "number of template keypoint for" << templ_object->get_id() << " is "<<templFeatures->getKeypoints().size() << std::endl;
 
         
         // === VIZ: keypoints del template su una tela ===
@@ -276,7 +282,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
 
         // find instances...
         size_t intances_found= 0;
-        while (matches.size() >= minMatchesForRANSAC && intances_found < numMaxInstancesPerTemplate) {
+        while (matches.size() >= this->minMatchesForRANSAC_ && intances_found < this->numMaxInstancesPerTemplate_) {
 
             std::vector<unsigned char> inlier_mask;
             Label label(templ_object->clone(), cv::Rect(), 0.f); 
@@ -292,7 +298,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
 
             size_t inliers = 0;
             for (size_t i = 0; i < inlier_mask.size(); ++i) if (inlier_mask[i]) ++inliers;
-            if (inliers < numMinInliers) break;
+            if (inliers < this->numMinInliers_) break;
 
             out_labels.push_back(std::move(label));
             ++intances_found;
@@ -312,7 +318,7 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
     }
 
     //4) NMS
-    nmsLabels(out_labels, nmsIoU);
+    nmsLabels(out_labels, this->nmsIoU_);
 
     // === VIZ: (opzionale) disegna le bbox finali sulla IMG ===
     #if DBG_VIZ
@@ -339,9 +345,9 @@ bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
 {
     if (matches.size() < 4) return false; // need at least 4 matches to compute homography
 
-    const std::vector<cv::KeyPoint>& templ_kp   = templFeatures.getKeypoints();
-    const std::vector<cv::KeyPoint>& image_kp   = imgFeatures.getKeypoints();
-    const std::vector<cv::Point2f>& templ_rect_corners   = templFeatures.getRectPoints(); 
+    const std::vector<cv::KeyPoint>& templ_kp = templFeatures.getKeypoints();
+    const std::vector<cv::KeyPoint>& image_kp = imgFeatures.getKeypoints();
+    const std::vector<cv::Point2f>& templ_rect_corners = templFeatures.getRectPoints(); 
 
     if (templ_rect_corners.size() != 4) {
         std::cerr << "Rect points must be 4 (the corners of the template) for templ_object: " << out_label.get_object()->get_id() << "\n";
@@ -358,8 +364,9 @@ bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
     }
 
     //2) estimate the homography matrix between the template and the scene
-    cv::Mat H = cv::findHomography(templ_pts, image_pts, cv::RANSAC, numRansacReprojErr, out_inlier_mask);
+    cv::Mat H = cv::findHomography(templ_pts, image_pts, cv::RANSAC, this->numRansacReprojErr_, out_inlier_mask);
     if (H.empty()) return false;
+    if (cv::determinant(H) == 0) return false;
 
     //3) project the 4 corners of the template into the scene image. So we obtain the bounding box of the templ_object in the scene
     std::vector<cv::Point2f> image_corners;
@@ -393,3 +400,26 @@ void FeaturePipeline::nmsLabels(std::vector<Label>& labels, double iou_thresh) c
     }
     labels.swap(toKeep);
 }
+
+
+
+
+// todo delete
+/*
+FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& template_cards_folder_path)
+    : extractor_{extractor}, matcher_{matcher}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *extractor)}
+{
+    this->update_extractor_matcher_compatibility();
+
+    std::string method_name = ExtractorType::toString(extractor->getType()) + "-" + MatcherType::toString(matcher->getType());
+    this->set_method_name(method_name);
+}
+
+FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, const std::string& template_cards_folder_path)
+    : extractor_{std::make_unique<FeatureExtractor>(extractor)}, matcher_{std::make_unique<FeatureMatcher>(matcher)}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *this->extractor_)}
+{
+    this->update_extractor_matcher_compatibility();
+
+    std::string method_name = ExtractorType::toString(extractor) + "-" + MatcherType::toString(matcher);
+    this->set_method_name(method_name);
+}*/
