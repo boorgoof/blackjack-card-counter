@@ -5,6 +5,7 @@
 #include "../../../../include/Loaders.h"
 
 
+
 void FeaturePipeline::update_extractor_matcher_compatibility() {
     /*
     if (this->extractor_->getType() == ExtractorType::ORB && this->matcher_->getType() == MatcherType::FLANN) {
@@ -116,6 +117,9 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
             for (size_t i = 0; i < inlier_mask.size(); ++i) if (inlier_mask[i]) ++inliers;
             if (inliers < this->numMinInliers_) break;
 
+            float confidence = this->computeConfidence(inliers, matches.size());
+            label.set_confidence(confidence);
+
             // If we have enough inlier, we accept the label for one instance. 
             out_labels.push_back(std::move(label));
             ++intances_found;
@@ -147,12 +151,13 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
 
     // --- TOGGLE VELOCE: metti a 0 per spegnere
     #define DBG_VIZ 1
+    #define DBG_VIC 0
 
     //1) Extracts test image features
     std::unique_ptr<KeypointFeature> imageFeatures(dynamic_cast<KeypointFeature*>(this->extractor_->extractFeatures(src_img, src_mask)));
 
     // === VIZ: input, mask, overlay, keypoints immagine ===
-    #if DBG_VIZ
+    #if DBG_VIC
     if (!src_img.empty()) {
         cv::namedWindow("IMG input", cv::WINDOW_NORMAL);
         cv::imshow("IMG input", src_img);
@@ -300,6 +305,9 @@ void FeaturePipeline::detect_objects(const cv::Mat &src_img, const cv::Mat &src_
             for (size_t i = 0; i < inlier_mask.size(); ++i) if (inlier_mask[i]) ++inliers;
             if (inliers < this->numMinInliers_) break;
 
+            float confidence = this->computeConfidence(inliers, matches.size());
+            label.set_confidence(confidence);
+
             out_labels.push_back(std::move(label));
             ++intances_found;
 
@@ -366,7 +374,10 @@ bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
     //2) estimate the homography matrix between the template and the scene
     cv::Mat H = cv::findHomography(templ_pts, image_pts, cv::RANSAC, this->numRansacReprojErr_, out_inlier_mask);
     if (H.empty()) return false;
-    if (cv::determinant(H) == 0) return false;
+    double det = cv::determinant(H);
+    if (std::abs(det) < 1e-6) {  
+        return false;
+    }
 
     //3) project the 4 corners of the template into the scene image. So we obtain the bounding box of the templ_object in the scene
     std::vector<cv::Point2f> image_corners;
@@ -375,51 +386,61 @@ bool FeaturePipeline::findBoundingBox(const std::vector<cv::DMatch>& matches,
     if (bbox.area() <= 0) return false;
 
     out_label.set_bounding_box(bbox);
-    out_label.set_confidence(0.0f); // TODO
     return true;
 }
 
-
+// function inspired from https://github.com/Nuzhny007/Non-Maximum-Suppression/blob/master/nms.h
 void FeaturePipeline::nmsLabels(std::vector<Label>& labels, double iou_thresh) const {
+    if (labels.empty()) return;
+    
+    const size_t size = labels.size();
+    
+    // multimap ordered by confidence
+    std::multimap<float, size_t> idxs;
+    for (size_t i = 0; i < size; ++i) {
+        idxs.emplace(labels[i].get_confidence(), i);
+    }
+    
+    std::vector<Label> resLabels;
+    resLabels.reserve(size);
+    
+    while (!idxs.empty()) {
 
-    // Sort labels by area in descending order // TODO sarebbe meglio ordinare per score, non lo ho attualmente in caso gli inliers?
-    std::sort(labels.begin(), labels.end(), [](const Label& a, const Label& b){
-        return a.get_bounding_box().area() > b.get_bounding_box().area();
-    });
+        auto lastElem = --std::end(idxs);
+        size_t idx = lastElem->second;
+        
+        idxs.erase(lastElem);
 
-    std::vector<Label> toKeep;
-    for (Label& candidate : labels) {
-        bool suppress = false;
-        for (const auto& kept : toKeep) {
-            if (StatisticsCalculation::calc_IoU(candidate, kept) >= iou_thresh) {
-                suppress = true;
-                break;
+        // search for overlap
+        for (auto pos = std::begin(idxs); pos != std::end(idxs); ) {
+            const Label& label2 = labels[pos->second];
+            
+            // Calcola IoU inline (evita dipendenza da StatisticsCalculation)
+            const cv::Rect& rect1 = labels[idx].get_bounding_box();
+            const cv::Rect& rect2 = label2.get_bounding_box();
+            float intArea = static_cast<float>((rect1 & rect2).area());
+            float unionArea = rect1.area() + rect2.area() - intArea;
+            float iou = (unionArea > 0.0f) ? (intArea / unionArea) : 0.0f;
+            
+            //  label if there are an overlap that is larger than threshold, suppress the current
+            if (iou >= iou_thresh) {
+                pos = idxs.erase(pos);
+            } else {
+                ++pos;
             }
         }
-        if (!suppress) toKeep.push_back(std::move(candidate));
+        
+        resLabels.push_back(std::move(labels[idx]));
     }
-    labels.swap(toKeep);
+    
+    labels.swap(resLabels);
+}
+
+float FeaturePipeline::computeConfidence(size_t num_inliers, size_t total_matches) const {
+
+    float confidence = static_cast<float>(num_inliers) / static_cast<float>(total_matches);
+    return confidence; 
 }
 
 
 
-
-// todo delete
-/*
-FeaturePipeline::FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& template_cards_folder_path)
-    : extractor_{extractor}, matcher_{matcher}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *extractor)}
-{
-    this->update_extractor_matcher_compatibility();
-
-    std::string method_name = ExtractorType::toString(extractor->getType()) + "-" + MatcherType::toString(matcher->getType());
-    this->set_method_name(method_name);
-}
-
-FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, const std::string& template_cards_folder_path)
-    : extractor_{std::make_unique<FeatureExtractor>(extractor)}, matcher_{std::make_unique<FeatureMatcher>(matcher)}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_cards_folder_path, *this->extractor_)}
-{
-    this->update_extractor_matcher_compatibility();
-
-    std::string method_name = ExtractorType::toString(extractor) + "-" + MatcherType::toString(matcher);
-    this->set_method_name(method_name);
-}*/

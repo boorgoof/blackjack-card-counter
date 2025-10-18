@@ -54,7 +54,7 @@ private:
      * @brief the OpenCV feature Extractor
      */
     cv::Ptr<cv::Feature2D> features_extractor;
-
+    
     void init();
 
 public:
