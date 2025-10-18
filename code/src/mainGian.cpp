@@ -14,9 +14,9 @@ int main() {
     int i = 0;
     std::unique_ptr<Dataset> dataset;
     if (i == 0) {
-        dataset = std::make_unique<ImageDataset>(std::string("../data/datasets/videos/images/"), std::string("../data/datasets/videos/labels/"), false);
+        dataset = std::make_unique<ImageDataset>(std::string("../data/datasets/videos/images/"), std::string("../data/datasets/videos/labels/"));
     } else {
-        dataset = std::make_unique<ImageDataset>(std::string("../data/datasets/single_cards/Images/Images"), std::string("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/"), false);
+        dataset = std::make_unique<ImageDataset>(std::string("../data/datasets/single_cards/Images/Images"), std::string("../data/datasets/single_cards/YOLO_Annotations/YOLO_Annotations/"));
     }
 
     for (auto it = dataset->begin(); it != dataset->end(); ++it) {

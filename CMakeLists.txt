@@ -9,8 +9,8 @@ add_executable(testGian code/src/mainGian.cpp
                     code/src/Utils.cpp
                     code/src/CardType.cpp
                     code/src/Loaders.cpp
-                    code/src/Dataset/Dataset.cpp
                     code/src/Dataset/ImageDataset.cpp
+                    code/src/Dataset/VideoDataset.cpp
                     code/src/StatisticsCalculation.cpp
                     code/src/card_detector/SingleCardDetector.cpp
                     code/src/card_detector/SequentialCardDetector.cpp

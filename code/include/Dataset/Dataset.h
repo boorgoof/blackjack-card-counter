@@ -102,12 +102,6 @@ public:
     virtual bool is_sequential() const noexcept = 0;
 
     /**
-     * @brief Sets whether the dataset is sequential.
-     * @param val True to set the dataset as sequential, false otherwise.
-     */
-    virtual void set_is_sequential(bool val) noexcept = 0;
-
-    /**
      * @brief Get the image root directory.
      * @return Path to the image directory, or empty path if not applicable.
      */
