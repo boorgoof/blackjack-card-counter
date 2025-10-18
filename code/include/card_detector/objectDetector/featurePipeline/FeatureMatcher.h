@@ -50,11 +50,13 @@ private:
      * @brief the OpenCV feature matcher
      */
     cv::Ptr<cv::DescriptorMatcher> features_matcher;
+    float lowe_ratio_thresh;
+
     void init();
 
 public:
-    FeatureMatcher(const MatcherType::MatcherAlgorithm& type) : type{type} {this->init();}
-    FeatureMatcher(const MatcherType::MatcherAlgorithm& type, cv::DescriptorMatcher* matcher) : type{type}, features_matcher{cv::Ptr<cv::DescriptorMatcher>(matcher)} {}
+    FeatureMatcher(const MatcherType::MatcherAlgorithm& type, float ratio_thresh = 0.8f) : type{type}, lowe_ratio_thresh{ratio_thresh} {this->init();}
+    FeatureMatcher(const MatcherType::MatcherAlgorithm& type, cv::DescriptorMatcher* matcher, float ratio_thresh = 0.8f) : type{type}, features_matcher{cv::Ptr<cv::DescriptorMatcher>(matcher)}, lowe_ratio_thresh{ratio_thresh} {}
     //destructor
     ~FeatureMatcher();
 
@@ -73,6 +75,13 @@ public:
 
     const MatcherType::MatcherAlgorithm& getType() const {return type;}
     void setType(const MatcherType::MatcherAlgorithm& type) {this->type = type;}
+
+    float getLoweRatioThresh() const { return lowe_ratio_thresh; }
+    void setLoweRatioThresh(float t) {
+        if (t <= 0.0f || !std::isfinite(t))
+            throw std::invalid_argument("lowe_ratio_thresh must be > 0");
+        lowe_ratio_thresh = t;
+    }
 
    
 };

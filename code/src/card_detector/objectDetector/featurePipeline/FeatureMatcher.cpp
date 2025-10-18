@@ -37,7 +37,7 @@ void FeatureMatcher::matchFeatures( const cv::Mat& modelDescriptors, const cv::M
         if (knn_matches[i].size() >= 2) {
             const cv::DMatch& m = knn_matches[i][0];
             const cv::DMatch& n = knn_matches[i][1];
-            if (m.distance < 0.8f * n.distance ) { 
+            if (m.distance < this->lowe_ratio_thresh * n.distance ) { 
                 matches.push_back(m);
             }
         }

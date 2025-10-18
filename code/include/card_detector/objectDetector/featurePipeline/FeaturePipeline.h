@@ -49,22 +49,23 @@ private:
                                     std::vector<unsigned char>& out_inlier_mask) const;
 
     void nmsLabels(std::vector<Label>& labels, double iou_thresh) const;
+    float computeConfidence(size_t num_inliers, size_t total_matches) const;
 
 public:
 
     FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& templates_folder_path, 
-                    size_t minMatchesForRANSAC = 50,
-                    size_t numMinInliers = 20,
+                    size_t minMatchesForRANSAC = 20,
+                    size_t numMinInliers = 15,
                     double nmsIoU = 0.30,
                     double numRansacReprojErr = 3.0,
-                    size_t numMaxInstancesPerTemplate = 5);
+                    size_t numMaxInstancesPerTemplate = 2);
 
     FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, const std::string& templates_folder_path,
-                    size_t minMatchesForRANSAC = 50,
-                    size_t numMinInliers = 20,
+                    size_t minMatchesForRANSAC = 20,
+                    size_t numMinInliers = 15,
                     double nmsIoU = 0.30,
                     double numRansacReprojErr = 3.0,
-                    size_t numMaxInstancesPerTemplate = 5);
+                    size_t numMaxInstancesPerTemplate = 2);
 
     ~FeaturePipeline();
 
