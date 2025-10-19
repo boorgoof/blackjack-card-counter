@@ -1,4 +1,4 @@
-#include "../../../../include/card_detector/objectDetector/featurePipeline/FeatureMatcher.h"
+#include "../../../../include/card_detector/objectClassifiers/featurePipeline/FeatureMatcher.h"
 
 
 FeatureMatcher::~FeatureMatcher() {
@@ -18,7 +18,7 @@ void FeatureMatcher::init(){
     }
 }
 
-void FeatureMatcher::matchFeatures( const cv::Mat& modelDescriptors, const cv::Mat& sceneDescriptors, std::vector<cv::DMatch>& matches) const{
+void FeatureMatcher::matchFeatures( const cv::Mat& modelDescriptors, const cv::Mat& sceneDescriptors, std::vector<cv::DMatch>& matches, float lowe_ratio_thresh) const{
     
     matches.clear();
 
@@ -37,7 +37,7 @@ void FeatureMatcher::matchFeatures( const cv::Mat& modelDescriptors, const cv::M
         if (knn_matches[i].size() >= 2) {
             const cv::DMatch& m = knn_matches[i][0];
             const cv::DMatch& n = knn_matches[i][1];
-            if (m.distance < this->lowe_ratio_thresh * n.distance ) { 
+            if (m.distance < lowe_ratio_thresh * n.distance ) { 
                 matches.push_back(m);
             }
         }

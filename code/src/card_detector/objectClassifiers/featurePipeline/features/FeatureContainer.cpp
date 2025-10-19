@@ -1,4 +1,4 @@
-#include "../../../../../include/card_detector/objectDetector/featurePipeline/features/FeatureContainer.h"
+#include "../../../../../include/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
 
 const std::map<ObjectType*, Feature*>& Utils::FeatureContainerSingleton::get_templates_features(const std::string& template_folder_path, const FeatureExtractor& extractor) {
     switch (extractor.getType()) {

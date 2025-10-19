@@ -11,8 +11,8 @@
 #include "../include/card_detector/RoughCardDetector.h"
 #include "../include/Dataset.h"
 #include "../include/StatisticsCalculation.h"
-#include "../include/card_detector/objectDetector/featurePipeline/features/FeatureContainer.h"
-#include "../include/card_detector/objectDetector/featurePipeline/FeaturePipeline.h"
+#include "../include/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
+#include "../include/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -76,6 +76,7 @@ int main(int argc, char** argv) {
     ImageFilter img_filter;
     img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
     //img_filter.add_filter("Gaussian Blur", Filters::gaussian_blur, cv::Size(7,7)); //check if it is useful for robustness to noise or just useless
+    img_filter.add_filter("CLAHE_contrast_equalization", Filters::CLAHE_contrast_equalization, 2, 4);
 
     //prepare a vector to store the predicted labels and the ground truth for every image
     std::vector<std::vector<Label>> predicted_labels = std::vector<std::vector<Label>>();
