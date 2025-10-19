@@ -1,4 +1,4 @@
-#include "../../../../include/card_detector/objectDetector/featurePipeline/FeatureExtractor.h"
+#include "../../../../include/card_detector/objectClassifiers/featurePipeline/FeatureExtractor.h"
 
 FeatureExtractor::~FeatureExtractor() {
     this->features_extractor.release();

@@ -6,8 +6,8 @@
 #include <map>
 #include <opencv2/opencv.hpp>
 #include "CardType.h"
-#include "card_detector/objectDetector/featurePipeline/features/Feature.h"
-#include "card_detector/objectDetector/featurePipeline/FeatureExtractor.h"
+#include "card_detector/objectClassifiers/featurePipeline/features/Feature.h"
+#include "card_detector/objectClassifiers/featurePipeline/FeatureExtractor.h"
 
 namespace Loader {
     

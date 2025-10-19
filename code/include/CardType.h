@@ -73,9 +73,9 @@ std::ostream& operator<<(std::ostream& os, const Card_Type& card);
 
 namespace Yolo_index_codec {
 
-  constexpr int numRanks     = 13;  
-  constexpr int numSuits     = 4;   
-  constexpr int noCardIndex  = numRanks * numSuits;  
+  constexpr int numRanks = 13;  
+  constexpr int numSuits = 4;   
+  constexpr int noCardIndex = numRanks * numSuits;  
 
   Card_Type yolo_index_to_card(int index);
   int card_to_yolo_index(const Card_Type& card); 
@@ -94,9 +94,9 @@ namespace Blackjack {
 
     switch (r) {
       case R::R2: case R::R3: case R::R4: case R::R5: case R::R6: return HiLo::Pos;
-      case R::R7: case R::R8: case R::R9:                         return HiLo::Neutral;
-      case R::R10: case R::J: case R::Q: case R::K: case R::A:    return HiLo::Neg;
-      default:                                                    return HiLo::Neutral;
+      case R::R7: case R::R8: case R::R9: return HiLo::Neutral;
+      case R::R10: case R::J: case R::Q: case R::K: case R::A: return HiLo::Neg;
+      default: return HiLo::Neutral;
     }
   }
 
