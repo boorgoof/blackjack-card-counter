@@ -105,7 +105,7 @@ public:
      * @brief Get the image root directory.
      * @return Path to the image directory, or empty path if not applicable.
      */
-    virtual std::filesystem::path get_image_root() const = 0;
+    virtual std::filesystem::path get_root() const = 0;
 
     /**
      * @brief Get the annotation root directory.

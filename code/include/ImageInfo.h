@@ -18,14 +18,13 @@ class ImageInfo {
 public:
     ImageInfo() = default;
     ImageInfo(std::string name, std::string image_path, std::string label_path)
-        : name_{std::move(name)}, pathImage_{std::move(image_path)}, pathLabel_{std::move(label_path)} {}
+        : name_{std::move(name)}, pathImage_{std::move(image_path)}, pathLabel_{std::move(label_path)} { }
 
     /**
      * @brief Checks if the ImageInfo is empty.
      * @return True if the ImageInfo is empty, false otherwise.
      */
     bool empty() const noexcept { return name_.empty(); }
-
 
     /**
      * @brief get the name of the image (without extension).

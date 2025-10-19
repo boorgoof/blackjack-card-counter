@@ -46,8 +46,8 @@ public:
     Iterator begin() const override;
     Iterator end() const override;
     size_t size() const noexcept override { return entries_.size(); }
-    bool is_sequential() const noexcept override { return is_sequential_; }
-    std::filesystem::path get_image_root() const override { return image_root_; }
+    bool is_sequential() const noexcept override { return false; }
+    std::filesystem::path get_root() const override { return image_root_; }
     std::filesystem::path get_annotation_root() const override { return annotation_root_; }
 
 private:
@@ -60,10 +60,9 @@ private:
     static std::vector<ImageInfo> build_entries(const std::filesystem::path& image_root,
                                                 const std::filesystem::path& annotation_root);
 
-    std::vector<ImageInfo> entries_;       ///< Vector of all image info entries
-    std::filesystem::path image_root_;     ///< Root directory for images
-    std::filesystem::path annotation_root_; ///< Root directory for annotations
-    bool is_sequential_;                   ///< Whether the dataset is sequential
+    std::vector<ImageInfo> entries_;       // Vector of all image info entries
+    std::filesystem::path image_root_;     // Root directory for images
+    std::filesystem::path annotation_root_; // Root directory for annotations
 };
 
 #endif // IMAGEDATASET_H
