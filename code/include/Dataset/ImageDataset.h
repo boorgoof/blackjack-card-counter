@@ -51,7 +51,7 @@ public:
     bool is_sequential() const noexcept override { return false; }
     std::filesystem::path get_root() const override { return image_root_; }
     std::filesystem::path get_annotation_root() const override { return annotation_root_; }
-    cv::Mat load(const Iterator& it) const override;
+    cv::Mat load(const Iterator& it) override;
 
 private:
     /**

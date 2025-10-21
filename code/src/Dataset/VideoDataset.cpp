@@ -48,7 +48,7 @@ VideoDataset::VideoDataset(const std::string& video_path)
     : video_root_{video_path}, entries_{build_entries(video_root_)} { }
 
 
-cv::Mat VideoDataset::load(const Dataset::Iterator& it) const {
+cv::Mat VideoDataset::load(const Dataset::Iterator& it) {
     // Check if the dataset is empty or iterator is at the end
     if (entries_.empty() || it == Iterator(entries_.cend())) {
         return {};

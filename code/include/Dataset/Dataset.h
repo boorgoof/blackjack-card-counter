@@ -100,7 +100,7 @@ public:
      * @param it Iterator pointing to a sample owned by this dataset.
      * @return Loaded cv::Mat image/frame.
      */
-    virtual cv::Mat load(const Iterator& it) const = 0;
+    virtual cv::Mat load(const Iterator& it) = 0;
 
     /**
      * @brief Checks if the Dataset is empty.

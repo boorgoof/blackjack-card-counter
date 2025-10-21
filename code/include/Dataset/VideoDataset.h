@@ -25,7 +25,7 @@ public:
     bool is_sequential() const noexcept override { return true; }
     std::filesystem::path get_root() const override { return video_root_; }
     std::filesystem::path get_annotation_root() const override { return {}; }
-    cv::Mat load(const Iterator& it) const override;
+    cv::Mat load(const Iterator& it) override;
 
 private:
     static std::vector<std::shared_ptr<SampleInfo>> build_entries(const std::filesystem::path& video_root);
@@ -38,7 +38,6 @@ private:
     std::filesystem::path video_root_;
     std::vector<std::shared_ptr<SampleInfo>> entries_;
     // Cache to store VideoCapture objects for each video file
-    // putting it mutable allows that member to be modified even when the containing object is const
-    mutable std::unordered_map<std::string, CaptureState> capture_cache_;
+    std::unordered_map<std::string, CaptureState> capture_cache_;
 };
 #endif // VIDEODATASET_H

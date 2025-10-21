@@ -28,7 +28,7 @@ Dataset::Iterator ImageDataset::end() const {
     return Iterator(entries_.cend());
 }
 
-cv::Mat ImageDataset::load(const Dataset::Iterator& it) const {
+cv::Mat ImageDataset::load(const Dataset::Iterator& it) {
     if (entries_.empty() || it == Iterator(entries_.cend())) {
         return {};
     }
