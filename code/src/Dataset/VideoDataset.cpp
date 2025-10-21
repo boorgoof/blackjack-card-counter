@@ -7,45 +7,6 @@
 #include <memory>
 #include <opencv2/videoio.hpp>
 
-namespace {
-
-void append_frames_from_video(const std::filesystem::path& video_file, std::vector<std::shared_ptr<SampleInfo>>& entries) {
-    cv::VideoCapture capture(video_file.string());
-    if (!capture.isOpened()) {
-        std::cerr << "VideoDataset: unable to open video file " << video_file << std::endl;
-        return;
-    }
-
-    const auto frame_count = static_cast<std::size_t>(capture.get(cv::CAP_PROP_FRAME_COUNT)); // Total number of frames
-    const double fps = capture.get(cv::CAP_PROP_FPS); // Frames per second
-    const std::string video_name = video_file.stem().string();
-
-    double duration_seconds = static_cast<double>(frame_count) / fps;
-    std::size_t steps = static_cast<std::size_t>(std::ceil(duration_seconds));
-    
-    entries.reserve(entries.size() + steps + 1);
-    
-    for (std::size_t second = 0; second <= steps && frame_count > 0; ++second) {
-        double timestamp = static_cast<double>(second);
-        std::size_t frame_idx = 0;
-        if (fps > 0.0) {
-            frame_idx = static_cast<std::size_t>(std::llround(timestamp * fps)); // Corresponding frame index
-            if (frame_idx >= frame_count) {
-                frame_idx = frame_count - 1;
-            }
-        } else {
-            frame_idx = std::min<std::size_t>(second, frame_count - 1);
-        }
-        std::string name = video_name + "_t_" + std::to_string(second); // e.g., "video1_t_0", "video1_t_1"..
-        entries.emplace_back(std::make_shared<FrameInfo>(name, video_file.string(), frame_idx, timestamp));
-        if (frame_idx + 1 >= frame_count) {
-            break;
-        }
-    }
-}
-
-}
-
 VideoDataset::VideoDataset(const std::string& video_path)
     : video_root_{video_path}, entries_{build_entries(video_root_)} { }
 
@@ -107,7 +68,41 @@ std::vector<std::shared_ptr<SampleInfo>> VideoDataset::build_entries(const std::
         return entries;
     }
     
-    append_frames_from_video(video_root, entries);
+    append_frames(video_root, entries);
     return entries;
+}
 
+void VideoDataset::append_frames(const std::filesystem::path& video_file, std::vector<std::shared_ptr<SampleInfo>>& entries) {
+    cv::VideoCapture capture(video_file.string());
+    if (!capture.isOpened()) {
+        std::cerr << "VideoDataset: unable to open video file " << video_file << std::endl;
+        return;
+    }
+
+    const auto frame_count = static_cast<std::size_t>(capture.get(cv::CAP_PROP_FRAME_COUNT)); // Total number of frames
+    const double fps = capture.get(cv::CAP_PROP_FPS); // Frames per second
+    const std::string video_name = video_file.stem().string();
+
+    double duration_seconds = static_cast<double>(frame_count) / fps;
+    std::size_t steps = static_cast<std::size_t>(std::ceil(duration_seconds));
+    
+    entries.reserve(entries.size() + steps + 1);
+    
+    for (std::size_t second = 0; second <= steps && frame_count > 0; ++second) {
+        double timestamp = static_cast<double>(second);
+        std::size_t frame_idx = 0;
+        if (fps > 0.0) {
+            frame_idx = static_cast<std::size_t>(std::llround(timestamp * fps)); // Corresponding frame index
+            if (frame_idx >= frame_count) {
+                frame_idx = frame_count - 1;
+            }
+        } else {
+            frame_idx = std::min<std::size_t>(second, frame_count - 1);
+        }
+        std::string name = video_name + "_t_" + std::to_string(second); // e.g., "video1_t_0", "video1_t_1"..
+        entries.emplace_back(std::make_shared<FrameInfo>(name, video_file.string(), frame_idx, timestamp));
+        if (frame_idx + 1 >= frame_count) {
+            break;
+        }
+    }
 }

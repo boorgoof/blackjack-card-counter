@@ -46,6 +46,13 @@ private:
     static std::vector<std::shared_ptr<SampleInfo>> build_entries(const std::filesystem::path& video_root);
 
     /**
+     * @brief Appends frame entries from a video file to the entries vector.
+     * @param video_file Path to the video file.
+     * @param entries Vector to append the frame entries to.
+     */
+    static void append_frames(const std::filesystem::path& video_file, std::vector<std::shared_ptr<SampleInfo>>& entries);
+
+    /**
      * @brief State tracking for cached video captures.
      */
     struct CaptureState {
