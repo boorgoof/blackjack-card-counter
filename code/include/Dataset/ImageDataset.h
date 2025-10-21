@@ -19,7 +19,6 @@ public:
     /**
      * @brief Construct from dataset path (legacy).
      * @param dataset_path Base path containing "Images/Images" and "YOLO_Annotations/YOLO_Annotations" subdirectories.
-     * @param is_sequential Whether this is a sequential dataset (default: false).
      */
     ImageDataset(const std::string& dataset_path);
     
