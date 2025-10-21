@@ -3,6 +3,8 @@
 
 #include "Dataset.h"
 #include <filesystem>
+#include <memory>
+#include <opencv2/core.hpp>
 #include <string>
 #include <vector>
 
@@ -49,19 +51,19 @@ public:
     bool is_sequential() const noexcept override { return false; }
     std::filesystem::path get_root() const override { return image_root_; }
     std::filesystem::path get_annotation_root() const override { return annotation_root_; }
+    cv::Mat load(const Iterator& it) const override;
 
 private:
     /**
      * @brief Builds the dataset entries by scanning the image and annotation directories.
      * @param image_root Path to the directory containing images.
      * @param annotation_root Path to the directory containing annotations.
-     * @return A vector of ImageInfo objects representing the dataset entries.
+     * @return A vector of SampleInfo objects representing the dataset entries.
      */
-    static std::vector<ImageInfo> build_entries(const std::filesystem::path& image_root,
-                                                const std::filesystem::path& annotation_root);
+    static std::vector<std::shared_ptr<SampleInfo>> build_entries(const std::filesystem::path& image_root, const std::filesystem::path& annotation_root);
 
-    std::vector<ImageInfo> entries_;       // Vector of all image info entries
-    std::filesystem::path image_root_;     // Root directory for images
+    std::vector<std::shared_ptr<SampleInfo>> entries_; // Vector of all sample info entries
+    std::filesystem::path image_root_; // Root directory for images
     std::filesystem::path annotation_root_; // Root directory for annotations
 };
 

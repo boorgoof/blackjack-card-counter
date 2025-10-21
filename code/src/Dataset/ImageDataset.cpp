@@ -1,10 +1,14 @@
 #include "../../include/Dataset/ImageDataset.h"
+#include "../../include/SampleInfo/ImageInfo.h"
+#include "../../include/Loaders.h"
 
 #include <utility>
 #include <filesystem>
 #include <algorithm>
+#include <cctype>
+#include <memory>
 
-ImageDataset::ImageDataset(const std::string& dataset_path = "../data/datasets")
+ImageDataset::ImageDataset(const std::string& dataset_path)
     : ImageDataset(std::filesystem::path(dataset_path) / "Images" / "Images",
                    std::filesystem::path(dataset_path) / "YOLO_Annotations" / "YOLO_Annotations") { }
 
@@ -17,24 +21,23 @@ ImageDataset::ImageDataset(std::filesystem::path image_root, std::filesystem::pa
       entries_{build_entries(image_root, annotation_root)} { }
 
 Dataset::Iterator ImageDataset::begin() const {
-    if (entries_.empty()) {
-        return Iterator(nullptr);
-    }
-    ImageInfo* first = const_cast<ImageInfo*>(&entries_.front());
-    return Iterator(first);
+    return Iterator(entries_.cbegin());
 }
 
 Dataset::Iterator ImageDataset::end() const {
-    if (entries_.empty()) {
-        return Iterator(nullptr);
-    }
-    ImageInfo* last = const_cast<ImageInfo*>(&entries_.back());
-    ImageInfo* one_past_last = last + 1;
-    return Iterator(one_past_last);
+    return Iterator(entries_.cend());
 }
 
-std::vector<ImageInfo> ImageDataset::build_entries(const std::filesystem::path& image_root, const std::filesystem::path& annotation_root) {
-    std::vector<ImageInfo> entries;
+cv::Mat ImageDataset::load(const Dataset::Iterator& it) const {
+    if (entries_.empty() || it == Iterator(entries_.cend())) {
+        return {};
+    }
+    const SampleInfo& sample = *it;
+    return Loader::Image::load_image(sample.get_pathSample());
+}
+
+std::vector<std::shared_ptr<SampleInfo>> ImageDataset::build_entries(const std::filesystem::path& image_root, const std::filesystem::path& annotation_root) {
+    std::vector<std::shared_ptr<SampleInfo>> entries;
     
     if (!std::filesystem::exists(image_root) || !std::filesystem::is_directory(image_root)) {
         return entries;
@@ -58,12 +61,12 @@ std::vector<ImageInfo> ImageDataset::build_entries(const std::filesystem::path& 
         if (ext == ".jpg" || ext == ".jpeg" || ext == ".png") {
             const std::string stem = p.stem().string();
             const std::filesystem::path ann = annotation_root / (stem + ".txt");
-            entries.emplace_back(stem, p.string(), ann.string());
+            entries.emplace_back(std::make_shared<ImageInfo>(stem, p.string(), ann.string()));
         }
     }
 
-    std::sort(entries.begin(), entries.end(), [](const ImageInfo& a, const ImageInfo& b){
-        return a.get_name() < b.get_name();
+    std::sort(entries.begin(), entries.end(), [](const std::shared_ptr<SampleInfo>& a, const std::shared_ptr<SampleInfo>& b){
+        return a->get_name() < b->get_name();
     });
 
     return entries;

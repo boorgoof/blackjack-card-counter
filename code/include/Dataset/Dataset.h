@@ -3,10 +3,14 @@
 
 #include <cstddef>
 #include <filesystem>
-#include <vector>
+#include <iterator>
+#include <memory>
 #include <string>
+#include <vector>
 
-#include "../ImageInfo.h"
+#include <opencv2/core.hpp>
+
+#include "../SampleInfo/SampleInfo.h"
 
 /**
  * @brief Abstract base class for dataset management.
@@ -18,52 +22,54 @@ class Dataset {
 public:
     /**
      * A forward iterator for Dataset entries.
-     * This iterator allows traversal over the ImageInfo entries in the Dataset.
+     * This iterator allows traversal over SampleInfo entries in the Dataset.
      * It supports standard iterator operations such as dereferencing, incrementing,
      * and comparison.
      */
     struct Iterator {
         using iterator_category = std::forward_iterator_tag;
         using difference_type   = std::ptrdiff_t;
-        using value_type        = ImageInfo;
-        using pointer           = ImageInfo*; 
-        using reference         = ImageInfo&; 
+        using value_type        = SampleInfo;
+        using pointer           = SampleInfo*;
+        using reference         = SampleInfo&;
 
     public:
+        Iterator() = default;
         /**
          * Constructor for the Iterator.
-         * @param m_ptr Pointer to the current ImageInfo entry.
+         * @param current Iterator to the current SampleInfo entry.
          */
-        Iterator(pointer m_ptr) : m_ptr(m_ptr) {}
+        explicit Iterator(std::vector<std::shared_ptr<SampleInfo>>::const_iterator current)
+            : current_(current) {}
 
         /**
-         * @brief Dereference operator to access the current ImageInfo.
-         * @return Reference to the current ImageInfo.
+         * @brief Dereference operator to access the current SampleInfo.
+         * @return Reference to the current SampleInfo.
          */
-        reference operator*() const { return *m_ptr; }
+        reference operator*() const { return *(*current_); }
 
         /**
-         * @brief Arrow operator to access members of the current ImageInfo.
-         * @return Pointer to the current ImageInfo.
+         * @brief Arrow operator to access members of the current SampleInfo.
+         * @return Pointer to the current SampleInfo.
          */
-        pointer operator->() { return m_ptr; }
+        pointer operator->() const { return current_->get(); }
 
         /**
-         * @brief Pre-increment operator to move to the next ImageInfo.
+         * @brief Pre-increment operator to move to the next SampleInfo.
          * @return Reference to the incremented iterator.
          */
-        Iterator& operator++() { m_ptr++; return *this; }  
+        Iterator& operator++() { ++current_; return *this; }
 
         /**
-         * @brief Post-increment operator to move to the next ImageInfo.
+         * @brief Post-increment operator to move to the next SampleInfo.
          * @return Iterator before incrementing.
          */
         Iterator operator++(int) { Iterator tmp = *this; ++(*this); return tmp; }
 
-        friend bool operator== (const Iterator& a, const Iterator& b) { return a.m_ptr == b.m_ptr; };
-        friend bool operator!= (const Iterator& a, const Iterator& b) { return a.m_ptr != b.m_ptr; };
+        friend bool operator== (const Iterator& a, const Iterator& b) { return a.current_ == b.current_; };
+        friend bool operator!= (const Iterator& a, const Iterator& b) { return a.current_ != b.current_; };
     private:
-        pointer m_ptr;
+        std::vector<std::shared_ptr<SampleInfo>>::const_iterator current_;
     };
 
     /**
@@ -88,6 +94,13 @@ public:
      * @return Size of the Dataset.
      */
     virtual size_t size() const noexcept = 0;
+
+    /**
+     * @brief Load the sample referenced by the iterator.
+     * @param it Iterator pointing to a sample owned by this dataset.
+     * @return Loaded cv::Mat image/frame.
+     */
+    virtual cv::Mat load(const Iterator& it) const = 0;
 
     /**
      * @brief Checks if the Dataset is empty.
