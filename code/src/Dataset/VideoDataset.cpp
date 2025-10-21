@@ -9,12 +9,6 @@
 
 namespace {
 
-bool is_video_extension(const std::filesystem::path& path) {
-    std::string ext = path.extension().string();
-    std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-    return ext == ".mp4" || ext == ".avi" || ext == ".mov" || ext == ".mkv" || ext == ".m4v";
-}
-
 void append_frames_from_video(const std::filesystem::path& video_file, std::vector<std::shared_ptr<SampleInfo>>& entries) {
     cv::VideoCapture capture(video_file.string());
     if (!capture.isOpened()) {
