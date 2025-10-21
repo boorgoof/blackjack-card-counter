@@ -79,13 +79,13 @@ public:
 
     /**
      * @brief Returns an iterator to the beginning of the Dataset entries.
-     * @return Iterator to the first ImageInfo entry.
+     * @return Iterator to the first SampleInfo entry.
      */
     virtual Iterator begin() const = 0;
 
     /**
      * @brief Returns an iterator to the end of the Dataset entries.
-     * @return Iterator to one past the last ImageInfo entry.
+     * @return Iterator to one past the last SampleInfo entry.
      */
     virtual Iterator end() const = 0;
 
