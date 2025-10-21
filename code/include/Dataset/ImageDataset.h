@@ -26,7 +26,6 @@ public:
      * @brief Construct from separate image and annotation directories.
      * @param image_dir Path to the directory containing images.
      * @param annotation_dir Path to the directory containing annotations.
-     * @param is_sequential Whether this is a sequential dataset (default: false).
      */
     ImageDataset(const std::string& image_dir, const std::string& annotation_dir);
     
