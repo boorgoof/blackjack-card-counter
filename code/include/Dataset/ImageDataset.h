@@ -34,7 +34,6 @@ public:
      * @brief Construct from filesystem paths.
      * @param image_root Path to the directory containing images.
      * @param annotation_root Path to the directory containing annotations.
-     * @param is_sequential Whether this is a sequential dataset (default: false).
      */
     ImageDataset(std::filesystem::path image_root, std::filesystem::path annotation_root);
 
