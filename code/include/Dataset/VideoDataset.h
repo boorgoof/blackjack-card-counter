@@ -13,8 +13,18 @@
 #include "../SampleInfo/FrameInfo.h"
 
 
+/**
+ * @brief Concrete implementation of Dataset for video files.
+ * 
+ * This class manages datasets from video files, extracting frames at 1-second intervals.
+ * Frames are decoded on-demand using cv::VideoCapture caching.
+ */
 class VideoDataset : public Dataset {
 public:
+    /**
+     * @brief Construct from video file path.
+     * @param video_path Path to the video file.
+     */
     VideoDataset(const std::string& video_path);
     ~VideoDataset() override = default;
 
@@ -28,8 +38,16 @@ public:
     cv::Mat load(const Iterator& it) override;
 
 private:
+    /**
+     * @brief Builds the dataset entries by analyzing the video file.
+     * @param video_root Path to the video file.
+     * @return A vector of SampleInfo objects representing frame entries.
+     */
     static std::vector<std::shared_ptr<SampleInfo>> build_entries(const std::filesystem::path& video_root);
 
+    /**
+     * @brief State tracking for cached video captures.
+     */
     struct CaptureState {
         cv::VideoCapture capture;
         std::size_t next_frame_index{0};

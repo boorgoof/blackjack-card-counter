@@ -20,8 +20,10 @@ void append_frames_from_video(const std::filesystem::path& video_file, std::vect
     const double fps = capture.get(cv::CAP_PROP_FPS); // Frames per second
     const std::string video_name = video_file.stem().string();
 
-    double duration_seconds = static_cast<double>(frame_count) / fps; // Total duration in seconds
-    std::size_t steps = static_cast<std::size_t>(std::ceil(duration_seconds)); // Total number of steps
+    double duration_seconds = static_cast<double>(frame_count) / fps;
+    std::size_t steps = static_cast<std::size_t>(std::ceil(duration_seconds));
+    
+    entries.reserve(entries.size() + steps + 1);
     
     for (std::size_t second = 0; second <= steps && frame_count > 0; ++second) {
         double timestamp = static_cast<double>(second);
@@ -56,6 +58,11 @@ cv::Mat VideoDataset::load(const Dataset::Iterator& it) {
 
     // Cast the iterator's SampleInfo to FrameInfo to access video-specific metadata
     const auto* frame_info = dynamic_cast<const FrameInfo*>(&*it);
+    // Add null check
+    if (!frame_info) {
+        std::cerr << "VideoDataset: iterator does not point to a FrameInfo object" << std::endl;
+        return {};
+    }
 
     // Extract the video file path and the target frame index from the FrameInfo
     const std::string& video_path = frame_info->get_pathSample();
@@ -96,6 +103,7 @@ std::vector<std::shared_ptr<SampleInfo>> VideoDataset::build_entries(const std::
     std::vector<std::shared_ptr<SampleInfo>> entries;
 
     if (!std::filesystem::exists(video_root)) {
+        std::cerr << "VideoDataset: video file does not exist: " << video_root << std::endl;
         return entries;
     }
     

@@ -30,19 +30,26 @@ Dataset::Iterator ImageDataset::end() const {
 
 cv::Mat ImageDataset::load(const Dataset::Iterator& it) {
     if (entries_.empty() || it == Iterator(entries_.cend())) {
+        std::cerr << "ImageDataset: invalid iterator or empty dataset" << std::endl;
         return {};
     }
     const SampleInfo& sample = *it;
-    return Loader::Image::load_image(sample.get_pathSample());
+    cv::Mat image = Loader::Image::load_image(sample.get_pathSample());
+    if (image.empty()) {
+        std::cerr << "ImageDataset: failed to load image from " << sample.get_pathSample() << std::endl;
+    }
+    return image;
 }
 
 std::vector<std::shared_ptr<SampleInfo>> ImageDataset::build_entries(const std::filesystem::path& image_root, const std::filesystem::path& annotation_root) {
     std::vector<std::shared_ptr<SampleInfo>> entries;
     
     if (!std::filesystem::exists(image_root) || !std::filesystem::is_directory(image_root)) {
+        std::cerr << "ImageDataset: image root directory does not exist or is not a directory: " << image_root << std::endl;
         return entries;
     }
     if (!std::filesystem::exists(annotation_root) || !std::filesystem::is_directory(annotation_root)) {
+        std::cerr << "ImageDataset: annotation root directory does not exist or is not a directory: " << annotation_root << std::endl;
         return entries;
     }
 
