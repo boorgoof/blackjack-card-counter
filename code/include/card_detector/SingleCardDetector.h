@@ -11,8 +11,9 @@ public:
     ~SingleCardDetector();
 
     std::vector<Label> detect_image(const cv::Mat& image) override;
-
+    
 private:
+   
     std::unique_ptr<RoughCardDetector> rough_card_detector_;
     std::unique_ptr<ObjectClassifier> object_classifier_;
 };

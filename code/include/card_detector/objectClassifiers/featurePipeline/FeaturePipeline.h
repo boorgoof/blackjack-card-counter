@@ -50,8 +50,7 @@ public:
     void setMatcherComponent(FeatureMatcher* fm) {
         this->matcher_.reset(fm);
     }
-
-          
+    
 };
 
 
