@@ -17,8 +17,10 @@ ImageDataset::ImageDataset(const std::string& image_dir, const std::string& anno
 
 ImageDataset::ImageDataset(std::filesystem::path image_root, std::filesystem::path annotation_root)
     : image_root_{image_root},
-      annotation_root_{annotation_root},
-      entries_{build_entries(image_root, annotation_root)} { }
+      annotation_root_{annotation_root}
+{ 
+    entries_ = build_entries();
+}
 
 Dataset::Iterator ImageDataset::begin() const {
     return Iterator(entries_.cbegin());
@@ -41,21 +43,21 @@ cv::Mat ImageDataset::load(const Dataset::Iterator& it) {
     return image;
 }
 
-std::vector<std::shared_ptr<SampleInfo>> ImageDataset::build_entries(const std::filesystem::path& image_root, const std::filesystem::path& annotation_root) {
+std::vector<std::shared_ptr<SampleInfo>> ImageDataset::build_entries() {
     std::vector<std::shared_ptr<SampleInfo>> entries;
-    
-    if (!std::filesystem::exists(image_root) || !std::filesystem::is_directory(image_root)) {
-        std::cerr << "ImageDataset: image root directory does not exist or is not a directory: " << image_root << std::endl;
+
+    if (!std::filesystem::exists(image_root_) || !std::filesystem::is_directory(image_root_)) {
+        std::cerr << "ImageDataset: image root directory does not exist or is not a directory: " << image_root_ << std::endl;
         return entries;
     }
-    if (!std::filesystem::exists(annotation_root) || !std::filesystem::is_directory(annotation_root)) {
-        std::cerr << "ImageDataset: annotation root directory does not exist or is not a directory: " << annotation_root << std::endl;
+    if (!std::filesystem::exists(annotation_root_) || !std::filesystem::is_directory(annotation_root_)) {
+        std::cerr << "ImageDataset: annotation root directory does not exist or is not a directory: " << annotation_root_ << std::endl;
         return entries;
     }
 
-    entries.reserve(std::distance(std::filesystem::directory_iterator(image_root), std::filesystem::directory_iterator{}));
+    entries.reserve(std::distance(std::filesystem::directory_iterator(image_root_), std::filesystem::directory_iterator{}));
 
-    for (const std::filesystem::directory_entry& dirent : std::filesystem::directory_iterator(image_root)) {
+    for (const std::filesystem::directory_entry& dirent : std::filesystem::directory_iterator(image_root_)) {
         if (!dirent.is_regular_file()) continue;
 
         const std::filesystem::path& p = dirent.path();
@@ -67,8 +69,8 @@ std::vector<std::shared_ptr<SampleInfo>> ImageDataset::build_entries(const std::
 
         if (ext == ".jpg" || ext == ".jpeg" || ext == ".png") {
             const std::string stem = p.stem().string();
-            const std::filesystem::path ann = annotation_root / (stem + ".txt");
-            entries.emplace_back(std::make_shared<ImageInfo>(stem, p.string(), ann.string()));
+            const std::filesystem::path ann = annotation_root_ / (stem + ".txt");
+            entries.emplace_back(std::make_unique<ImageInfo>(stem, p.string(), ann.string()));
         }
     }
 
