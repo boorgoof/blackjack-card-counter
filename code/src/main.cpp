@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
 
         SampleInfo* img_info = &(*it);
 
-        cv::Mat img = Loader::Image::load_image(img_info->get_pathSample());
+        cv::Mat img = single_cards_dataset.load(it);
 
         img = img_filter.apply_filters(img);
 
