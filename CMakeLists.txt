@@ -23,7 +23,11 @@ add_executable(main
     code/src/card_detector/objectClassifiers/featurePipeline/FeatureExtractor.cpp
     code/src/card_detector/objectClassifiers/featurePipeline/FeatureMatcher.cpp
     code/src/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.cpp
-    code/src/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.cpp)
+    code/src/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.cpp
+    
+    code/src/card_detector/objectSegmenters/ObjectSegmenter.cpp
+    code/src/card_detector/objectSegmenters/SimpleContoursCardSegmenter.cpp
+    code/src/card_detector/objectSegmenters/DistanceTransformCardSegmenter.cpp)
 
 set_property(TARGET main PROPERTY CXX_STANDARD 20)
 target_link_libraries(main ${OpenCV_LIBS})

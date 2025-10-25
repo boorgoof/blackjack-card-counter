@@ -50,6 +50,7 @@ const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const
 
     //3) For each template, match its descriptors with the test image descriptors and find the bounding boxes of the templ_object in the test image
     size_t best_score = 0;
+    const size_t MIN_MATCHES_THRESHOLD = 10;
     for (const auto& [templ_object, templ_feature] : this->template_features_) {
         
         if (!templ_object || !templ_feature) continue;
@@ -73,7 +74,7 @@ const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const
             continue;
         }
 
-        if (matches.size() > best_score) {
+        if (matches.size() >= MIN_MATCHES_THRESHOLD && matches.size() > best_score) {
             best_score = matches.size();
             best_obj = templ_object; 
         }

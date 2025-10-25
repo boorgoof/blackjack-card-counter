@@ -1,9 +1,5 @@
 #include "../../include/card_detector/SingleCardDetector.h"
 
-
-
-
-
 SingleCardDetector::SingleCardDetector(RoughCardDetector* rough_card_detector, ObjectClassifier* object_classifier, bool detect_full_card, bool visualize)
     : CardDetector(detect_full_card, visualize), rough_card_detector_(rough_card_detector), object_classifier_(object_classifier) {
     
