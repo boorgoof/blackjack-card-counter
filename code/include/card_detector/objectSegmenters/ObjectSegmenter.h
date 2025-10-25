@@ -1,5 +1,5 @@
-#ifndef OBJECT_CLASSIFIER_H
-#define OBJECT_CLASSIFIER_H
+#ifndef OBJECT_SEGMENTER_H
+#define OBJECT_SEGMENTER_H
 
 #include <opencv2/opencv.hpp>
 #include "../../Label.h"
@@ -26,4 +26,4 @@ private:
     std::string method_name;
 };
 
-#endif // OBJECT_CLASSIFIER_H
+#endif // OBJECT_SEGMENTERR_H
