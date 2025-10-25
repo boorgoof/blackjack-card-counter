@@ -13,6 +13,8 @@ public:
     std::vector<Label> detect_image(const cv::Mat& image) override;
     
 private:
+    // Return mask ∩ rect (only pixels inside rect preserved).
+    cv::Mat intersectRotatedRect(const cv::Mat& mask, const cv::RotatedRect& rect) const;
     std::unique_ptr<RoughCardDetector> rough_card_detector_;
     std::unique_ptr<ObjectClassifier> object_classifier_;
 };
