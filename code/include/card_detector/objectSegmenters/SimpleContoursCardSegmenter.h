@@ -17,8 +17,6 @@ private:
 public:
     
     SimpleContoursCardSegmenter();
-
-   
     ~SimpleContoursCardSegmenter() override = default;
 
     std::vector<cv::RotatedRect> segment_objects(const cv::Mat& src_img, const cv::Mat& src_mask) override;

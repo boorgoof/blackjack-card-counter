@@ -1,8 +1,8 @@
 #include "../../include/card_detector/SingleCardDetector.h"
 #include <opencv2/imgproc.hpp>
 
-SingleCardDetector::SingleCardDetector(RoughCardDetector* rough_card_detector, ObjectClassifier* object_classifier, bool detect_full_card, bool visualize)
-    : CardDetector(detect_full_card, visualize), rough_card_detector_(rough_card_detector), object_classifier_(object_classifier) {
+SingleCardDetector::SingleCardDetector(RoughCardDetector* rough_card_detector, ObjectClassifier* object_classifier, ObjectSegmenter* object_segmenter, bool detect_full_card, bool visualize)
+    : CardDetector(detect_full_card, visualize), rough_card_detector_(rough_card_detector), object_classifier_(object_classifier), object_segmenter_(object_segmenter) {
     
 }
 
@@ -34,18 +34,24 @@ cv::Mat SingleCardDetector::intersectRotatedRect(const cv::Mat& mask, const cv::
 std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
     std::vector<Label> detected_labels;
 
-    //first, use the rough card detector to get a mask of the area where the card is located
     cv::Mat mask = this->rough_card_detector_->getMask(image);
+    std::vector<cv::RotatedRect> cards_rect = this->object_segmenter_->segment_objects(image, mask);
 
-    cv::RotatedRect card_rect;
-    
-    cv::Mat mask2 = this->intersectRotatedRect(mask, card_rect);
+    for (const auto& rotated_rect : cards_rect) {
+        cv::Mat single_obj_mask = this->intersectRotatedRect(mask, rotated_rect);
 
+        if (this->object_classifier_) {
+            const ObjectType* obj_type = this->object_classifier_->classify_object(image, single_obj_mask);
+            
+            if (obj_type && obj_type->isValid()) {
 
-    if (this->object_classifier_) {
-        this->object_classifier_->classify_object(image, mask2);
+                cv::Rect bounding_box = rotated_rect.boundingRect();
+                Label label(obj_type->clone(), bounding_box);
+                detected_labels.push_back(std::move(label));
+                
+            }
+        }
     }
 
     return detected_labels;
 }
-
