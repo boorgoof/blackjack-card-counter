@@ -10,15 +10,15 @@
 
    
 
-Card_Type::Card_Type(const std::string& card_text) {
+CardType::CardType(const std::string& card_text) {
     set_type(card_text);
 }
 
-void Card_Type::set_type(const std::string& card_text) {
+void CardType::set_type(const std::string& card_text) {
 
     if (card_text.size() < 2) {
-        rank = Rank::NOTHING; 
-        suit = Suit::NOTHING; 
+        rank = Rank::UNKNOWN; 
+        suit = Suit::UNKNOWN; 
         return;
     }
     std::string str_norm = Utils::String::normalize(card_text);
@@ -28,45 +28,45 @@ void Card_Type::set_type(const std::string& card_text) {
     str_norm.pop_back();  
     
     // rank = what remains
-    const Rank& rk  = Card_Type::string_to_rank(str_norm);                 
-    const Suit& su = Card_Type::string_to_suit(std::string(1, suit_ch)); 
+    const Rank& rk  = CardType::string_to_rank(str_norm);                 
+    const Suit& su = CardType::string_to_suit(std::string(1, suit_ch)); 
 
     rank = rk;
     suit = su;
 }
 
 
-std::map<std::string, Card_Type::Rank> Card_Type::map_string_to_rank = {
-    {"K",  Card_Type::Rank::K},
-    {"Q",  Card_Type::Rank::Q},
-    {"J",  Card_Type::Rank::J},
-    {"10", Card_Type::Rank::R10},
-    {"9",  Card_Type::Rank::R9},
-    {"8",  Card_Type::Rank::R8},
-    {"7",  Card_Type::Rank::R7},
-    {"6",  Card_Type::Rank::R6},
-    {"5",  Card_Type::Rank::R5},
-    {"4",  Card_Type::Rank::R4},
-    {"3",  Card_Type::Rank::R3},
-    {"2",  Card_Type::Rank::R2},
-    {"A",  Card_Type::Rank::A},
-    {"NOTHING", Card_Type::Rank::NOTHING}
+std::map<std::string, CardType::Rank> CardType::map_string_to_rank = {
+    {"K",  CardType::Rank::K},
+    {"Q",  CardType::Rank::Q},
+    {"J",  CardType::Rank::J},
+    {"10", CardType::Rank::R10},
+    {"9",  CardType::Rank::R9},
+    {"8",  CardType::Rank::R8},
+    {"7",  CardType::Rank::R7},
+    {"6",  CardType::Rank::R6},
+    {"5",  CardType::Rank::R5},
+    {"4",  CardType::Rank::R4},
+    {"3",  CardType::Rank::R3},
+    {"2",  CardType::Rank::R2},
+    {"A",  CardType::Rank::A},
+    {"UNKNOWN", CardType::Rank::UNKNOWN}
 };
 
-std::map<std::string, Card_Type::Suit> Card_Type::map_string_to_suit = {
-    {"C", Card_Type::Suit::CLUBS},
-    {"D", Card_Type::Suit::DIAMONDS},
-    {"H", Card_Type::Suit::HEARTS},
-    {"S", Card_Type::Suit::SPADES},
-    {"NOTHING", Card_Type::Suit::NOTHING}
+std::map<std::string, CardType::Suit> CardType::map_string_to_suit = {
+    {"C", CardType::Suit::CLUBS},
+    {"D", CardType::Suit::DIAMONDS},
+    {"H", CardType::Suit::HEARTS},
+    {"S", CardType::Suit::SPADES},
+    {"UNKNOWN", CardType::Suit::UNKNOWN}
 };
 
-std::map<Card_Type::Rank, std::string> Card_Type::map_rank_to_string = Utils::Map::createInverseMap(Card_Type::map_string_to_rank);
-std::map<Card_Type::Suit, std::string> Card_Type::map_suit_to_string = Utils::Map::createInverseMap(Card_Type::map_string_to_suit);
+std::map<CardType::Rank, std::string> CardType::map_rank_to_string = Utils::Map::createInverseMap(CardType::map_string_to_rank);
+std::map<CardType::Suit, std::string> CardType::map_suit_to_string = Utils::Map::createInverseMap(CardType::map_string_to_suit);
 
 
 
-std::string Card_Type::to_string() const {
+std::string CardType::to_string() const {
 
     const std::string r = map_rank_to_string[this->rank];
     const std::string s = map_suit_to_string[this->suit];
@@ -74,40 +74,40 @@ std::string Card_Type::to_string() const {
     return r + s; // ex: "10H", 10 of Hearts
 }
 
-const Card_Type::Rank Card_Type::string_to_rank(const std::string& s) {
+const CardType::Rank CardType::string_to_rank(const std::string& s) {
     auto it = map_string_to_rank.find(s);
-    return it != map_string_to_rank.end() ? it->second : Card_Type::Rank::NOTHING;
+    return it != map_string_to_rank.end() ? it->second : CardType::Rank::UNKNOWN;
 }
 
-const Card_Type::Suit Card_Type::string_to_suit(const std::string& s) {
+const CardType::Suit CardType::string_to_suit(const std::string& s) {
     auto it = map_string_to_suit.find(s);
-    return it != map_string_to_suit.end() ? it->second : Card_Type::Suit::NOTHING;
+    return it != map_string_to_suit.end() ? it->second : CardType::Suit::UNKNOWN;
 }
 
 
-bool operator<(const Card_Type& l, const Card_Type& r) {
+bool operator<(const CardType& l, const CardType& r) {
     if (l.get_suit() != r.get_suit())
         return l.get_suit() < r.get_suit();
     return l.get_rank() < r.get_rank();
 }
 
-std::ostream& operator<<(std::ostream& os, const Card_Type& c) {
+std::ostream& operator<<(std::ostream& os, const CardType& c) {
     return os << c.to_string();
 }
 
 
-Card_Type Yolo_index_codec::yolo_index_to_card(int index){
+CardType Yolo_index_codec::yolo_index_to_card(int index){
     if (index < 0 || index >= 52) {
-        Card_Type card(Card_Type::Rank::NOTHING, Card_Type::Suit::NOTHING);
+        CardType card(CardType::Rank::UNKNOWN, CardType::Suit::UNKNOWN);
         return card;
     }
     int r = index / 4;
     int s = index % 4;
-    return Card_Type(static_cast<Card_Type::Rank>(r), static_cast<Card_Type::Suit>(s));
+    return CardType(static_cast<CardType::Rank>(r), static_cast<CardType::Suit>(s));
 }
 
-int Yolo_index_codec::card_to_yolo_index(const Card_Type& card){
-    if (card.get_rank() == Card_Type::Rank::NOTHING || card.get_suit() == Card_Type::Suit::NOTHING) return noCardIndex;
+int Yolo_index_codec::card_to_yolo_index(const CardType& card){
+    if (card.get_rank() == CardType::Rank::UNKNOWN || card.get_suit() == CardType::Suit::UNKNOWN) return noCardIndex;
     int index = static_cast<int>(card.get_rank()) * numSuits + static_cast<int>(card.get_suit());
     return index;
 }

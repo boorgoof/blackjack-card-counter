@@ -9,6 +9,7 @@ add_executable(main code/src/main.cpp
                     code/src/Loaders.cpp
                     code/src/Dataset/ImageDataset.cpp
                     code/src/Dataset/VideoDataset.cpp
+                    code/src/Dataset/TemplateDataset.cpp
                     code/src/StatisticsCalculation.cpp
                     code/src/card_detector/SingleCardDetector.cpp
                     code/src/card_detector/SequentialCardDetector.cpp

@@ -11,27 +11,36 @@
 #include "../include/card_detector/SingleCardDetector.h"
 #include "../include/Dataset/ImageDataset.h"
 #include "../include/Dataset/VideoDataset.h"
-#include "../include/ImageInfo.h"
+#include "../include/Dataset/TemplateDataset.h"
+#include "../include/SampleInfo/TemplateInfo.h"
 #include "../include/StatisticsCalculation.h"
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
-    if (argc < 3) {
-        std::cerr << "Usage: ./program <datasets_path> <output_path> <visualize_flag>" << std::endl;
+    if (argc < 4) {
+        std::cerr << "Usage: ./program <datasets_path> <template_dataset_path> <output_path> <visualize_flag>" << std::endl;
         std::cerr << "datasets_path: path to the folder containing the datasets (single_cards and videos folders)" << std::endl;
+        std::cerr << "template_dataset_path: path to the folder containing the template cards dataset" << std::endl;
         std::cerr << "output_path: path to the folder where the output will be saved" << std::endl;
+
         std::cerr << "visualize_flag: FOR NOW JUST FOR DEVELOPMENT PURPOSE whether to visualize the detected images (true/false), optional, default is false" << std::endl;
         return 1;
     }
     std::string datasets_path = argv[1];
-    std::string output_path = argv[2];
-    bool visualize = (argc > 3) ? (std::string(argv[3]) == "true") : false;
+    std::string template_dataset_path = argv[2];
+    std::string output_path = argv[3];
+    bool visualize = (argc > 4) ? (std::string(argv[4]) == "true") : false;
 
     if (!std::filesystem::exists(datasets_path)) {
         std::cerr << "The datasets path does not exist!" << std::endl;
         return 1;
     }
 
+    if (!std::filesystem::exists(template_dataset_path)) {
+        std::cerr << "The template dataset path does not exist!" << std::endl;
+        return 1;
+    }
+    
     if (std::filesystem::exists(output_path)) {
         std::cout << "The output path already exists! Do you want to proceed? (y/n): ";
         char response;
@@ -52,11 +61,27 @@ int main(int argc, char** argv) {
 
     std::cout << "Program started with the following parameters:" << std::endl;
     std::cout << "datasets_path: " << datasets_path << std::endl;
+    std::cout << "template_dataset_path: " << template_dataset_path << std::endl;
     std::cout << "output_path: " << output_path << std::endl;
     std::cout << "visualize: " << (visualize ? "true" : "false") << std::endl;
 
     std::string single_cards_dataset_path = datasets_path + "/single_cards";
     std::string videos_dataset_path = datasets_path + "/videos";
+
+    //TemplateDataset creation
+    TemplateDataset template_dataset(template_dataset_path);
+    std::cout << "Template Dataset root: " << template_dataset.get_root() << std::endl;
+    std::cout << "Template Dataset loaded with " << template_dataset.size() << " entries." << std::endl;
+    for( auto it = template_dataset.begin(); it != template_dataset.end(); ++it) {
+        const TemplateInfo& sample = dynamic_cast<const TemplateInfo&>(*it);
+        std::cout << "Template card: " << sample.get_name() << ", Path: " << sample.get_pathSample() << std::endl;
+        if (visualize){
+            cv::Mat img = template_dataset.load(it);
+            cv::imshow("Template Card: " + sample.get_name(), img);
+            cv::waitKey(1000);
+            cv::destroyAllWindows();
+        }
+    }
 
     //Dataset object creation
     ImageDataset single_cards_dataset(single_cards_dataset_path);
