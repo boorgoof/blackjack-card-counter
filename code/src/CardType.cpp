@@ -11,11 +11,11 @@
 
    
 
-Card_Type::Card_Type(const std::string& card_text) {
+CardType::CardType(const std::string& card_text) {
     set_type(card_text);
 }
 
-void Card_Type::set_type(const std::string& card_text) {
+void CardType::set_type(const std::string& card_text) {
 
     if (card_text.size() < 2) {
         rank = Rank::UNKNOWN; 
@@ -29,8 +29,8 @@ void Card_Type::set_type(const std::string& card_text) {
     str_norm.pop_back();  
     
     // rank = what remains
-    const Rank& rk  = Card_Type::string_to_rank(str_norm);                 
-    const Suit& su = Card_Type::string_to_suit(std::string(1, suit_ch)); 
+    const Rank& rk  = CardType::string_to_rank(str_norm);                 
+    const Suit& su = CardType::string_to_suit(std::string(1, suit_ch)); 
 
     rank = rk;
     suit = su;
@@ -62,8 +62,8 @@ std::map<std::string, Card_Type::Suit> Card_Type::map_string_to_suit = {
     {"UNKNOWN", Card_Type::Suit::UNKNOWN}
 };
 
-std::map<Card_Type::Rank, std::string> Card_Type::map_rank_to_string = Utils::Map::createInverseMap(Card_Type::map_string_to_rank);
-std::map<Card_Type::Suit, std::string> Card_Type::map_suit_to_string = Utils::Map::createInverseMap(Card_Type::map_string_to_suit);
+std::map<CardType::Rank, std::string> CardType::map_rank_to_string = Utils::Map::createInverseMap(CardType::map_string_to_rank);
+std::map<CardType::Suit, std::string> CardType::map_suit_to_string = Utils::Map::createInverseMap(CardType::map_string_to_suit);
 
 std::string Card_Type::get_id() const {
 
@@ -77,12 +77,12 @@ int Card_Type::get_id_number() const{
     return Yolo_index_codec::card_to_yolo_index(this->get_id());
 }
 
-const Card_Type::Rank Card_Type::string_to_rank(const std::string& s) {
+const CardType::Rank CardType::string_to_rank(const std::string& s) {
     auto it = map_string_to_rank.find(s);
     return it != map_string_to_rank.end() ? it->second : Card_Type::Rank::UNKNOWN;
 }
 
-const Card_Type::Suit Card_Type::string_to_suit(const std::string& s) {
+const CardType::Suit CardType::string_to_suit(const std::string& s) {
     auto it = map_string_to_suit.find(s);
     return it != map_string_to_suit.end() ? it->second : Card_Type::Suit::UNKNOWN;
 }
@@ -107,14 +107,14 @@ std::ostream &operator<<(std::ostream &os, const Card_Type &card) {
     return os << card.get_id();
 }
 
-Card_Type Yolo_index_codec::yolo_index_to_card(int index){
+CardType Yolo_index_codec::yolo_index_to_card(int index){
     if (index < 0 || index >= 52) {
         Card_Type card(Card_Type::Rank::UNKNOWN, Card_Type::Suit::UNKNOWN);
         return card;
     }
     int r = index / 4;
     int s = index % 4;
-    return Card_Type(static_cast<Card_Type::Rank>(r), static_cast<Card_Type::Suit>(s));
+    return CardType(static_cast<CardType::Rank>(r), static_cast<CardType::Suit>(s));
 }
 
 int Yolo_index_codec::card_to_yolo_index(const Card_Type& card){

@@ -11,7 +11,10 @@
  */
 class SampleInfo {
 public:
+    SampleInfo() = default;
     virtual ~SampleInfo() = default;
+    SampleInfo(const SampleInfo&) = delete;
+    SampleInfo& operator=(const SampleInfo&) = delete;
 
     /**
      * @brief Returns whether the sample info is empty/invalid.

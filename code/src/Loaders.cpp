@@ -28,7 +28,7 @@ std::vector<Label> Loader::Annotation::load_yolo_image_annotations(const std::st
         
         if (iss >> class_id >> x_center >> y_center >> width >> height) {
 
-            Card_Type card = Yolo_index_codec::yolo_index_to_card(class_id);
+            CardType card = Yolo_index_codec::yolo_index_to_card(class_id);
             cv::Rect bbox = yoloNorm_to_rect(x_center, y_center, width, height, image_width, image_height);
             
             labels.emplace_back(std::make_unique<Card_Type>(card), bbox);
