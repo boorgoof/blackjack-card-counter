@@ -9,7 +9,9 @@
 #include "../include/card_detector/SequentialCardDetector.h"
 #include "../include/card_detector/SingleCardDetector.h"
 #include "../include/card_detector/RoughCardDetector.h"
-#include "../include/Dataset.h"
+#include "../include/Dataset/ImageDataset.h"
+#include "../include/Dataset/VideoDataset.h"
+#include "../include/ImageInfo.h"
 #include "../include/StatisticsCalculation.h"
 #include "../include/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
 #include "../include/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
@@ -59,7 +61,7 @@ int main(int argc, char** argv) {
     std::string videos_dataset_path = datasets_path + "/videos";
 
     //Dataset object creation
-    Dataset single_cards_dataset(single_cards_dataset_path, false);
+    ImageDataset single_cards_dataset(single_cards_dataset_path);
     Dataset::Iterator it = single_cards_dataset.begin();
 
     const std::string template_cards_folder_path = "../data/template/complete_template";
@@ -88,9 +90,9 @@ int main(int argc, char** argv) {
     for ( ; it != single_cards_dataset.end(); ++it) {
         auto start = std::chrono::steady_clock::now();
 
-        ImageInfo img_info = *it;
+        SampleInfo* img_info = &(*it);
 
-        cv::Mat img = Loader::Image::load_image(img_info.get_pathImage());
+        cv::Mat img = Loader::Image::load_image(img_info->get_pathSample());
 
         img = img_filter.apply_filters(img);
 
@@ -103,13 +105,13 @@ int main(int argc, char** argv) {
         auto detection_time = std::chrono::steady_clock::now();
         total_detection_time += std::chrono::duration<double, std::milli>(detection_time - loading_time);
 
-        true_labels.push_back(Loader::Annotation::load_yolo_image_annotations(img_info.get_pathLabel(), img.cols, img.rows));
+        true_labels.push_back(Loader::Annotation::load_yolo_image_annotations(img_info->get_pathLabel(), img.cols, img.rows));
 
         Utils::Visualization::printProgressBar(static_cast<float>(std::distance(single_cards_dataset.begin(), it) + 1) / std::distance(single_cards_dataset.begin(), single_cards_dataset.end()),
                                                  50, "Processing images: ", "Complete");
     }
 
-    std::cout << "Dataset image path: " << single_cards_dataset.get_image_root() << std::endl;
+    std::cout << "Dataset image path: " << single_cards_dataset.get_root() << std::endl;
     std::cout << "Dataset annotation path: " << single_cards_dataset.get_annotation_root() << std::endl;
     std::cout << "Total images processed: " << std::distance(single_cards_dataset.begin(), single_cards_dataset.end()) << std::endl;
     std::cout << "Average loading time per image: " << total_loading_time.count() / std::distance(single_cards_dataset.begin(), single_cards_dataset.end()) << " ms" << std::endl;
