@@ -2,17 +2,21 @@
 #include <iostream>
 #include <filesystem>
 #include "../include/Label.h"
-#include "../include/CardType.h"
 #include "../include/Utils.h"
 #include "../include/Loaders.h"
 #include "../include/ImageFilter.h"
 #include "../include/card_detector/CardDetector.h"
 #include "../include/card_detector/SequentialCardDetector.h"
 #include "../include/card_detector/SingleCardDetector.h"
+#include "../include/card_detector/RoughCardDetector.h"
 #include "../include/Dataset/ImageDataset.h"
 #include "../include/Dataset/VideoDataset.h"
 #include "../include/ImageInfo.h"
 #include "../include/StatisticsCalculation.h"
+#include "../include/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
+#include "../include/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
+#include "../include/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
+#include "../include/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -62,19 +66,20 @@ int main(int argc, char** argv) {
     ImageDataset single_cards_dataset(single_cards_dataset_path);
     Dataset::Iterator it = single_cards_dataset.begin();
 
+    const std::string template_cards_folder_path = "../data/template/complete_template";
+
     //depending on the dataset type, create the appropriate card detector (specific parameters will be decided later, in the actual implementation)
     std::unique_ptr<CardDetector> card_detector = nullptr;
     bool detect_full_card = false; //depending on the dataset, we may want to detect the full card or just a part of it (e.g., the rank and suit in the corner)
     if (single_cards_dataset.is_sequential()) {
         card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
     } else {
-        card_detector = std::make_unique<SingleCardDetector>(detect_full_card, visualize);
+        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_cards_folder_path), new  SimpleContoursCardSegmenter(),  detect_full_card, visualize);
     }
 
     ImageFilter img_filter;
     img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
-    //img_filter.add_filter("Gaussian Blur", Filters::gaussian_blur, cv::Size(7,7)); //check if it is useful for robustness to noise or just useless
-
+    
     //prepare a vector to store the predicted labels and the ground truth for every image
     std::vector<std::vector<Label>> predicted_labels = std::vector<std::vector<Label>>();
     std::vector<std::vector<Label>> true_labels = std::vector<std::vector<Label>>();
