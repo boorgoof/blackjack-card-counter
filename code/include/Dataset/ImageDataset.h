@@ -57,7 +57,7 @@ private:
      * @param annotation_root Path to the directory containing annotations.
      * @return A vector of SampleInfo objects representing the dataset entries.
      */
-    static std::vector<std::shared_ptr<SampleInfo>> build_entries(const std::filesystem::path& image_root, const std::filesystem::path& annotation_root);
+    std::vector<std::shared_ptr<SampleInfo>> build_entries();
 
     std::vector<std::shared_ptr<SampleInfo>> entries_; // Vector of all sample info entries
     std::filesystem::path image_root_; // Root directory for images

@@ -10,11 +10,11 @@
 int main() {
 
     // Test Card_Type
-    Card_Type card("10S");
-    Card_Type card2("10000S");  
-    Card_Type card3("AS");  
-    Card_Type card4("ASP");
-    Card_Type card5("10C");  
+    CardType card("10S");
+    CardType card2("10000S");  
+    CardType card3("AS");  
+    CardType card4("ASP");
+    CardType card5("10C");  
     std::cout << card << std::endl;
     std::cout << card2 << std::endl;
     std::cout << card3 << std::endl;

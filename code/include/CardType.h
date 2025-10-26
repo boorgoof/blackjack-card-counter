@@ -77,8 +77,8 @@ namespace Yolo_index_codec {
   constexpr int numSuits = 4;   
   constexpr int noCardIndex = numRanks * numSuits;  
 
-  Card_Type yolo_index_to_card(int index);
-  int card_to_yolo_index(const Card_Type& card); 
+  CardType yolo_index_to_card(int index);
+  int card_to_yolo_index(const CardType& card); 
 
 }
 
@@ -88,9 +88,9 @@ namespace Blackjack {
   enum class HiLo { Pos=+1, Neutral=0, Neg=-1 };
   inline int HiLo_to_int(HiLo v) { return v==HiLo::Pos ? 1 : (v==HiLo::Neg ? -1 : 0); }
   
-  inline HiLo rank_to_HiLo(Card_Type::Rank r) {
+  inline HiLo rank_to_HiLo(CardType::Rank r) {
     
-    using R = Card_Type::Rank;
+    using R = CardType::Rank;
 
     switch (r) {
       case R::R2: case R::R3: case R::R4: case R::R5: case R::R6: return HiLo::Pos;

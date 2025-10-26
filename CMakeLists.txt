@@ -12,6 +12,7 @@ add_executable(main
     code/src/Loaders.cpp
     code/src/Dataset/ImageDataset.cpp
     code/src/Dataset/VideoDataset.cpp
+    code/src/Dataset/TemplateDataset.cpp
     code/src/StatisticsCalculation.cpp
     code/src/ImageFilter.cpp
 
