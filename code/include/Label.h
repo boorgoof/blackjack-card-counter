@@ -5,27 +5,40 @@
 #include <opencv2/opencv.hpp>
 
 class Label {
+private:
 
-    private:
-        CardType class_name_;
-        cv::Rect  boundingbox_;
-    
-    public:
+    std::unique_ptr<ObjectType> object_;
+    cv::Rect boundingbox_;
+    float confidence_{0.f};     
 
-        Label(const CardType& card, const cv::Rect& bbox, float conf = 0.f)
-            : class_name_{card}, boundingbox_{bbox} {}
+public:
 
-        
-        const CardType& get_class_name() const noexcept { return class_name_; }
-        const cv::Rect&  get_bounding_box() const noexcept { return boundingbox_; }
+    Label(): object_{nullptr}, boundingbox_{}, confidence_{0.f} {}
 
-        void set_class_name(const CardType& new_name) { class_name_ = new_name; }
-        void set_bounding_box(const cv::Rect& new_bb) { boundingbox_ = new_bb; }
-        
+    Label(std::unique_ptr<ObjectType> obj, const cv::Rect& bbox, float conf = 0.f)
+        : object_{std::move(obj)}, boundingbox_{bbox}, confidence_{conf} {}
+
+    Label(Label&& label) : object_{std::move(label.object_)}, boundingbox_{label.boundingbox_}, confidence_{label.confidence_} {}
+    Label& operator=(const Label& label) {
+        object_ = label.object_ ? label.object_->clone() : nullptr;
+        boundingbox_ = label.boundingbox_;
+        confidence_ = label.confidence_;
+        return *this;
+    }
+
+    // getters
+    const ObjectType* get_object() const { return object_.get(); }
+    const cv::Rect& get_bounding_box() const { return boundingbox_;}
+    float get_confidence() const { return confidence_;}  
+
+    // setters
+    void set_object(std::unique_ptr<ObjectType> obj) { object_ = std::move(obj); }
+    void set_bounding_box(const cv::Rect& bbox) { boundingbox_ = bbox; }
+    void set_confidence(float conf) { confidence_ = conf; }      
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Label& l){
-    os << l.get_class_name() << " " << l.get_bounding_box();
+    os << l.get_object() << " " << l.get_bounding_box();
     return os;
 }
 
