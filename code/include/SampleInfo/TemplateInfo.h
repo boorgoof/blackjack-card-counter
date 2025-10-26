@@ -29,9 +29,13 @@ public:
         return kEmpty;
     }
 
+    const CardType& get_card_type() const noexcept {
+        return card_type_;
+    }
+    
     friend std::ostream& operator<<(std::ostream& os, const TemplateInfo& info) {
         os << "TemplateInfo{name: " << info.name_ << ", image_path: " << info.pathSample_ 
-           << ", card_type: " << info.card_type_.to_string() << "}";
+           << ", card_type: " << info.card_type_ << "}";
         return os;
     }
 

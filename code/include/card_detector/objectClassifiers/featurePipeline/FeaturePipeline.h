@@ -7,7 +7,7 @@
 
 #include "../../../Label.h"
 #include "features/FeatureContainer.h"
-
+#include "../../../Dataset/TemplateDataset.h"
 #include <opencv2/opencv.hpp>
 
 
@@ -24,7 +24,7 @@ private:
      */
     std::unique_ptr<FeatureMatcher> matcher_;
 
-    const std::map<ObjectType*, Feature*>& template_features_;
+    const std::map<const ObjectType*, const Feature*>& template_features_;
 
     /**
      * @brief  check and to update the compatibility between the extractor and matcher.
@@ -35,9 +35,9 @@ private:
 
 public:
 
-    FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, const std::string& templates_folder_path);
+    FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, TemplateDataset& template_dataset);
 
-    FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, const std::string& templates_folder_path);
+    FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, TemplateDataset& template_dataset);
 
     ~FeaturePipeline();
 

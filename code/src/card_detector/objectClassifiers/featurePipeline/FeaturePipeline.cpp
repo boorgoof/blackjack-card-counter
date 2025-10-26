@@ -1,4 +1,5 @@
 #include "../../../../include/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
+#include "../../../../include/Dataset/TemplateDataset.h"
 #include "../../../../include/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
 #include "../../../../include/card_detector/objectClassifiers/featurePipeline/features/KeypointFeature.h"
 #include "../../../../include/StatisticsCalculation.h"
@@ -16,8 +17,8 @@ void FeaturePipeline::update_extractor_matcher_compatibility() {
 
 FeaturePipeline::~FeaturePipeline() {}
 
-FeaturePipeline::FeaturePipeline(FeatureExtractor *extractor, FeatureMatcher *matcher, const std::string &templates_folder_path)
-    : extractor_{extractor}, matcher_{matcher}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(templates_folder_path, *extractor)}
+FeaturePipeline::FeaturePipeline(FeatureExtractor *extractor, FeatureMatcher *matcher, TemplateDataset& template_dataset)
+    : extractor_{extractor}, matcher_{matcher}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_dataset, *extractor)}
 {
     this->update_extractor_matcher_compatibility();
 
@@ -25,8 +26,8 @@ FeaturePipeline::FeaturePipeline(FeatureExtractor *extractor, FeatureMatcher *ma
     this->set_method_name(method_name);
 }
 
-FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, const std::string &templates_folder_path)
-    : extractor_{std::make_unique<FeatureExtractor>(extractor)}, matcher_{std::make_unique<FeatureMatcher>(matcher)}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(templates_folder_path, *this->extractor_)}
+FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, TemplateDataset& template_dataset)
+    : extractor_{std::make_unique<FeatureExtractor>(extractor)}, matcher_{std::make_unique<FeatureMatcher>(matcher)}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_dataset, *this->extractor_)}
 {
     this->update_extractor_matcher_compatibility();
 

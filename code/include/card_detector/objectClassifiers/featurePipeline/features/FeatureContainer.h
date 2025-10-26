@@ -18,9 +18,9 @@ public:
         return inst;
     }
 
-    const std::map<ObjectType*, Feature*>& get_features(const std::string& template_folder_path, const FeatureExtractor& extractor){
+    const std::map<const ObjectType*, const Feature*>& get_features(TemplateDataset& dataset, const FeatureExtractor& extractor){
         if (!features_) {
-            features_ = std::unique_ptr<const std::map<ObjectType*, Feature*>>(Loader::TemplateObject::load_template_feature(template_folder_path, extractor));
+            features_ = std::unique_ptr<const std::map<const ObjectType*, const Feature*>>(Loader::TemplateObject::load_template_feature(dataset, extractor));
         }
 
         return *features_;
@@ -32,12 +32,12 @@ private:
     FeatureContainer(const FeatureContainer&) = delete;
     FeatureContainer& operator=(const FeatureContainer&) = delete;
 
-    std::unique_ptr<const std::map<ObjectType*, Feature*>> features_;
+    std::unique_ptr<const std::map<const ObjectType*, const Feature*>> features_;
 };
 
 namespace Utils {
     namespace FeatureContainerSingleton {
-        const std::map<ObjectType*, Feature*>& get_templates_features(const std::string& template_folder_path, const FeatureExtractor& extractor);
+        const std::map<const ObjectType*, const Feature*>& get_templates_features(TemplateDataset& dataset, const FeatureExtractor& extractor);
     }
 }
 #endif // FEATURECONTAINER_H
