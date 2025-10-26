@@ -5,9 +5,10 @@
 #include "Label.h"
 #include <map>
 #include <opencv2/opencv.hpp>
+class TemplateDataset;
+class FeatureExtractor;
 #include "CardType.h"
 #include "card_detector/objectClassifiers/featurePipeline/features/Feature.h"
-#include "card_detector/objectClassifiers/featurePipeline/FeatureExtractor.h"
 
 namespace Loader {
     
@@ -21,7 +22,7 @@ namespace Loader {
     };
 
     namespace TemplateObject {
-        std::map<ObjectType*, Feature*>* load_template_feature(const std::string& template_folder_path, const FeatureExtractor& extractor);
+        std::map<const ObjectType*, const Feature*>* load_template_feature(TemplateDataset& template_dataset, const FeatureExtractor& extractor);
     }
 
 }

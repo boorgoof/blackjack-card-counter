@@ -1,7 +1,7 @@
 #ifndef TEMPLATE_DATASET_H
 #define TEMPLATE_DATASET_H 
 
-#include "ImageDataset.h"
+#include "Dataset.h"
 #include "../../include/Loaders.h"
 #include "../CardType.h"
 #include <filesystem>

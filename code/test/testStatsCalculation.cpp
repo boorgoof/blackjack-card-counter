@@ -9,7 +9,7 @@
 
 int main() {
 
-    // Test Card_Type
+    // Test CardType
     CardType card("10S");
     CardType card2("10000S");  
     CardType card3("AS");  

@@ -5,7 +5,7 @@
 #include <map>
 #include "ObjectType.h"
 
-class Card_Type : public ObjectType {
+class CardType : public ObjectType {
 
 public:
 
@@ -25,18 +25,18 @@ public:
   };
 
   
-  Card_Type(const std::string& card_text);
-  Card_Type(const Rank& r, const Suit& s) : rank{r}, suit{s} {}
+  CardType(const std::string& card_text);
+  CardType(const Rank& r, const Suit& s) : rank{r}, suit{s} {}
 
-  Card_Type(const Card_Type& other) : rank{other.rank}, suit{other.suit} {}
+  CardType(const CardType& other) : rank{other.rank}, suit{other.suit} {}
 
-  Card_Type& operator=(const Card_Type& other) {
+  CardType& operator=(const CardType& other) {
       this->rank = other.rank;
       this->suit = other.suit;
       return *this;
   }
 
-  std::unique_ptr<ObjectType> clone() const { return std::make_unique<Card_Type>(*this); }
+  std::unique_ptr<ObjectType> clone() const { return std::make_unique<CardType>(*this); }
 
   std::string get_id() const;
   int get_id_number() const;
@@ -62,14 +62,13 @@ public:
   bool operator<(const ObjectType& other) const;
   bool operator==(const ObjectType& other) const;
 
+  std::string to_string() const;
+
 private:
    
   Rank rank{Rank::UNKNOWN};
   Suit suit{Suit::UNKNOWN};
 };
-
-std::ostream& operator<<(std::ostream& os, const Card_Type& card); 
-
 
 namespace Yolo_index_codec {
 
