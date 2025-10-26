@@ -7,15 +7,17 @@
 
 float StatisticsCalculation::calc_IoU(const Label& true_label, const Label& pred_label) {
     
-    // Insection area
-    cv::Rect intersectionRect = pred_label.get_bounding_box() & true_label.get_bounding_box();
-    double intersection_area = intersectionRect.area();
+    cv::Rect2f trueRect(true_label.get_bounding_box());
+    cv::Rect2f predRect(pred_label.get_bounding_box());
 
-    // Union area
-    double union_area = true_label.get_bounding_box().area() + true_label.get_bounding_box().area() - intersection_area;
+    cv::Rect2f intersetion = trueRect & predRect;
+    float intersetion_area = std::max(0.0f, intersetion.area()); 
 
-    // IoU
-    return intersection_area / union_area;
+    float union_area = trueRect.area() + predRect.area() - intersetion_area;
+    if (union_area <= 0.0f)    // avoid division by zero
+        return 0.0f;
+
+    return intersetion_area / union_area;
 }
 
 float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_labels,const std::vector<Label>& predicted_labels)
@@ -50,7 +52,7 @@ float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_l
     }
 
     //2) Sort candidates by IoU in descending order
-    std::sort(all_candidates_pairs.begin(), all_candidates_pairs.end(), [](const auto& a, const auto& b){ return std::get<0>(a) > std::get<0>(b); });
+    std::sort(all_candidates_pairs.begin(), all_candidates_pairs.end(), [](const auto& trueRect, const auto& predRect){ return std::get<0>(trueRect) > std::get<0>(predRect); });
 
     //3) Greedy assignment for matching true and predicted labels: one true label is matched with the predicted label with the highest IoU
     std::vector<char> true_used(true_labels.size(), 0);
@@ -63,7 +65,7 @@ float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_l
 
         int true_idx = std::get<1>(candidate);
         int pred_idx = std::get<2>(candidate);
-        if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in a match
+        if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in trueRect match
 
         float IoU = std::get<0>(candidate);
         sum_iou += static_cast<double>(IoU);
@@ -122,7 +124,7 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& t
     }
 
     //2) Sort candidates by IoU in descending order
-    std::sort(all_candidates_pairs.begin(), all_candidates_pairs.end(), [](const auto& a, const auto& b) { return std::get<0>(a) > std::get<0>(b); });
+    std::sort(all_candidates_pairs.begin(), all_candidates_pairs.end(), [](const auto& trueRect, const auto& predRect) { return std::get<0>(trueRect) > std::get<0>(predRect); });
 
     //3) Greedy assignment for matching true and predicted labels: one true label is matched with the predicted label with the highest IoU
     //   We handle the True Positive case and Mispredicted case (FP) 
@@ -133,10 +135,10 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& t
 
         int true_idx = std::get<1>(candidate);
         int pred_idx = std::get<2>(candidate);
-        if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in a match
+        if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in trueRect match
                                                                   
-        int col_actual_class_index = Yolo_index_codec::card_to_yolo_index(true_labels[true_idx].get_class_name());
-        int row_predicted_class_index = Yolo_index_codec::card_to_yolo_index(pred_labels[pred_idx].get_class_name());
+        int col_actual_class_index = true_labels[true_idx].get_object()->get_id_number();
+        int row_predicted_class_index = pred_labels[pred_idx].get_object()->get_id_number();
 
         //CV_Assert(0 <= row_predicted_class_index && row_predicted_class_index < num_classes);
         //CV_Assert(0 <= col_actual_class_index && col_actual_class_index < num_classes);
@@ -148,12 +150,12 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& t
     }
 
 
-    // 4) Undetected object (FN): we have a true label that does not have a corresponding predicted label: row = no_object_index, col = col_actual_class_index
+    // 4) Undetected object (FN): we have trueRect true label that does not have trueRect corresponding predicted label: row = no_object_index, col = col_actual_class_index
     for (int true_idx = 0; true_idx < (int)true_labels.size(); ++true_idx) {
        
         if (!true_used[true_idx]) {
             
-            int col_actual_class_index = Yolo_index_codec::card_to_yolo_index(true_labels[true_idx].get_class_name());
+            int col_actual_class_index = true_labels[true_idx].get_object()->get_id_number();
             
             //CV_Assert(0 <= col_actual_class_index && col_actual_class_index < num_classes);
             
@@ -165,7 +167,7 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& t
     for (int pred_idx = 0; pred_idx < (int)pred_labels.size(); ++pred_idx) {
         if (!pred_used[pred_idx]) {
 
-            int row_predicted_class_index = Yolo_index_codec::card_to_yolo_index(pred_labels[pred_idx].get_class_name());
+            int row_predicted_class_index = pred_labels[pred_idx].get_object()->get_id_number();
             
             CV_Assert(0 <= row_predicted_class_index && row_predicted_class_index < num_classes);
             
@@ -272,7 +274,7 @@ std::vector<float> StatisticsCalculation::calc_f1(const cv::Mat& confusion_matri
 }
 
 
-void StatisticsCalculation::print_confusion_matrix(const cv::Mat& confusion_matrix)
+void StatisticsCalculation::print_card_confusion_matrix(const cv::Mat& confusion_matrix)
 {
     CV_Assert(confusion_matrix.rows == confusion_matrix.cols);
     CV_Assert(confusion_matrix.type() == CV_32S);
