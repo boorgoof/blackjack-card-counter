@@ -15,6 +15,8 @@
 #include "../include/StatisticsCalculation.h"
 #include "../include/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
 #include "../include/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
+#include "../include/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
+#include "../include/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -72,14 +74,12 @@ int main(int argc, char** argv) {
     if (single_cards_dataset.is_sequential()) {
         card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
     } else {
-        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_cards_folder_path), detect_full_card, visualize);
+        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_cards_folder_path), new  SimpleContoursCardSegmenter(),  detect_full_card, visualize);
     }
 
     ImageFilter img_filter;
-    //img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
-    //img_filter.add_filter("Gaussian Blur", Filters::gaussian_blur, cv::Size(7,7)); //check if it is useful for robustness to noise or just useless
-   // img_filter.add_filter("CLAHE_contrast_equalization", Filters::CLAHE_contrast_equalization, 2, 4);
-
+    img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
+    
     //prepare a vector to store the predicted labels and the ground truth for every image
     std::vector<std::vector<Label>> predicted_labels = std::vector<std::vector<Label>>();
     std::vector<std::vector<Label>> true_labels = std::vector<std::vector<Label>>();
