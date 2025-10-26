@@ -5,8 +5,6 @@
 #include <functional>
 #include <vector>
 
-namespace vision {
-
 /**
  * @brief Predefined pipeline configurations for common use cases
  * 
@@ -138,8 +136,6 @@ public:
     void loadMaskPreset(MaskType maskType);
 };
 
-} 
-
 namespace preprocessing {
 
 /**
@@ -208,5 +204,6 @@ std::vector<cv::Rect> getCardsBoundingBox(const cv::Mat& mask);
  * @return cv::Mat: Binary mask with bounding boxes filled.
  */
 cv::Mat getBoundingBoxesMask(const cv::Mat& mask);
+
 }
 #endif
