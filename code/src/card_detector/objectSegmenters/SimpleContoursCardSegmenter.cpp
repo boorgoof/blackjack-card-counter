@@ -5,7 +5,7 @@ SimpleContoursCardSegmenter::SimpleContoursCardSegmenter() {
     set_method_name("SimpleContours");
 }
 
-std::vector<cv::RotatedRect> SimpleContoursCardSegmenter::segment_objects(
+std::vector<std::vector<cv::Point>> SimpleContoursCardSegmenter::segment_objects(
     const cv::Mat& src_img, 
     const cv::Mat& src_mask) {
     
@@ -23,9 +23,9 @@ std::vector<cv::RotatedRect> SimpleContoursCardSegmenter::segment_objects(
     cv::findContours(mask, contours, hierarchy, 
                      cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
     
-    // Filter contours and create rotated rectangles
-    std::vector<cv::RotatedRect> rotatedRects;
-    rotatedRects.reserve(contours.size());
+    // Filter contours by area and number of points
+    std::vector<std::vector<cv::Point>> filteredContours;
+    filteredContours.reserve(contours.size());
     
     for (const auto& contour : contours) {
         // Filter by area and number of points
@@ -35,10 +35,8 @@ std::vector<cv::RotatedRect> SimpleContoursCardSegmenter::segment_objects(
             continue;
         }
         
-        // Fit minimum area rectangle
-        cv::RotatedRect rotatedRect = cv::minAreaRect(contour);
-        rotatedRects.push_back(rotatedRect);
+        filteredContours.push_back(contour);
     }
     
-    return rotatedRects;
+    return filteredContours;
 }
