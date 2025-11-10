@@ -34,7 +34,7 @@ public:
     ~DistanceTransformCardSegmenter() override = default;
 
     
-    std::vector<cv::RotatedRect> segment_objects(const cv::Mat& src_img, const cv::Mat& src_mask) override;
+    std::vector<std::vector<cv::Point>> segment_objects(const cv::Mat& src_img, const cv::Mat& src_mask) override;
 
     
     void setDistThresholdPercent(float percent) { params_.distThresholdPercent = percent; }

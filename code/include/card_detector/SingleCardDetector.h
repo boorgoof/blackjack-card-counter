@@ -15,6 +15,7 @@ public:
     
 private:
     cv::Mat intersectRotatedRect(const cv::Mat& mask, const cv::RotatedRect& rect) const;
+    cv::Mat intersectContour(const cv::Mat& mask, const std::vector<cv::Point>& contour) const;
     std::unique_ptr<RoughCardDetector> rough_card_detector_;
     std::unique_ptr<ObjectClassifier> object_classifier_;
     std::unique_ptr<ObjectSegmenter> object_segmenter_;
