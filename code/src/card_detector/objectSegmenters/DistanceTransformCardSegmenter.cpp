@@ -5,7 +5,7 @@ DistanceTransformCardSegmenter::DistanceTransformCardSegmenter() {
     set_method_name("DistanceTransform");
 }
 
-std::vector<cv::RotatedRect> DistanceTransformCardSegmenter::segment_objects(
+std::vector<std::vector<cv::Point>> DistanceTransformCardSegmenter::segment_objects(
     const cv::Mat& src_img, 
     const cv::Mat& src_mask) {
     
@@ -29,13 +29,11 @@ std::vector<cv::RotatedRect> DistanceTransformCardSegmenter::segment_objects(
     float threshold = static_cast<float>(maxVal) * params_.distThresholdPercent;
     std::vector<cv::Point> centers = findLocalMaxima(distTransform, threshold, params_.fixedMinDistance);
     
-    // Extract rotated rectangles for each center
-    std::vector<cv::RotatedRect> rotatedRects;
-    rotatedRects.reserve(centers.size());
+    // Extract contours for each center
+    std::vector<std::vector<cv::Point>> cardContours;
+    cardContours.reserve(centers.size());
     
     for (const auto& center : centers) {
-        cv::RotatedRect rotatedRect;
-        
         // Get distance value at center
         float distValue = distTransform.at<float>(center);
         
@@ -50,7 +48,7 @@ std::vector<cv::RotatedRect> DistanceTransformCardSegmenter::segment_objects(
         );
         
         // Try to find local contour around this center
-        bool foundLocalRect = false;
+        bool foundLocalContour = false;
         if (roi.width > 30 && roi.height > 30) {
             cv::Mat localBinary = mask(roi).clone();
             std::vector<std::vector<cv::Point>> localContours;
@@ -65,31 +63,38 @@ std::vector<cv::RotatedRect> DistanceTransformCardSegmenter::segment_objects(
                     double test = cv::pointPolygonTest(contour, localCenter, false);
                     if (test >= 0) {
                         // Found the contour containing our center
-                        cv::RotatedRect localRect = cv::minAreaRect(contour);
+                        // Transform contour back to global coordinates
+                        std::vector<cv::Point> globalContour;
+                        globalContour.reserve(contour.size());
+                        for (const auto& pt : contour) {
+                            globalContour.push_back(cv::Point(pt.x + roi.x, pt.y + roi.y));
+                        }
                         
-                        // Transform back to global coordinates
-                        localRect.center.x += roi.x;
-                        localRect.center.y += roi.y;
-                        
-                        rotatedRect = localRect;
-                        foundLocalRect = true;
+                        cardContours.push_back(globalContour);
+                        foundLocalContour = true;
                         break;
                     }
                 }
             }
         }
         
-        // Fallback: create rectangular region based on distance value
-        if (!foundLocalRect) {
+        // Fallback: create rectangular contour based on distance value
+        if (!foundLocalContour) {
             float width = std::max(10.f, distValue * params_.bboxWidthMultiplier);
             float height = std::max(10.f, distValue * params_.bboxHeightMultiplier);
-            rotatedRect = cv::RotatedRect(cv::Point2f(center), cv::Size2f(width, height), 0);
+            
+            // Create a rectangular contour centered at the detected center
+            std::vector<cv::Point> rectContour;
+            rectContour.push_back(cv::Point(center.x - width/2, center.y - height/2));
+            rectContour.push_back(cv::Point(center.x + width/2, center.y - height/2));
+            rectContour.push_back(cv::Point(center.x + width/2, center.y + height/2));
+            rectContour.push_back(cv::Point(center.x - width/2, center.y + height/2));
+            
+            cardContours.push_back(rectContour);
         }
-        
-        rotatedRects.push_back(rotatedRect);
     }
     
-    return rotatedRects;
+    return cardContours;
 }
 
 std::vector<cv::Point> DistanceTransformCardSegmenter::findLocalMaxima(
@@ -131,3 +136,5 @@ std::vector<cv::Point> DistanceTransformCardSegmenter::findLocalMaxima(
     
     return maxima;
 }
+
+
