@@ -55,11 +55,11 @@ private:
      */
     bool isImageFile(const std::string& filename);
     
-    std::string outputPath;
-    double fps;
-    cv::VideoWriter videoWriter;
-    cv::Size frameSize;
-    bool initialized;
+    std::string outputPath_;
+    double fps_;
+    cv::VideoWriter videoWriter_;
+    cv::Size frameSize_;
+    bool initialized_;
 };
 
 #endif // VIDEOWRITER_H
