@@ -9,7 +9,7 @@ SingleCardDetector::SingleCardDetector(RoughCardDetector* rough_card_detector, O
 SingleCardDetector::~SingleCardDetector() {
     
 }
-
+//todo delete
 cv::Mat SingleCardDetector::intersectRotatedRect(const cv::Mat& mask, const cv::RotatedRect& rect) const {
     // Ensure single-channel mask
     cv::Mat src = mask.clone();
@@ -31,21 +31,40 @@ cv::Mat SingleCardDetector::intersectRotatedRect(const cv::Mat& mask, const cv::
     return out;
 }
 
+
+
+cv::Mat SingleCardDetector::intersectContour(const cv::Mat& mask, const std::vector<cv::Point>& contour) const {
+    // Ensure single-channel mask
+    cv::Mat src = mask.clone();
+
+    // Create a mask for the contour
+    cv::Mat contourMask(src.size(), CV_8UC1, cv::Scalar(0));
+    
+    // Fill the contour on the mask
+    std::vector<std::vector<cv::Point>> contours = {contour};
+    cv::fillPoly(contourMask, contours, cv::Scalar(255));
+
+    // Bitwise AND to keep only pixels inside
+    cv::Mat out;
+    cv::bitwise_and(src, contourMask, out);
+    return out;
+}
+
 std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
     std::vector<Label> detected_labels;
 
     cv::Mat mask = this->rough_card_detector_->getMask(image);
-    std::vector<cv::RotatedRect> cards_rect = this->object_segmenter_->segment_objects(image, mask);
-
-    for (const auto& rotated_rect : cards_rect) {
-        cv::Mat single_obj_mask = this->intersectRotatedRect(mask, rotated_rect);
+    std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(image, mask);
+    
+    for (const auto& contour : cards_contour) {
+        cv::Mat single_obj_mask = this->intersectContour(mask, contour);
 
         if (this->object_classifier_) {
             const ObjectType* obj_type = this->object_classifier_->classify_object(image, single_obj_mask);
             
             if (obj_type && obj_type->isValid()) {
 
-                cv::Rect bounding_box = rotated_rect.boundingRect();
+                cv::Rect bounding_box = boundingRect(contour);
                 Label label(obj_type->clone(), bounding_box);
                 detected_labels.push_back(std::move(label));
                 
