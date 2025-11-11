@@ -3,7 +3,7 @@
 #include <algorithm>
 
 VideoWriter::VideoWriter(const std::string& outputPath, double fps)
-    : outputPath(outputPath), fps(fps), initialized(false) {}
+    : outputPath_(outputPath), fps_(fps), initialized_(false) {}
 
 VideoWriter::~VideoWriter() {
     close();
@@ -18,12 +18,9 @@ bool VideoWriter::isImageFile(const std::string& filename) {
 std::vector<std::string> VideoWriter::getImageFiles(const std::string& folderPath) {
     std::vector<std::string> imagePaths;
     
-    std::filesystem::directory_iterator begin(folderPath);
-    std::filesystem::directory_iterator end;
-    
-    for (std::filesystem::directory_iterator it = begin; it != end; ++it) {
-        if (it->is_regular_file() && isImageFile(it->path().filename().string())) {
-            imagePaths.push_back(it->path().string());
+    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(folderPath)) {
+        if (entry.is_regular_file() && isImageFile(entry.path().filename().string())) {
+            imagePaths.push_back(entry.path().string());
         }
     }
     
@@ -44,24 +41,24 @@ void VideoWriter::createVideoFromFolder(const std::string& folderPath) {
 }
 
 void VideoWriter::addFrame(const cv::Mat& frame) {
-    if (!initialized) {
-        frameSize = frame.size();
+    if (!initialized_) {
+        frameSize_ = frame.size();
         int fourcc = cv::VideoWriter::fourcc('m', 'p', '4', 'v');
-        videoWriter.open(outputPath, fourcc, fps, frameSize);
-        initialized = true;
+        videoWriter_.open(outputPath_, fourcc, fps_, frameSize_);
+        initialized_ = true;
     }
     
-    cv::Mat resized;
-    if (frame.size() != frameSize) {
-        cv::resize(frame, resized, frameSize);
-        videoWriter.write(resized);
+    if (frame.size() == frameSize_) {
+        videoWriter_.write(frame);
     } else {
-        videoWriter.write(frame);
+        cv::Mat resized;
+        cv::resize(frame, resized, frameSize_);
+        videoWriter_.write(resized);
     }
 }
 
 void VideoWriter::close() {
-    if (videoWriter.isOpened()) {
-        videoWriter.release();
+    if (videoWriter_.isOpened()) {
+        videoWriter_.release();
     }
 }
