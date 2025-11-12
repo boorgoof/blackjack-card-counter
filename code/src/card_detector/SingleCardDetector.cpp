@@ -61,6 +61,7 @@ std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
         cv::Mat single_obj_mask = this->intersectContour(mask, contour);
         //Fede lavora qua con projected, prova a usare qualche filtro per migliorare la classificazione
         cv::Mat projected = CardProjection::projectCard(image, contour);
+        cv::Mat corner = CardProjection::extractCardCorner(image, contour);
 
         if (this->object_classifier_) {
             const ObjectType* obj_type = this->object_classifier_->classify_object(image, single_obj_mask);

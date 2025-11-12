@@ -71,4 +71,10 @@ cv::Mat projectCard(const cv::Mat& image, const std::vector<cv::Point>& contour)
     return result;
 }
 
+cv::Mat extractCardCorner(const cv::Mat& image, const std::vector<cv::Point>& contour, int width, int height) {
+    cv::Mat fullCard = projectCard(image, contour);
+    cv::Rect cornerRegion(0, 0, width, height);
+    return fullCard(cornerRegion).clone();
+}
+
 }
