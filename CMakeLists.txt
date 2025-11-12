@@ -10,6 +10,7 @@ add_executable(main
     code/src/ObjectType.cpp
     code/src/CardType.cpp
     code/src/Loaders.cpp
+    code/src/CardProjection.cpp
     code/src/Dataset/ImageDataset.cpp
     code/src/Dataset/VideoDataset.cpp
     code/src/Dataset/TemplateDataset.cpp
