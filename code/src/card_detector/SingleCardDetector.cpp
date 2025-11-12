@@ -1,4 +1,5 @@
 #include "../../include/card_detector/SingleCardDetector.h"
+#include "../../include/CardProjection.h"
 #include <opencv2/imgproc.hpp>
 
 SingleCardDetector::SingleCardDetector(RoughCardDetector* rough_card_detector, ObjectClassifier* object_classifier, ObjectSegmenter* object_segmenter, bool detect_full_card, bool visualize)
@@ -56,8 +57,10 @@ std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
     cv::Mat mask = this->rough_card_detector_->getMask(image);
     std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(image, mask);
     
-    for (const auto& contour : cards_contour) {
+    for (const std::vector<cv::Point>& contour : cards_contour) {
         cv::Mat single_obj_mask = this->intersectContour(mask, contour);
+        //Fede lavora qua con projected, prova a usare qualche filtro per migliorare la classificazione
+        cv::Mat projected = CardProjection::projectCard(image, contour);
 
         if (this->object_classifier_) {
             const ObjectType* obj_type = this->object_classifier_->classify_object(image, single_obj_mask);
