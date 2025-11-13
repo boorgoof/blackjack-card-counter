@@ -18,6 +18,7 @@
 #include "../include/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
 #include "../include/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
 #include "../include/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
+#include "../include/card_detector/objectSegmenters/MultipleCardSegmenter.h"
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -81,9 +82,9 @@ int main(int argc, char** argv) {
         std::cout << "Template card: " << sample.get_name() << ", Path: " << sample.get_pathSample() << std::endl;
         if (visualize){
             cv::Mat img = template_dataset.load(it);
-            cv::imshow("Template Card: " + sample.get_name(), img);
-            cv::waitKey(200);
-            cv::destroyAllWindows();
+            //cv::imshow("Template Card: " + sample.get_name(), img);
+            //cv::waitKey(200);
+            //cv::destroyAllWindows();
         }
     }
 
@@ -96,7 +97,7 @@ int main(int argc, char** argv) {
     if (single_cards_dataset.is_sequential()) {
         card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
     } else {
-        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), new  DistanceTransformCardSegmenter(),  detect_full_card, visualize);
+        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), new  MultipleCardSegmenter(),  detect_full_card, visualize);
     }
 
     ImageFilter img_filter;

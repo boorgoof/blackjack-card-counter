@@ -30,7 +30,8 @@ add_executable(main
     
     code/src/card_detector/objectSegmenters/ObjectSegmenter.cpp
     code/src/card_detector/objectSegmenters/SimpleContoursCardSegmenter.cpp
-    code/src/card_detector/objectSegmenters/DistanceTransformCardSegmenter.cpp)
+    code/src/card_detector/objectSegmenters/DistanceTransformCardSegmenter.cpp
+    code/src/card_detector/objectSegmenters/MultipleCardSegmenter.cpp)
 
 set_property(TARGET main PROPERTY CXX_STANDARD 20)
 target_link_libraries(main ${OpenCV_LIBS})
