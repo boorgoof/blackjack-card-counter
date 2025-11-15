@@ -5,7 +5,7 @@
 #include "Label.h"
 #include <map>
 #include <filesystem>
-
+#include <fstream>
 /**
  * @brief utility functions.
  */
@@ -18,6 +18,11 @@ namespace Utils{
     namespace Path{
         std::string longestCommonPath(const std::string& path1_str, const std::string& path2_str);
         std::filesystem::path longestCommonPath(const std::filesystem::path& path1, const std::filesystem::path& path2);
+    }
+
+    namespace Save{
+        void saveLabelsToYoloFile(const std::string& file_path, const std::vector<Label>& labels, const int image_width, const int image_height);
+        void saveImageToFile(const std::string& file_path, const cv::Mat& image);
     }
 
     /**

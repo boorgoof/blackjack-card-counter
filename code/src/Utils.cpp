@@ -31,6 +31,39 @@ std::string Utils::String::normalize(const std::string& str) {
     return t;
 }
 
+
+void Utils::Save::saveLabelsToYoloFile(const std::string &file_path, const std::vector<Label> &labels, const int image_width, const int image_height)
+{
+    std::ofstream file(file_path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file for writing: " + file_path);
+    }
+
+    for (const auto& label : labels) {
+        if (!label.get_object()) {
+            continue;
+        }
+        const cv::Rect& bbox = label.get_bounding_box();
+        float x_center = (bbox.x + bbox.width / 2.0f) / image_width;
+        float y_center = (bbox.y + bbox.height / 2.0f) / image_height;
+        float width = static_cast<float>(bbox.width) / image_width;
+        float height = static_cast<float>(bbox.height) / image_height;
+
+        file << label.get_object()->get_id_number() << " "
+             << x_center << " "
+             << y_center << " "
+             << width << " "
+             << height << "\n";
+    }
+
+    file.close();
+}
+
+void Utils::Save::saveImageToFile(const std::string &file_path, const cv::Mat &image)
+{
+    cv::imwrite(file_path, image);
+}
+
 void Utils::Visualization::printProgressBar(float progress, size_t barwidth, const std::string& prefix, const std::string& suffix) {
     std::cout << "\r" << prefix << " [";
     size_t pos = static_cast<size_t>(barwidth * progress);
@@ -74,28 +107,3 @@ void Utils::Visualization::printLabelsOnImage(cv::Mat &image, const std::vector<
         }
     }
 }
-/**
-void Utils::Visualization::showImageWithLabels(const cv::Mat &image, const cv::Size& size, const std::vector<Label> &ground_truth_labels, const std::vector<Label> &predicted_labels, const cv::Scalar& gt_color, const cv::Scalar& pred_color, const int time, const std::string &window_name)
-{
-    cv::Mat image_copy = image.clone();
-    //draw true labels in green
-    printLabelsOnImage(image_copy, ground_truth_labels, gt_color, gt_color);
-    //draw predicted labels in red
-    printLabelsOnImage(image_copy, predicted_labels, pred_color, pred_color);
-    //resize the image to the specified size
-    showImage(image_copy, window_name, time, size);
-    cv::destroyAllWindows();
-}
-
-void Utils::Visualization::showImageWithLabels(const cv::Mat &image, const float &resize_factor, const std::vector<Label> &ground_truth_labels, const std::vector<Label> &predicted_labels, const cv::Scalar &gt_color, const cv::Scalar &pred_color, const int time, const std::string &window_name)
-{
-    cv::Mat image_copy = image.clone();
-    //draw true labels in green
-    printLabelsOnImage(image_copy, ground_truth_labels, gt_color, gt_color);
-    //draw predicted labels in red
-    printLabelsOnImage(image_copy, predicted_labels, pred_color, pred_color);
-    //resize the image to the specified size
-    showImage(image_copy, window_name, time, resize_factor);
-    cv::destroyAllWindows();
-}
-*/
