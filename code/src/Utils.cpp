@@ -74,6 +74,7 @@ void Utils::Visualization::printLabelsOnImage(cv::Mat &image, const std::vector<
         }
     }
 }
+/**
 void Utils::Visualization::showImageWithLabels(const cv::Mat &image, const cv::Size& size, const std::vector<Label> &ground_truth_labels, const std::vector<Label> &predicted_labels, const cv::Scalar& gt_color, const cv::Scalar& pred_color, const int time, const std::string &window_name)
 {
     cv::Mat image_copy = image.clone();
@@ -97,3 +98,4 @@ void Utils::Visualization::showImageWithLabels(const cv::Mat &image, const float
     showImage(image_copy, window_name, time, resize_factor);
     cv::destroyAllWindows();
 }
+*/
