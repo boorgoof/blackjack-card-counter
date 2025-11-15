@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     }
 
     //Dataset object creation
-    ImageDataset single_cards_dataset(videos_dataset_path);
+    ImageDataset single_cards_dataset(single_cards_dataset_path);
 
     //depending on the dataset type, create the appropriate card detector (specific parameters will be decided later, in the actual implementation)
     std::unique_ptr<CardDetector> card_detector = nullptr;
@@ -96,20 +96,21 @@ int main(int argc, char** argv) {
     if (single_cards_dataset.is_sequential()) {
         card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
     } else {
-        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), new  DistanceTransformCardSegmenter(),  detect_full_card, visualize);
+        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), new  SimpleContoursCardSegmenter(),  detect_full_card, visualize);
     }
 
     ImageFilter img_filter;
     img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
-    
-    //prepare a vector to store the predicted labels and the ground truth for every image
-    std::vector<std::vector<Label>> predicted_labels = std::vector<std::vector<Label>>();
-    std::vector<std::vector<Label>> true_labels = std::vector<std::vector<Label>>();
+        
 
     //keep track of the time taken to load and detect each image
     std::chrono::duration<double, std::milli> total_loading_time;
     std::chrono::duration<double, std::milli> total_detection_time;
     for (auto it = single_cards_dataset.begin(); it != single_cards_dataset.end(); ++it) {
+        //vectors to hold predicted and true labels for the current image
+        std::vector<Label> predicted_labels;
+        std::vector<Label> true_labels;
+
         auto start = std::chrono::steady_clock::now();
 
         SampleInfo* img_info = &(*it);
@@ -121,35 +122,16 @@ int main(int argc, char** argv) {
         auto loading_time = std::chrono::steady_clock::now();
         total_loading_time += std::chrono::duration<double, std::milli>(loading_time - start);
 
-        //detects card in image and adds the result of the detection to the vector
-        predicted_labels.push_back(card_detector->detect_image(img));
+        //detects cards in image and adds the result of the detection to the vector
+        predicted_labels = card_detector->detect_image(img);
 
         auto detection_time = std::chrono::steady_clock::now();
         total_detection_time += std::chrono::duration<double, std::milli>(detection_time - loading_time);
 
-        true_labels.push_back(Loader::Annotation::load_yolo_image_annotations(img_info->get_pathLabel(), img.cols, img.rows));
+        true_labels = Loader::Annotation::load_yolo_image_annotations(img_info->get_pathLabel(), img.cols, img.rows);
 
         if(visualize){
-            cv::Mat vis_img = img.clone();
-            //draw true labels in green
-            for (const auto& label : true_labels.back()) {
-                cv::rectangle(vis_img, label.get_bounding_box(), cv::Scalar(0, 255, 0), 2);
-                if (label.get_object()) {
-                    cv::putText(vis_img, label.get_object()->to_string(), cv::Point(label.get_bounding_box().x, label.get_bounding_box().y - 10),
-                                cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
-                }
-            }
-            //draw predicted labels in red
-            for (const auto& label : predicted_labels.back()) {
-                cv::rectangle(vis_img, label.get_bounding_box(), cv::Scalar(0, 0, 255), 2);
-                if (label.get_object()) {
-                    cv::putText(vis_img, label.get_object()->to_string(), cv::Point(label.get_bounding_box().x, label.get_bounding_box().y - 10),
-                                cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 2);
-                }
-            }
-            cv::imshow("Detections", vis_img);
-            cv::waitKey(0); //display each image for 500 ms
-            cv::destroyAllWindows();
+            Utils::Visualization::showImageWithLabels(img, 0.5, true_labels, predicted_labels, cv::Scalar(0,255,0), cv::Scalar(255,0,0), 1000, img_info->get_name());
         }
 
         Utils::Visualization::printProgressBar(static_cast<float>(std::distance(single_cards_dataset.begin(), it) + 1) / std::distance(single_cards_dataset.begin(), single_cards_dataset.end()),
