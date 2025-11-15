@@ -5,7 +5,7 @@
 
 class SequentialCardDetector : public CardDetector {
 public:
-    SequentialCardDetector(bool detect_full_card = false, bool visualize = false);
+    SequentialCardDetector(const bool detect_full_card = false, const bool visualize = false);
     ~SequentialCardDetector();
     std::vector<Label> detect_image(const cv::Mat& image) override;
 };

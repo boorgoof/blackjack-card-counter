@@ -1,6 +1,6 @@
 #include "../../include/card_detector/SequentialCardDetector.h"
 
-SequentialCardDetector::SequentialCardDetector(bool detect_full_card, bool visualize) : CardDetector(detect_full_card, visualize) {
+SequentialCardDetector::SequentialCardDetector(const bool detect_full_card, const bool visualize) : CardDetector(detect_full_card, visualize) {
     // Constructor implementation
 }
 

@@ -2,9 +2,9 @@
 #include "../../include/CardProjection.h"
 #include <opencv2/imgproc.hpp>
 
-SingleCardDetector::SingleCardDetector(RoughCardDetector* rough_card_detector, ObjectClassifier* object_classifier, ObjectSegmenter* object_segmenter, bool detect_full_card, bool visualize)
-    : CardDetector(detect_full_card, visualize), rough_card_detector_(rough_card_detector), object_classifier_(object_classifier), object_segmenter_(object_segmenter) {
-    
+SingleCardDetector::SingleCardDetector(std::unique_ptr<RoughCardDetector> rough_card_detector, std::unique_ptr<ObjectClassifier> object_classifier, std::unique_ptr<ObjectSegmenter> object_segmenter, const bool detect_full_card, const bool visualize)
+    : CardDetector(detect_full_card, visualize), rough_card_detector_(std::move(rough_card_detector)), object_classifier_(std::move(object_classifier)), object_segmenter_(std::move(object_segmenter)) {
+
 }
 
 SingleCardDetector::~SingleCardDetector() {
