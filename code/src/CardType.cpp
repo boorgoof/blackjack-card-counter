@@ -49,7 +49,7 @@ std::map<std::string, CardType::Rank> CardType::map_string_to_rank = {
     {"3",  CardType::Rank::R3},
     {"2",  CardType::Rank::R2},
     {"A",  CardType::Rank::A},
-    {"UNKNOWN", CardType::Rank::UNKNOWN}
+    {"UNK", CardType::Rank::UNKNOWN}
 };
 
 std::map<std::string, CardType::Suit> CardType::map_string_to_suit = {
@@ -57,7 +57,7 @@ std::map<std::string, CardType::Suit> CardType::map_string_to_suit = {
     {"D", CardType::Suit::DIAMONDS},
     {"H", CardType::Suit::HEARTS},
     {"S", CardType::Suit::SPADES},
-    {"UNKNOWN", CardType::Suit::UNKNOWN}
+    {"UNK", CardType::Suit::UNKNOWN}
 };
 
 std::map<CardType::Rank, std::string> CardType::map_rank_to_string = Utils::Map::createInverseMap(CardType::map_string_to_rank);

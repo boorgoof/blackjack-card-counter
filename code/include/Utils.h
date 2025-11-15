@@ -23,6 +23,8 @@ namespace Utils{
     namespace Save{
         void saveLabelsToYoloFile(const std::string& file_path, const std::vector<Label>& labels, const int image_width, const int image_height);
         void saveImageToFile(const std::string& file_path, const cv::Mat& image);
+        void save_confusion_matrix(const std::string& file_path, const cv::Mat& confusion_matrix);
+        void save_metrics(const std::string& file_path, const float accuracy, const std::vector<float>& precision, const std::vector<float>& recall, const std::vector<float>& f1);
     }
 
     /**
