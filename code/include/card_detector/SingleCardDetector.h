@@ -8,7 +8,7 @@
 
 class SingleCardDetector : public CardDetector {
 public:
-    SingleCardDetector(RoughCardDetector* rough_card_detector, ObjectClassifier* object_classifier, ObjectSegmenter* object_segmenter, bool detect_full_card = false, bool visualize = false);
+    SingleCardDetector(std::unique_ptr<RoughCardDetector> rough_card_detector, std::unique_ptr<ObjectClassifier> object_classifier, std::unique_ptr<ObjectSegmenter> object_segmenter, const bool detect_full_card = false, const bool visualize = false);
     ~SingleCardDetector();
 
     std::vector<Label> detect_image(const cv::Mat& image) override;
