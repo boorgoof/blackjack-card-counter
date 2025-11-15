@@ -20,7 +20,7 @@
 #include "../include/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
 
 std::unique_ptr<CardDetector> create_card_detector_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize);
-void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<CardDetector>& card_detector, const std::string& output_folder_path, const bool visualize);
+void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<CardDetector>& card_detector, const std::string& output_folder_path, const bool visualize, const int num_classes = 53, const float iou_threshold = 0.5f);
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -78,6 +78,9 @@ int main(int argc, char** argv) {
     std::string single_cards_dataset_path = datasets_path + "/" + single_cards_folder;
     std::string videos_dataset_path = datasets_path + "/" + videos_folder;
 
+    constexpr int num_classes = 53; //52 cards + background/no card class
+    constexpr float iou_threshold = 0.5f;
+
     //TemplateDataset creation
     TemplateDataset template_dataset(template_dataset_path);
     std::cout << "Template Dataset root: " << template_dataset.get_root() << std::endl;
@@ -102,7 +105,7 @@ int main(int argc, char** argv) {
     ImageFilter img_filter;
     img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
 
-    iterate_dataset(single_cards_dataset, img_filter, card_detector, output_path + "/" + single_cards_folder, visualize);
+    iterate_dataset(single_cards_dataset, img_filter, card_detector, output_path + "/" + single_cards_folder, visualize, num_classes);
 
     //----------  VIDEO DATASET  ----------
 
@@ -113,7 +116,7 @@ int main(int argc, char** argv) {
     card_detector.release();
     card_detector = create_card_detector_for_dataset(video_dataset, template_dataset, true, visualize);
 
-    iterate_dataset(video_dataset, img_filter, card_detector, output_path + "/" + videos_folder, visualize);
+    iterate_dataset(video_dataset, img_filter, card_detector, output_path + "/" + videos_folder, visualize, num_classes);
 }
 
 std::unique_ptr<CardDetector> create_card_detector_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize) {
@@ -124,10 +127,11 @@ std::unique_ptr<CardDetector> create_card_detector_for_dataset(const std::unique
     }
 }
 
-void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<CardDetector>& card_detector, const std::string& output_folder_path, const bool visualize){
+void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<CardDetector>& card_detector, const std::string& output_folder_path, const bool visualize, const int num_classes, const float iou_threshold) {
 
     std::string annotations_folder = output_folder_path + "/annotations/";
     std::string images_folder = output_folder_path + "/images/";
+    std::string stats_folder = output_folder_path + "/stats/";
 
     if (!std::filesystem::exists(annotations_folder)) {
         std::filesystem::create_directories(annotations_folder);
@@ -139,6 +143,9 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     //keep track of the time taken to load and detect each image
     std::chrono::duration<double, std::milli> total_loading_time;
     std::chrono::duration<double, std::milli> total_detection_time;
+
+    cv::Mat cumulative_confusion_matrix = cv::Mat::zeros(num_classes, num_classes, CV_32S);
+
     for (auto it = dataset->begin(); it != dataset->end(); ++it) {
         //vectors to hold predicted and true labels for the current image
         std::vector<Label> predicted_labels;
@@ -166,6 +173,10 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         //saves the predicted labels to a file
         Utils::Save::saveLabelsToYoloFile(annotations_folder + img_info->get_name() + ".txt", predicted_labels, img.cols, img.rows);
 
+        //update cumulative confusion matrix
+        cumulative_confusion_matrix += StatisticsCalculation::calc_confusion_matrix(true_labels, predicted_labels, num_classes, iou_threshold);
+        //StatisticsCalculation::print_confusion_matrix(cumulative_confusion_matrix);
+
         cv::Mat output_img = img.clone();
         Utils::Visualization::printLabelsOnImage(output_img, true_labels, cv::Scalar(0,255,0), cv::Scalar(0,255,0)); //true labels in green
         Utils::Visualization::printLabelsOnImage(output_img, predicted_labels, cv::Scalar(255,0,0), cv::Scalar(255,0,0)); //predicted labels in red
@@ -186,13 +197,12 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     std::cout << "Average loading time per image: " << total_loading_time.count() / std::distance(dataset->begin(), dataset->end()) << " ms" << std::endl;
     std::cout << "Average detection time per image: " << total_detection_time.count() / std::distance(dataset->begin(), dataset->end()) << " ms" << std::endl;
 
-    /**
-    //calculate metrics for single cards dataset
-    cv::Mat cfm = StatisticsCalculation::calc_confusion_matrix(true_labels, predicted_labels, 52); //52 classes for a standard deck of cards
-    StatisticsCalculation::print_confusion_matrix(cfm);
-
-    StatisticsCalculation::calc_dataset_meanIoU(true_labels, predicted_labels);
-    StatisticsCalculation::print_dataset_meanIoU();
-    */
-
+    //save final cumulative confusion matrix
+    Utils::Save::save_confusion_matrix(stats_folder + "confusion_matrix.txt", cumulative_confusion_matrix);
+    float accuracy = StatisticsCalculation::calc_accuracy(cumulative_confusion_matrix);
+    std::vector<float> precision = StatisticsCalculation::calc_precision(cumulative_confusion_matrix);
+    std::vector<float> recall = StatisticsCalculation::calc_recall(cumulative_confusion_matrix);
+    std::vector<float> f1 = StatisticsCalculation::calc_f1(cumulative_confusion_matrix);
+    //save metrics
+    Utils::Save::save_metrics(stats_folder + "metrics.txt", accuracy, precision, recall, f1);
 }

@@ -1,4 +1,5 @@
 #include "../include/Utils.h"
+#include "Utils.h"
 
 std::string Utils::Path::longestCommonPath(const std::string& path1_str, const std::string& path2_str) {
     std::filesystem::path path1(path1_str);
@@ -62,6 +63,37 @@ void Utils::Save::saveLabelsToYoloFile(const std::string &file_path, const std::
 void Utils::Save::saveImageToFile(const std::string &file_path, const cv::Mat &image)
 {
     cv::imwrite(file_path, image);
+}
+
+void Utils::Save::save_confusion_matrix(const std::string &file_path, const cv::Mat &confusion_matrix)
+{
+    std::ofstream file(file_path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file for writing: " + file_path);
+    }
+    for (int i = 0; i < confusion_matrix.rows; ++i) {
+        for (int j = 0; j < confusion_matrix.cols; ++j) {
+            file << confusion_matrix.at<int>(i, j);
+            if (j < confusion_matrix.cols - 1) {
+                file << ",";
+            }
+        }
+        file << "\n";
+    }
+    file.close();
+}
+void Utils::Save::save_metrics(const std::string &file_path, const float accuracy, const std::vector<float> &precision, const std::vector<float> &recall, const std::vector<float> &f1)
+{
+    std::ofstream file(file_path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file for writing: " + file_path);
+    }
+    file << "Accuracy: " << accuracy << "\n\n";
+    file << "Class,Precision,Recall,F1-Score\n";
+    for (size_t i = 0; i < precision.size(); ++i) {
+        file << i << "," << precision[i] << "," << recall[i] << "," << f1[i] << "\n";
+    }
+    file.close();
 }
 
 void Utils::Visualization::printProgressBar(float progress, size_t barwidth, const std::string& prefix, const std::string& suffix) {
