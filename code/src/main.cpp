@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
     ImageFilter img_filter;
     img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
 
-    iterate_dataset(single_cards_dataset, img_filter, card_detector, output_path, visualize);
+    iterate_dataset(single_cards_dataset, img_filter, card_detector, output_path + "/" + single_cards_folder, visualize);
 
     //----------  VIDEO DATASET  ----------
 
@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
     card_detector.release();
     card_detector = create_card_detector_for_dataset(video_dataset, template_dataset, true, visualize);
 
-    iterate_dataset(video_dataset, img_filter, card_detector, output_path, visualize);
+    iterate_dataset(video_dataset, img_filter, card_detector, output_path + "/" + videos_folder, visualize);
 }
 
 std::unique_ptr<CardDetector> create_card_detector_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize) {
@@ -125,6 +125,16 @@ std::unique_ptr<CardDetector> create_card_detector_for_dataset(const std::unique
 }
 
 void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<CardDetector>& card_detector, const std::string& output_folder_path, const bool visualize){
+
+    std::string annotations_folder = output_folder_path + "/annotations/";
+    std::string images_folder = output_folder_path + "/images/";
+
+    if (!std::filesystem::exists(annotations_folder)) {
+        std::filesystem::create_directories(annotations_folder);
+    }
+    if (!std::filesystem::exists(images_folder)) {
+        std::filesystem::create_directories(images_folder);
+    }
 
     //keep track of the time taken to load and detect each image
     std::chrono::duration<double, std::milli> total_loading_time;
@@ -153,9 +163,14 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
 
         true_labels = Loader::Annotation::load_yolo_image_annotations(img_info->get_pathLabel(), img.cols, img.rows);
 
+        //saves the predicted labels to a file
+        Utils::Save::saveLabelsToYoloFile(annotations_folder + img_info->get_name() + ".txt", predicted_labels, img.cols, img.rows);
+
         cv::Mat output_img = img.clone();
         Utils::Visualization::printLabelsOnImage(output_img, true_labels, cv::Scalar(0,255,0), cv::Scalar(0,255,0)); //true labels in green
         Utils::Visualization::printLabelsOnImage(output_img, predicted_labels, cv::Scalar(255,0,0), cv::Scalar(255,0,0)); //predicted labels in red
+
+        Utils::Save::saveImageToFile(images_folder + img_info->get_name() + ".png", output_img);
 
         if(visualize){
             Utils::Visualization::showImage(output_img, img_info->get_name(), 1000, 0.5);
