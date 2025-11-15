@@ -32,7 +32,21 @@ namespace Utils{
          * @param suffix a string to print after the progress bar
          */
         void printProgressBar(float progress, size_t barwidth, const std::string& prefix = "", const std::string& suffix = "");
+        /**
+         * @brief Shows an image in a window.
+         * @param image the image to show
+         * @param window_name the name of the window
+         * @param time the time to wait before closing the window (0 means wait indefinitely)
+         * @param resize_factor the factor by which to resize the image
+         */
         void showImage(cv::Mat& image, const std::string& window_name = "Image", const int time = 0, const float resize_factor = 1.0);
+        /**
+         * @brief Shows an image in a window.
+         * @param image the image to show
+         * @param window_name the name of the window
+         * @param time the time to wait before closing the window (0 means wait indefinitely)
+         * @param size the size to resize the image to
+         */
         void showImage(cv::Mat& image, const std::string& window_name = "Image", const int time = 0, const cv::Size& size = cv::Size());
         /**
          * @brief draws the provided labels directly on the image.
@@ -49,8 +63,6 @@ namespace Utils{
          * @param predicted_labels the predicted labels to draw
          * @param window_name the name of the window to show the image in
          */
-        void showImageWithLabels(const cv::Mat& image, const cv::Size& size = cv::Size(800, 600), const std::vector<Label>& ground_truth_labels = {}, const std::vector<Label>& predicted_labels = {}, const cv::Scalar& gt_color = cv::Scalar(0,255,0), const cv::Scalar& pred_color = cv::Scalar(255,0,0), const int time=0, const std::string& window_name = "Image with Labels");
-        void showImageWithLabels(const cv::Mat& image, const float& resize_factor = 1, const std::vector<Label>& ground_truth_labels = {}, const std::vector<Label>& predicted_labels = {}, const cv::Scalar& gt_color = cv::Scalar(0,255,0), const cv::Scalar& pred_color = cv::Scalar(255,0,0), const int time=0, const std::string& window_name = "Image with Labels");
     }
 
     /**
