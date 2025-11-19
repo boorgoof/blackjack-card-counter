@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     }
 
     //Dataset object creation
-    ImageDataset single_cards_dataset(videos_dataset_path);
+    ImageDataset single_cards_dataset(single_cards_dataset_path);
 
     //depending on the dataset type, create the appropriate card detector (specific parameters will be decided later, in the actual implementation)
     std::unique_ptr<CardDetector> card_detector = nullptr;
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
     if (single_cards_dataset.is_sequential()) {
         card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
     } else {
-        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), new  DistanceTransformCardSegmenter(),  detect_full_card, visualize);
+        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), new  SimpleContoursCardSegmenter(),  detect_full_card, visualize);
     }
 
     ImageFilter img_filter;

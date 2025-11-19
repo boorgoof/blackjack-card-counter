@@ -12,6 +12,9 @@ namespace CardProjection {
      * @return A perspective-corrected image of the card (250x350 pixels)
      */
     cv::Mat projectCard(const cv::Mat& image, const std::vector<cv::Point>& contour);
+
+    cv::Mat getPerspectiveTranform(const cv::Mat& image, const std::vector<cv::Point>& contour);
+
     cv::Mat extractCardCorner(const cv::Mat& image, const std::vector<cv::Point>& contour, int width = 50, int height = 100);
 }
 
