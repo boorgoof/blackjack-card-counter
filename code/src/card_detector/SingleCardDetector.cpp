@@ -57,14 +57,59 @@ std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
     cv::Mat mask = this->rough_card_detector_->getMask(image);
     std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(image, mask);
     
-    for (const std::vector<cv::Point>& contour : cards_contour) {
-        cv::Mat single_obj_mask = this->intersectContour(mask, contour);
-        //Fede lavora qua con projected, prova a usare qualche filtro per migliorare la classificazione
-        cv::Mat projected = CardProjection::projectCard(image, contour);
-        cv::Mat corner = CardProjection::extractCardCorner(image, contour);
+    for (std::vector<cv::Point>& contour : cards_contour) {
+        
+        cv::Mat single_obj_mask; 
+        cv::Mat card_projected_image;
+        
+        if(this->object_segmenter_->get_method_name()== "SimpleContours"){
+            
+            // for the test dataset we need to find the rectangles of a card 
+            cv::Mat H = CardProjection::getPerspectiveTranform(image, contour);
+            cv::warpPerspective(image, card_projected_image, H, cv::Size(250, 350));
+            cv::Mat H_inv = H.inv();
 
+            const int cardWidth = card_projected_image.cols;
+            const int cardHeight = card_projected_image.rows; 
+            
+            int cornerWidth  = static_cast<int>(cardWidth * 0.20f);
+            int cornerHeight = static_cast<int>(cardHeight *  0.25f);
+
+
+            std::vector<cv::Point2f> dstCorner = {
+                {0.0f, 0.0f},                              
+                {static_cast<float>(cornerWidth), 0.0f},   
+                {static_cast<float>(cornerWidth), static_cast<float>(cornerHeight)}, 
+                {0.0f, static_cast<float>(cornerHeight)}  
+            };
+            
+
+            std::vector<cv::Point2f> srcCornerFloat;
+            cv::perspectiveTransform(dstCorner, srcCornerFloat, H_inv);
+            
+            // conversion to cv::Point
+            std::vector<cv::Point> srcCorner;
+            srcCorner.reserve(srcCornerFloat.size());
+            for (const auto& p : srcCornerFloat) {
+                srcCorner.emplace_back(cvRound(p.x), cvRound(p.y));
+            }
+            contour = srcCorner;
+            
+            
+        }else{
+            cv::Mat single_obj_mask = this->intersectContour(mask, contour);
+        }
+
+        
         if (this->object_classifier_) {
-            const ObjectType* obj_type = this->object_classifier_->classify_object(image, single_obj_mask);
+
+            const ObjectType* obj_type = nullptr;
+
+            if (!card_projected_image.empty()) {
+                obj_type = this->object_classifier_->classify_object(card_projected_image, cv::Mat());
+            } else {
+                obj_type = this->object_classifier_->classify_object(image, single_obj_mask);
+            }
             
             if (obj_type && obj_type->isValid()) {
 
