@@ -1,5 +1,5 @@
 #include "../../include/card_detector/SingleCardDetector.h"
-#include "../../include/CardProjection.h"
+#include "../../include/card_detector/CardProjection.h"
 #include "../../include/ObjectType.h"
 #include <opencv2/imgproc.hpp>
 
@@ -11,29 +11,6 @@ SingleCardDetector::SingleCardDetector(RoughCardDetector* rough_card_detector, O
 SingleCardDetector::~SingleCardDetector() {
     
 }
-//todo delete
-cv::Mat SingleCardDetector::intersectRotatedRect(const cv::Mat& mask, const cv::RotatedRect& rect) const {
-    // Ensure single-channel mask
-    cv::Mat src = mask.clone();
-
-    // Create a mask for the rotated rect
-    cv::Mat rectMask(src.size(), CV_8UC1, cv::Scalar(0));
-    cv::Point2f pt[4];
-    rect.points(pt);
-    std::vector<cv::Point> pts;
-    pts.reserve(4);
-    for (int i = 0; i < 4; ++i) {
-        pts.emplace_back(cv::Point(cvRound(pt[i].x), cvRound(pt[i].y)));
-    }
-    cv::fillConvexPoly(rectMask, pts, cv::Scalar(255));
-
-    // Bitwise AND to keep only pixels inside
-    cv::Mat out;
-    cv::bitwise_and(src, rectMask, out);
-    return out;
-}
-
-
 
 cv::Mat SingleCardDetector::intersectContour(const cv::Mat& mask, const std::vector<cv::Point>& contour) const {
     // Ensure single-channel mask
@@ -75,43 +52,8 @@ std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
             const int cardWidth = card_projected_image.cols;
             const int cardHeight = card_projected_image.rows; 
             
-            int cornerWidth  = static_cast<int>(cardWidth * 0.20f);
-            int cornerHeight = static_cast<int>(cardHeight *  0.25f);
+            CardProjection::compute_two_opposite_corners_bboxes(H_inv, cardWidth, cardHeight, bbox1, bbox2);
 
-            std::vector<cv::Point2f> dstCorner = {
-                {0.0f, 0.0f},                              
-                {static_cast<float>(cornerWidth), 0.0f},   
-                {static_cast<float>(cornerWidth), static_cast<float>(cornerHeight)}, 
-                {0.0f, static_cast<float>(cornerHeight)}  
-            };
-
-            float x0_opposite_corner = static_cast<float>(cardWidth  - cornerWidth);
-            float y0_opposite_corner = static_cast<float>(cardHeight - cornerHeight);
-            std::vector<cv::Point2f> dstOppositeCorner = {
-                {x0_opposite_corner,y0_opposite_corner},
-                {static_cast<float>(cardWidth), y0_opposite_corner},
-                {static_cast<float>(cardWidth), static_cast<float>(cardHeight)},
-                {x0_opposite_corner, static_cast<float>(cardHeight)}
-            };
-
-            std::vector<cv::Point2f> srcCornerFloat, srcOppositeCornerFloat;
-            cv::perspectiveTransform(dstCorner, srcCornerFloat, H_inv);
-            cv::perspectiveTransform(dstOppositeCorner, srcOppositeCornerFloat, H_inv);
-
-            std::vector<cv::Point> srcCorner, srcOppositeCorner;
-            srcCorner.reserve(srcCornerFloat.size());
-            for (const cv::Point2f& p : srcCornerFloat) {
-                srcCorner.emplace_back(cvRound(p.x), cvRound(p.y));
-            }
-
-            srcOppositeCorner.reserve(srcOppositeCornerFloat.size());
-            for (const cv::Point2f& p : srcOppositeCornerFloat) {
-                srcOppositeCorner.emplace_back(cvRound(p.x), cvRound(p.y));
-            }
-            
-            bbox1 = cv::boundingRect(srcCorner);
-            bbox2 = cv::boundingRect(srcOppositeCorner);
- 
         }else{
             single_obj_mask = this->intersectContour(mask, contour);
         }
@@ -131,21 +73,16 @@ std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
 
                 std::vector<cv::Rect> bboxes;
                 if (bbox1.empty() == false && bbox2.empty() == false) {
-
                     bboxes.push_back(bbox1);
                     bboxes.push_back(bbox2);
                     Label label(obj_type->clone(), bboxes);  
                     detected_labels.push_back(std::move(label));
-
                 } else {
-
                     cv::Rect bounding_box = boundingRect(contour);
                     Label label(obj_type->clone(), bounding_box);
                     detected_labels.push_back(std::move(label));
-
                 }
-                
-                
+                   
             }
         }
     }
