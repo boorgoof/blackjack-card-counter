@@ -1,5 +1,6 @@
 #include "../include/StatisticsCalculation.h"
 #include "../include/Label.h"
+#include "../include/CardType.h"
 #include <algorithm>
 #include <unordered_set>
 #include <map>
@@ -7,17 +8,32 @@
 
 float StatisticsCalculation::calc_IoU(const Label& true_label, const Label& pred_label) {
     
-    cv::Rect2f trueRect(true_label.get_bounding_box());
-    cv::Rect2f predRect(pred_label.get_bounding_box());
+    const std::vector<cv::Rect>& true_boxes = true_label.get_bounding_boxes();
+    const std::vector<cv::Rect>& pred_boxes = pred_label.get_bounding_boxes();
 
-    cv::Rect2f intersetion = trueRect & predRect;
-    float intersetion_area = std::max(0.0f, intersetion.area()); 
-
-    float union_area = trueRect.area() + predRect.area() - intersetion_area;
-    if (union_area <= 0.0f)    // avoid division by zero
+     if (true_boxes.size() != 1 || pred_boxes.empty())
         return 0.0f;
+    
+    cv::Rect2f trueRect(true_boxes[0]);
+    float best_iou = 0.0f;
 
-    return intersetion_area / union_area;
+    for (const cv::Rect& pred_box : pred_boxes) {
+        
+        cv::Rect2f predRect(pred_box);
+
+        cv::Rect2f intersection = trueRect & predRect;
+        float intersection_area = std::max(0.0f, intersection.area());
+
+        float union_area = trueRect.area() + predRect.area() - intersection_area;
+        if (union_area <= 0.0f)
+            continue;
+
+        float iou = intersection_area / union_area;
+        if (iou > best_iou)
+            best_iou = iou;
+    }
+
+    return best_iou;
 }
 
 float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_labels,const std::vector<Label>& predicted_labels)

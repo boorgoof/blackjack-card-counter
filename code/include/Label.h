@@ -1,44 +1,56 @@
 #ifndef LABEL_H
 #define LABEL_H
 
-#include "CardType.h"
 #include <opencv2/opencv.hpp>
-
+# include "ObjectType.h"
 class Label {
 private:
 
     std::unique_ptr<ObjectType> object_;
-    cv::Rect boundingbox_;
-    float confidence_{0.f};     
+    std::vector<cv::Rect> bounding_boxes_;
+   
 
 public:
 
-    Label(): object_{nullptr}, boundingbox_{}, confidence_{0.f} {}
+    Label(): object_{nullptr},  bounding_boxes_{} {}
 
     Label(std::unique_ptr<ObjectType> obj, const cv::Rect& bbox, float conf = 0.f)
-        : object_{std::move(obj)}, boundingbox_{bbox}, confidence_{conf} {}
+        : object_{std::move(obj)}, bounding_boxes_{bbox} {}
 
-    Label(Label&& label) : object_{std::move(label.object_)}, boundingbox_{label.boundingbox_}, confidence_{label.confidence_} {}
+    Label(std::unique_ptr<ObjectType> obj, const std::vector<cv::Rect>& bboxes,float conf = 0.f)
+        : object_{std::move(obj)}, bounding_boxes_{bboxes} {}
+
+    Label(Label&& label) : object_{std::move(label.object_)}, bounding_boxes_{label.bounding_boxes_} {}
     Label& operator=(const Label& label) {
         object_ = label.object_ ? label.object_->clone() : nullptr;
-        boundingbox_ = label.boundingbox_;
-        confidence_ = label.confidence_;
+        bounding_boxes_ = label.bounding_boxes_;
         return *this;
     }
 
     // getters
     const ObjectType* get_object() const { return object_.get(); }
-    const cv::Rect& get_bounding_box() const { return boundingbox_;}
-    float get_confidence() const { return confidence_;}  
+    const std::vector<cv::Rect>& get_bounding_boxes() const { return bounding_boxes_;}
 
     // setters
     void set_object(std::unique_ptr<ObjectType> obj) { object_ = std::move(obj); }
-    void set_bounding_box(const cv::Rect& bbox) { boundingbox_ = bbox; }
-    void set_confidence(float conf) { confidence_ = conf; }      
+    void set_bounding_boxes(const std::vector<cv::Rect>& bbox) { bounding_boxes_ = bbox; }
+   
 };
 
-inline std::ostream& operator<<(std::ostream& os, const Label& l){
-    os << l.get_object() << " " << l.get_bounding_box();
+inline std::ostream& operator<<(std::ostream& os, const Label& l) {
+
+    os << l.get_object() << " ";
+
+    const auto& boxes = l.get_bounding_boxes();
+    os << "[";
+    for (size_t i = 0; i < boxes.size(); ++i) {
+        os << boxes[i];
+        if (i + 1 < boxes.size()) {
+            os << ", ";
+        }
+    }
+    os << "]";
+
     return os;
 }
 

@@ -1,5 +1,6 @@
 #include "../../include/card_detector/SingleCardDetector.h"
 #include "../../include/CardProjection.h"
+#include "../../include/ObjectType.h"
 #include <opencv2/imgproc.hpp>
 
 SingleCardDetector::SingleCardDetector(RoughCardDetector* rough_card_detector, ObjectClassifier* object_classifier, ObjectSegmenter* object_segmenter, bool detect_full_card, bool visualize)
@@ -56,11 +57,13 @@ std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
 
     cv::Mat mask = this->rough_card_detector_->getMask(image);
     std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(image, mask);
-    
+   
+
     for (std::vector<cv::Point>& contour : cards_contour) {
         
         cv::Mat single_obj_mask; 
         cv::Mat card_projected_image;
+         cv::Rect bbox1, bbox2;
         
         if(this->object_segmenter_->get_method_name()== "SimpleContours"){
             
@@ -75,29 +78,42 @@ std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
             int cornerWidth  = static_cast<int>(cardWidth * 0.20f);
             int cornerHeight = static_cast<int>(cardHeight *  0.25f);
 
-
             std::vector<cv::Point2f> dstCorner = {
                 {0.0f, 0.0f},                              
                 {static_cast<float>(cornerWidth), 0.0f},   
                 {static_cast<float>(cornerWidth), static_cast<float>(cornerHeight)}, 
                 {0.0f, static_cast<float>(cornerHeight)}  
             };
-            
 
-            std::vector<cv::Point2f> srcCornerFloat;
+            float x0_opposite_corner = static_cast<float>(cardWidth  - cornerWidth);
+            float y0_opposite_corner = static_cast<float>(cardHeight - cornerHeight);
+            std::vector<cv::Point2f> dstOppositeCorner = {
+                {x0_opposite_corner,y0_opposite_corner},
+                {static_cast<float>(cardWidth), y0_opposite_corner},
+                {static_cast<float>(cardWidth), static_cast<float>(cardHeight)},
+                {x0_opposite_corner, static_cast<float>(cardHeight)}
+            };
+
+            std::vector<cv::Point2f> srcCornerFloat, srcOppositeCornerFloat;
             cv::perspectiveTransform(dstCorner, srcCornerFloat, H_inv);
-            
-            // conversion to cv::Point
-            std::vector<cv::Point> srcCorner;
+            cv::perspectiveTransform(dstOppositeCorner, srcOppositeCornerFloat, H_inv);
+
+            std::vector<cv::Point> srcCorner, srcOppositeCorner;
             srcCorner.reserve(srcCornerFloat.size());
-            for (const auto& p : srcCornerFloat) {
+            for (const cv::Point2f& p : srcCornerFloat) {
                 srcCorner.emplace_back(cvRound(p.x), cvRound(p.y));
             }
-            contour = srcCorner;
+
+            srcOppositeCorner.reserve(srcOppositeCornerFloat.size());
+            for (const cv::Point2f& p : srcOppositeCornerFloat) {
+                srcOppositeCorner.emplace_back(cvRound(p.x), cvRound(p.y));
+            }
             
-            
+            bbox1 = cv::boundingRect(srcCorner);
+            bbox2 = cv::boundingRect(srcOppositeCorner);
+ 
         }else{
-            cv::Mat single_obj_mask = this->intersectContour(mask, contour);
+            single_obj_mask = this->intersectContour(mask, contour);
         }
 
         
@@ -113,9 +129,22 @@ std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
             
             if (obj_type && obj_type->isValid()) {
 
-                cv::Rect bounding_box = boundingRect(contour);
-                Label label(obj_type->clone(), bounding_box);
-                detected_labels.push_back(std::move(label));
+                std::vector<cv::Rect> bboxes;
+                if (bbox1.empty() == false && bbox2.empty() == false) {
+
+                    bboxes.push_back(bbox1);
+                    bboxes.push_back(bbox2);
+                    Label label(obj_type->clone(), bboxes);  
+                    detected_labels.push_back(std::move(label));
+
+                } else {
+
+                    cv::Rect bounding_box = boundingRect(contour);
+                    Label label(obj_type->clone(), bounding_box);
+                    detected_labels.push_back(std::move(label));
+
+                }
+                
                 
             }
         }
@@ -123,3 +152,4 @@ std::vector<Label> SingleCardDetector::detect_image(const cv::Mat& image) {
 
     return detected_labels;
 }
+
