@@ -10,7 +10,6 @@ add_executable(main
     code/src/ObjectType.cpp
     code/src/CardType.cpp
     code/src/Loaders.cpp
-    code/src/CardProjection.cpp
     code/src/Dataset/ImageDataset.cpp
     code/src/Dataset/VideoDataset.cpp
     code/src/Dataset/TemplateDataset.cpp
@@ -21,6 +20,7 @@ add_executable(main
     code/src/card_detector/SequentialCardDetector.cpp
     code/src/card_detector/SingleCardDetector.cpp
     code/src/card_detector/RoughCardDetector.cpp
+    code/src/card_detector/CardProjection.cpp
 
     code/src/card_detector/objectClassifiers/ObjectClassifier.cpp
     code/src/card_detector/objectClassifiers/featurePipeline/FeatureExtractor.cpp
