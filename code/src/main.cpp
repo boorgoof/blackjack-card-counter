@@ -19,7 +19,7 @@
 #include "../include/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
 #include "../include/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
 #include "../include/card_detector/objectSegmenters/MultipleCardSegmenter.h"
-
+#include "../include/card_detector/objectSegmenters/MultipleCardSegmenter2.h"
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
     if (argc < 4) {
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     if (single_cards_dataset.is_sequential()) {
         card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
     } else {
-        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), new  MultipleCardSegmenter(),  detect_full_card, visualize);
+        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), new  MultipleCardSegmenter2(),  detect_full_card, visualize);
     }
 
     ImageFilter img_filter;
