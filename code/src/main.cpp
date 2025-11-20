@@ -133,19 +133,31 @@ int main(int argc, char** argv) {
             cv::Mat vis_img = img.clone();
             //draw true labels in green
             for (const auto& label : true_labels.back()) {
-                cv::rectangle(vis_img, label.get_bounding_box(), cv::Scalar(0, 255, 0), 2);
-                if (label.get_object()) {
-                    cv::putText(vis_img, label.get_object()->to_string(), cv::Point(label.get_bounding_box().x, label.get_bounding_box().y - 10),
+                const std::vector<cv::Rect>& boxes = label.get_bounding_boxes();
+
+                for (const cv::Rect& box : boxes) {
+                    cv::rectangle(vis_img, box, cv::Scalar(0, 255, 0), 2);
+                    if (label.get_object()) {
+                        cv::putText(vis_img, label.get_object()->to_string(), cv::Point(box.x, box.y - 10),
                                 cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
+                    }
                 }
+
+                
             }
             //draw predicted labels in red
             for (const auto& label : predicted_labels.back()) {
-                cv::rectangle(vis_img, label.get_bounding_box(), cv::Scalar(0, 0, 255), 2);
-                if (label.get_object()) {
-                    cv::putText(vis_img, label.get_object()->to_string(), cv::Point(label.get_bounding_box().x, label.get_bounding_box().y - 10),
+
+                const std::vector<cv::Rect>& boxes = label.get_bounding_boxes();
+                for (const cv::Rect& box : boxes) {
+                    cv::rectangle(vis_img, box, cv::Scalar(0, 0, 255), 2);
+                    if (label.get_object()) {
+                        cv::putText(vis_img, label.get_object()->to_string(), cv::Point(box.x, box.y - 10),
                                 cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 2);
+                     }
                 }
+
+                
             }
             cv::imshow("Detections", vis_img);
             cv::waitKey(0); //display each image for 500 ms
