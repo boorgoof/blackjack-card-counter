@@ -1,9 +1,9 @@
 **/build/
 **/build_debug/
 **/.vscode/
-**/output/
 **/.DS_Store/
 .DS_Store
 data/datasets/YoloDataset
 __pycache__/train_yolo.cpython-314.pyc
 yolo11s.pt
+.venv
