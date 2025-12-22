@@ -4,3 +4,8 @@
 **/output/
 **/.DS_Store/
 .DS_Store
+**/DL_approach/runs/*
+**/DL_approach/yolo11_3_best.pt
+**/DL_approach/yolo11n.pt
+**/DL_approach/yolo11s.pt
+**/test_code/*
