@@ -2,14 +2,20 @@
 #define CARDPROJECTION_H
 
 #include <opencv2/opencv.hpp>
-#include <vector>
 
 namespace CardProjection {
-  
-    cv::Mat getPerspectiveTranform(const cv::Mat& image, const std::vector<cv::Point>& contour);
-    void compute_two_opposite_corners_bboxes(const cv::Mat& H_inv, int cardWidth, int cardHeight,  cv::Rect& bbox1,  cv::Rect& bbox2, float cornerWRatio = 0.20f, float cornerHRatio = 0.25f);
-    void convertToIntPoints(const std::vector<cv::Point2f>& foalPoints, std::vector<cv::Point>& intPoints);
 
-}
+/**
+ * @brief flatten: Takes an image and a binary mask of a card, detects the
+ * card's corners, and applies a perspective transform to "flatten" it into a
+ * top-down view.
+ * @param image: Input source image (BGR).
+ * @param mask: Binary mask where the card is white (CV_8UC1).
+ * @return cv::Mat: The flattened card image (approx 200x300 or aspect ratio
+ * corrected).
+ */
+cv::Mat flatten(const cv::Mat &image, const cv::Mat &mask);
+
+} // namespace CardProjection
 
 #endif // CARDPROJECTION_H
