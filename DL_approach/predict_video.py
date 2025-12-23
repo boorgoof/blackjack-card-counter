@@ -6,7 +6,7 @@ import sys
 def main():
     # 1. Select the model
     # We look for the latest best.pt based on exploration
-    model_path = "output/yolo_synthetic/train/weights/best.pt"
+    model_path = './yolo11s_synthetic.pt'
     if not os.path.exists(model_path):
         # Fallback to base model if custom one doesn't exist
         print(f"Custom model not found at {model_path}. Checking for base models...")
@@ -43,6 +43,24 @@ def main():
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     print(f"Frame Size: {width}x{height}")
 
+
+    results = model(video_path, stream=True)
+
+    for res in results:
+        # .plot() returns a BGR numpy array with boxes/labels drawn
+        annotated_frame = res.plot()
+
+        # Display the frame
+        cv2.imshow("YOLO Stream", annotated_frame)
+
+        # Press 'q' to quit
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cv2.destroyAllWindows()
+    exit()
+
+
     # We want 1 frame per second
     # If FPS is 30, we process frame 0, 30, 60...
     step = int(fps)
@@ -52,12 +70,31 @@ def main():
     
     print("\nStarting prediction display Loop...")
     print("Press 'q' to quit, 'n' for next frame immediately.")
-
+    '''
     while True:
         # Set the video position
         cap.set(cv2.CAP_PROP_POS_FRAMES, current_frame_index)
         ret, frame = cap.read()
+        frame = frame[:, 180:1100]
         
+        target_size = 920
+        h, w = frame.shape[:2]
+
+        # 1. Center Crop Width (removes left/right borders)
+        if w > target_size:
+            start_x = (w - target_size) // 2
+            frame = frame[:, start_x : start_x + target_size]
+        
+        # 2. Vertical Padding (adds top/bottom borders if frame is too short)
+        h, w = frame.shape[:2] # Update h after potential crop
+        if h < target_size:
+            pad_total = target_size - h
+            pad_top = pad_total // 2
+            pad_bottom = pad_total - pad_top
+            # Add black bars (0,0,0)
+            frame = cv2.copyMakeBorder(frame, pad_top, pad_bottom, 0, 0, 
+                                       cv2.BORDER_CONSTANT, value=[0, 0, 0])
+
         if not ret:
             print("End of video reached.")
             break
@@ -69,8 +106,10 @@ def main():
         # Predict
         # verbose=False to keep clutter down
         # Lower confidence to catch weak detections, set imgsz to match training typically
-        results = model(frame, verbose=False, conf=0.04)
+        results = model(frame, verbose=False, conf=0.4)
         
+        
+
         # Check if we have any detections
         num_detections = len(results[0].boxes)
         print(f"Frame {current_frame_index}: {num_detections} detections")
@@ -103,6 +142,6 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
-
+    '''
 if __name__ == "__main__":
     main()

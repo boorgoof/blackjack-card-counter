@@ -5,7 +5,7 @@ import torch
 device = 0 if torch.cuda.is_available() else 'cpu'
 print(f"Running evaluation on: {device}")
 
-model_path = 'output/yolo_synthetic/train/weights/best.pt'
+model_path = './yolo11s_synthetic.pt'
 
 
 try:
@@ -21,7 +21,7 @@ source_images = 'datasets/video_test/test/images'
 print("Starting prediction on the Test Set...")
 results = model.predict(
     source=source_images,
-    conf=0.25,       # Confidence threshold (ignore weak detections)
+    conf=0.7,       # Confidence threshold (ignore weak detections)
     iou=0.5,         # NMS threshold (remove overlapping boxes)
     save=True,       # <--- This saves the images with drawings
     save_txt=False,  # Set True if you also want the coordinates in .txt files

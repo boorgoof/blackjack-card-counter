@@ -9,7 +9,7 @@ print(f"Running evaluation on: {device}")
 # CRITICAL: Change this path to your specific run folder name.
 # Usually found in 'runs/detect/train/weights/best.pt' 
 # or 'runs/detect/card_model_v1/weights/best.pt'
-model_path = 'runs/detect/train2/weights/best.pt' 
+model_path = 'yolo11_3_best.pt' 
 
 try:
     model = YOLO(model_path)
