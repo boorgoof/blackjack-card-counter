@@ -6,17 +6,10 @@ import sys
 def main():
     # 1. Select the model
     # We look for the latest best.pt based on exploration
-    model_path = './yolo11s_synthetic.pt'
+    model_path = './yolov11s_synthetic_1280.pt'
     if not os.path.exists(model_path):
-        # Fallback to base model if custom one doesn't exist
         print(f"Custom model not found at {model_path}. Checking for base models...")
-        if os.path.exists("yolo11s.pt"):
-            model_path = "yolo11s.pt"
-        elif os.path.exists("yolo11n.pt"):
-            model_path = "yolo11n.pt"
-        else:
-            print("No suitable YOLO model found.")
-            sys.exit(1)
+        sys.exit(1)
             
     print(f"Loading model: {model_path}")
     model = YOLO(model_path)
