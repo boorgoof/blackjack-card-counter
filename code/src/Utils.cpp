@@ -1,5 +1,4 @@
 #include "../include/Utils.h"
-#include "Utils.h"
 
 std::string Utils::Path::longestCommonPath(const std::string& path1_str, const std::string& path2_str) {
     std::filesystem::path path1(path1_str);
@@ -44,17 +43,19 @@ void Utils::Save::saveLabelsToYoloFile(const std::string &file_path, const std::
         if (!label.get_object()) {
             continue;
         }
-        const cv::Rect& bbox = label.get_bounding_box();
-        float x_center = (bbox.x + bbox.width / 2.0f) / image_width;
-        float y_center = (bbox.y + bbox.height / 2.0f) / image_height;
-        float width = static_cast<float>(bbox.width) / image_width;
-        float height = static_cast<float>(bbox.height) / image_height;
+        const std::vector<cv::Rect>& bboxes = label.get_bounding_boxes();
+        for (const auto& bbox : bboxes) {
+            float x_center = (bbox.x + bbox.width / 2.0f) / image_width;
+            float y_center = (bbox.y + bbox.height / 2.0f) / image_height;
+            float width = static_cast<float>(bbox.width) / image_width;
+            float height = static_cast<float>(bbox.height) / image_height;
 
-        file << label.get_object()->get_id_number() << " "
-             << x_center << " "
-             << y_center << " "
-             << width << " "
-             << height << "\n";
+            file << label.get_object()->get_id_number() << " "
+                << x_center << " "
+                << y_center << " "
+                << width << " "
+                << height << "\n";
+        }
     }
 
     file.close();
@@ -132,10 +133,13 @@ void Utils::Visualization::showImage(cv::Mat &image, const std::string &window_n
 void Utils::Visualization::printLabelsOnImage(cv::Mat &image, const std::vector<Label> &labels, const cv::Scalar &box_color, const cv::Scalar &text_color)
 {
     for (const auto& label : labels) {
-        cv::rectangle(image, label.get_bounding_box(), box_color, 2);
-        if (label.get_object()) {
-            cv::putText(image, label.get_object()->to_string(), cv::Point(label.get_bounding_box().x, label.get_bounding_box().y - 10),
-                        cv::FONT_HERSHEY_SIMPLEX, 0.5, text_color, 2);
+        const std::vector<cv::Rect>& bboxes = label.get_bounding_boxes();
+        for (const auto& bbox : bboxes) {
+            cv::rectangle(image, bbox, box_color, 2);
+            if (label.get_object()) {
+                cv::putText(image, label.get_object()->to_string(), cv::Point(bbox.x, bbox.y - 10),
+                            cv::FONT_HERSHEY_SIMPLEX, 0.5, text_color, 2);
+            }
         }
     }
 }
