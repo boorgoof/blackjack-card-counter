@@ -213,6 +213,9 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
 
                 
             }
+            //resize image
+            float ratio = 0.5;
+            cv::resize(vis_img, vis_img, cv::Size(), ratio, ratio, cv::INTER_LINEAR);
             cv::imshow("Detections", vis_img);
             cv::waitKey(0); //display each image for 500 ms
             cv::destroyAllWindows();
