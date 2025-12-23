@@ -19,6 +19,9 @@
 #include "../include/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
 #include "../include/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
 
+std::unique_ptr<CardDetector> create_card_detector_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize);
+void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<CardDetector>& card_detector, const std::string& output_folder_path, const bool visualize, const int num_classes = 53, const float iou_threshold = 0.5f);
+
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
     if (argc < 4) {
@@ -69,65 +72,116 @@ int main(int argc, char** argv) {
     std::cout << "output_path: " << output_path << std::endl;
     std::cout << "visualize: " << (visualize ? "true" : "false") << std::endl;
 
-    std::string single_cards_dataset_path = datasets_path + "/single_cards";
-    std::string videos_dataset_path = datasets_path + "/videos";
+    std::string single_cards_folder = "single_cards";
+    std::string videos_folder = "videos";
+
+    std::string single_cards_dataset_path = datasets_path + "/" + single_cards_folder;
+    std::string videos_dataset_path = datasets_path + "/" + videos_folder;
+
+    constexpr int num_classes = 53; //52 cards + background/no card class
+    constexpr float iou_threshold = 0.5f;
 
     //TemplateDataset creation
     TemplateDataset template_dataset(template_dataset_path);
     std::cout << "Template Dataset root: " << template_dataset.get_root() << std::endl;
     std::cout << "Template Dataset loaded with " << template_dataset.size() << " entries." << std::endl;
-    for( auto it = template_dataset.begin(); it != template_dataset.end(); ++it) {
-        const TemplateInfo& sample = dynamic_cast<const TemplateInfo&>(*it);
-        std::cout << "Template card: " << sample.get_name() << ", Path: " << sample.get_pathSample() << std::endl;
-        if (visualize){
+    if (visualize) {
+        for (auto it = template_dataset.begin(); it != template_dataset.end(); ++it) {
+            const TemplateInfo& sample = dynamic_cast<const TemplateInfo&>(*it);
             cv::Mat img = template_dataset.load(it);
-            cv::imshow("Template Card: " + sample.get_name(), img);
-            cv::waitKey(200);
-            cv::destroyAllWindows();
+            Utils::Visualization::showImage(img, "Template Card: " + sample.get_name(), 200, 1);
         }
     }
 
-    //Dataset object creation
-    ImageDataset single_cards_dataset(single_cards_dataset_path);
+    //----------  SINGLE CARD DATASET  ----------
 
-    //depending on the dataset type, create the appropriate card detector (specific parameters will be decided later, in the actual implementation)
-    std::unique_ptr<CardDetector> card_detector = nullptr;
-    bool detect_full_card = false; //depending on the dataset, we may want to detect the full card or just a part of it (e.g., the rank and suit in the corner)
-    if (single_cards_dataset.is_sequential()) {
-        card_detector = std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
-    } else {
-        card_detector = std::make_unique<SingleCardDetector>(new RoughCardDetector(PipelinePreset::DEFAULT, MaskType::POLYGON), new FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), new  SimpleContoursCardSegmenter(),  detect_full_card, visualize);
-    }
+    //Dataset object creation
+    std::unique_ptr<Dataset> single_cards_dataset(new ImageDataset(single_cards_dataset_path));
+
+    //depending on the dataset type, create the appropriate card detector
+    // change create_card_detector_for_dataset to return std::unique_ptr<CardDetector>
+    std::unique_ptr<CardDetector> card_detector = create_card_detector_for_dataset(single_cards_dataset, template_dataset, false, visualize);
 
     ImageFilter img_filter;
     img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
-    
-    //prepare a vector to store the predicted labels and the ground truth for every image
-    std::vector<std::vector<Label>> predicted_labels = std::vector<std::vector<Label>>();
-    std::vector<std::vector<Label>> true_labels = std::vector<std::vector<Label>>();
+
+    iterate_dataset(single_cards_dataset, img_filter, card_detector, output_path + "/" + single_cards_folder, visualize, num_classes);
+
+    //----------  VIDEO DATASET  ----------
+
+    //Dataset object creation
+    std::unique_ptr<Dataset> video_dataset(new VideoDataset(videos_dataset_path));
+
+    //depending on the dataset type, create the appropriate card detector
+    card_detector.release();
+    card_detector = create_card_detector_for_dataset(video_dataset, template_dataset, true, visualize);
+
+    iterate_dataset(video_dataset, img_filter, card_detector, output_path + "/" + videos_folder, visualize, num_classes);
+}
+
+std::unique_ptr<CardDetector> create_card_detector_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize) {
+    if (dataset->is_sequential()) {
+        return std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
+    } else {
+        return std::make_unique<SingleCardDetector>(std::make_unique<RoughCardDetector>(PipelinePreset::DEFAULT, MaskType::POLYGON), std::make_unique<FeaturePipeline>(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), std::make_unique<SimpleContoursCardSegmenter>(), detect_full_card, visualize);
+    }
+}
+
+void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<CardDetector>& card_detector, const std::string& output_folder_path, const bool visualize, const int num_classes, const float iou_threshold) {
+
+    std::string annotations_folder = output_folder_path + "/annotations/";
+    std::string images_folder = output_folder_path + "/images/";
+    std::string stats_folder = output_folder_path + "/stats/";
+
+    if (!std::filesystem::exists(annotations_folder)) {
+        std::filesystem::create_directories(annotations_folder);
+    }
+    if (!std::filesystem::exists(images_folder)) {
+        std::filesystem::create_directories(images_folder);
+    }
 
     //keep track of the time taken to load and detect each image
     std::chrono::duration<double, std::milli> total_loading_time;
     std::chrono::duration<double, std::milli> total_detection_time;
-    for (auto it = single_cards_dataset.begin(); it != single_cards_dataset.end(); ++it) {
+
+    cv::Mat cumulative_confusion_matrix = cv::Mat::zeros(num_classes, num_classes, CV_32S);
+
+    for (auto it = dataset->begin(); it != dataset->end(); ++it) {
+        //vectors to hold predicted and true labels for the current image
+        std::vector<Label> predicted_labels;
+        std::vector<Label> true_labels;
+
         auto start = std::chrono::steady_clock::now();
 
         SampleInfo* img_info = &(*it);
 
-        cv::Mat img = single_cards_dataset.load(it);
+        cv::Mat img = dataset->load(it);
 
-        img = img_filter.apply_filters(img);
+        img = image_filter.apply_filters(img);
 
         auto loading_time = std::chrono::steady_clock::now();
         total_loading_time += std::chrono::duration<double, std::milli>(loading_time - start);
 
-        //detects card in image and adds the result of the detection to the vector
-        predicted_labels.push_back(card_detector->detect_image(img));
+        //detects cards in image and adds the result of the detection to the vector
+        predicted_labels = card_detector->detect_image(img);
 
         auto detection_time = std::chrono::steady_clock::now();
         total_detection_time += std::chrono::duration<double, std::milli>(detection_time - loading_time);
 
-        true_labels.push_back(Loader::Annotation::load_yolo_image_annotations(img_info->get_pathLabel(), img.cols, img.rows));
+        true_labels = Loader::Annotation::load_yolo_image_annotations(img_info->get_pathLabel(), img.cols, img.rows);
+
+        //saves the predicted labels to a file
+        Utils::Save::saveLabelsToYoloFile(annotations_folder + img_info->get_name() + ".txt", predicted_labels, img.cols, img.rows);
+
+        //update cumulative confusion matrix
+        cumulative_confusion_matrix += StatisticsCalculation::calc_confusion_matrix(true_labels, predicted_labels, num_classes, iou_threshold);
+        //StatisticsCalculation::print_confusion_matrix(cumulative_confusion_matrix);
+
+        cv::Mat output_img = img.clone();
+        Utils::Visualization::printLabelsOnImage(output_img, true_labels, cv::Scalar(0,255,0), cv::Scalar(0,255,0)); //true labels in green
+        Utils::Visualization::printLabelsOnImage(output_img, predicted_labels, cv::Scalar(255,0,0), cv::Scalar(255,0,0)); //predicted labels in red
+
+        Utils::Save::saveImageToFile(images_folder + img_info->get_name() + ".png", output_img);
 
         if(visualize){
             cv::Mat vis_img = img.clone();
@@ -164,25 +218,22 @@ int main(int argc, char** argv) {
             cv::destroyAllWindows();
         }
 
-        Utils::Visualization::printProgressBar(static_cast<float>(std::distance(single_cards_dataset.begin(), it) + 1) / std::distance(single_cards_dataset.begin(), single_cards_dataset.end()),
+        Utils::Visualization::printProgressBar(static_cast<float>(std::distance(dataset->begin(), it) + 1) / std::distance(dataset->begin(), dataset->end()),
                                                  50, "Processing images: ", "Complete");
     }
 
-    std::cout << "Dataset image path: " << single_cards_dataset.get_root() << std::endl;
-    std::cout << "Dataset annotation path: " << single_cards_dataset.get_annotation_root() << std::endl;
-    std::cout << "Total images processed: " << std::distance(single_cards_dataset.begin(), single_cards_dataset.end()) << std::endl;
-    std::cout << "Average loading time per image: " << total_loading_time.count() / std::distance(single_cards_dataset.begin(), single_cards_dataset.end()) << " ms" << std::endl;
-    std::cout << "Average detection time per image: " << total_detection_time.count() / std::distance(single_cards_dataset.begin(), single_cards_dataset.end()) << " ms" << std::endl;
+    std::cout << "Dataset image path: " << dataset->get_root() << std::endl;
+    std::cout << "Dataset annotation path: " << dataset->get_annotation_root() << std::endl;
+    std::cout << "Total images processed: " << std::distance(dataset->begin(), dataset->end()) << std::endl;
+    std::cout << "Average loading time per image: " << total_loading_time.count() / std::distance(dataset->begin(), dataset->end()) << " ms" << std::endl;
+    std::cout << "Average detection time per image: " << total_detection_time.count() / std::distance(dataset->begin(), dataset->end()) << " ms" << std::endl;
 
-    /**
-    //calculate metrics for single cards dataset
-    cv::Mat cfm = StatisticsCalculation::calc_confusion_matrix(true_labels, predicted_labels, 52); //52 classes for a standard deck of cards
-    StatisticsCalculation::print_confusion_matrix(cfm);
-
-    StatisticsCalculation::calc_dataset_meanIoU(true_labels, predicted_labels);
-    StatisticsCalculation::print_dataset_meanIoU();
-    */
-
-
-    //TODO: repeat the same process for the videos
+    //save final cumulative confusion matrix
+    Utils::Save::save_confusion_matrix(stats_folder + "confusion_matrix.txt", cumulative_confusion_matrix);
+    float accuracy = StatisticsCalculation::calc_accuracy(cumulative_confusion_matrix);
+    std::vector<float> precision = StatisticsCalculation::calc_precision(cumulative_confusion_matrix);
+    std::vector<float> recall = StatisticsCalculation::calc_recall(cumulative_confusion_matrix);
+    std::vector<float> f1 = StatisticsCalculation::calc_f1(cumulative_confusion_matrix);
+    //save metrics
+    Utils::Save::save_metrics(stats_folder + "metrics.txt", accuracy, precision, recall, f1);
 }

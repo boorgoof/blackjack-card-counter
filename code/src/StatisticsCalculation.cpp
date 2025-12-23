@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <map>
 #include <vector>
+#include "StatisticsCalculation.h"
 
 float StatisticsCalculation::calc_IoU(const Label& true_label, const Label& pred_label) {
     
@@ -179,7 +180,7 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& t
         }
     }
 
-    // 5) Ghost prediction (FP but sightly different form Mispredicted case): riga = row_predicted_class_index, col = no_object_index
+    // 5) Ghost prediction (FP but sightly different form Mispredicted case): row = row_predicted_class_index, col = no_object_index
     for (int pred_idx = 0; pred_idx < (int)pred_labels.size(); ++pred_idx) {
         if (!pred_used[pred_idx]) {
 
@@ -210,6 +211,30 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<std::vect
         mcm += StatisticsCalculation::calc_confusion_matrix(true_labels_dataset[i], pred_labels_dataset[i], num_classes, iou_threshold);
     }
     return mcm;
+}
+
+float StatisticsCalculation::calc_accuracy(const cv::Mat &confusion_matrix)
+{
+    CV_Assert(confusion_matrix.rows == confusion_matrix.cols);
+    CV_Assert(confusion_matrix.type() == CV_32S);
+
+    int TP = 0;
+    int TN = 0;
+    int FP = 0;
+    int FN = 0;
+
+    for (int i = 0; i < confusion_matrix.rows; ++i) {
+        for (int j = 0; j < confusion_matrix.cols; ++j) {
+            if (i == j) {
+                TP += confusion_matrix.at<int>(i, j);
+            } else {
+                FP += confusion_matrix.at<int>(i, j);
+                FN += confusion_matrix.at<int>(j, i);
+            }
+        }
+    }
+
+    return static_cast<float>(TP + TN) / (TP + TN + FP + FN);
 }
 
 // usefull link: https://medium.com/mcd-unison/multiclass-confusion-matrix-clarity-without-confusion-88af1494c1d1
@@ -290,7 +315,7 @@ std::vector<float> StatisticsCalculation::calc_f1(const cv::Mat& confusion_matri
 }
 
 
-void StatisticsCalculation::print_card_confusion_matrix(const cv::Mat& confusion_matrix)
+void StatisticsCalculation::print_confusion_matrix(const cv::Mat& confusion_matrix)
 {
     CV_Assert(confusion_matrix.rows == confusion_matrix.cols);
     CV_Assert(confusion_matrix.type() == CV_32S);
@@ -301,7 +326,7 @@ void StatisticsCalculation::print_card_confusion_matrix(const cv::Mat& confusion
     std::cout <<  "[rows = predicted, cols = ground truth]" << std::endl;
 
     // Columns indices
-    int weight_cell = 8;
+    int weight_cell = 4;
     std::cout << std::setw(weight_cell) << "";
     for (int j = 0; j < matrix_dim; ++j) std::cout << std::setw(weight_cell) <<  Yolo_index_codec::yolo_index_to_card(j);
     std::cout << '\n';
