@@ -5,7 +5,6 @@
 #include <unordered_set>
 #include <map>
 #include <vector>
-#include "StatisticsCalculation.h"
 
 float StatisticsCalculation::calc_IoU(const Label& true_label, const Label& pred_label) {
     

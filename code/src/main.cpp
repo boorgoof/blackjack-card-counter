@@ -186,7 +186,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         if(visualize){
             cv::Mat vis_img = img.clone();
             //draw true labels in green
-            for (const auto& label : true_labels.back()) {
+            for (const auto& label : true_labels) {
                 const std::vector<cv::Rect>& boxes = label.get_bounding_boxes();
 
                 for (const cv::Rect& box : boxes) {
@@ -200,7 +200,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
                 
             }
             //draw predicted labels in red
-            for (const auto& label : predicted_labels.back()) {
+            for (const auto& label : predicted_labels) {
 
                 const std::vector<cv::Rect>& boxes = label.get_bounding_boxes();
                 for (const cv::Rect& box : boxes) {
