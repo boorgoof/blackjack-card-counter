@@ -1,7 +1,7 @@
 #include "../include/Loaders.h"
 #include "../include/SampleInfo/TemplateInfo.h"
 #include "../include/Dataset/TemplateDataset.h"
-#include "../include/card_detector/objectClassifiers/featurePipeline/FeatureExtractor.h"
+#include "../include/detection/card_detector/objectClassifiers/featurePipeline/FeatureExtractor.h"
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 #include <fstream>
