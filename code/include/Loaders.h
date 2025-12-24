@@ -8,7 +8,7 @@
 class TemplateDataset;
 class FeatureExtractor;
 #include "CardType.h"
-#include "card_detector/objectClassifiers/featurePipeline/features/Feature.h"
+#include "detection/card_detector/objectClassifiers/featurePipeline/features/Feature.h"
 
 namespace Loader {
     
