@@ -133,15 +133,11 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     std::string images_folder = output_folder_path + "/images/";
     std::string stats_folder = output_folder_path + "/stats/";
 
-    
     if (!std::filesystem::exists(annotations_folder)) {
         std::filesystem::create_directories(annotations_folder);
     }
     if (!std::filesystem::exists(images_folder)) {
         std::filesystem::create_directories(images_folder);
-    }
-    if (!std::filesystem::exists(stats_folder)) {
-        std::filesystem::create_directories(stats_folder);
     }
 
     //keep track of the time taken to load and detect each image
@@ -189,9 +185,9 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         auto time_save_pred_ann_end = std::chrono::steady_clock::now();
         double save_pred_ann_ms = std::chrono::duration<double, std::milli>(time_save_pred_ann_end - time_gt_end).count();
 
+        ++idx;
         //update cumulative confusion matrix
         cumulative_confusion_matrix += StatisticsCalculation::calc_confusion_matrix(true_labels, predicted_labels, num_classes, iou_threshold);
-        ++idx;
         float accuracy = StatisticsCalculation::calc_accuracy(cumulative_confusion_matrix);
         if (save_cm_every > 0 && (idx % save_cm_every == 0)) {
             Utils::Save::save_confusion_matrix(stats_folder + "confusion_matrix.txt", cumulative_confusion_matrix);
