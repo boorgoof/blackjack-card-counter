@@ -14,7 +14,6 @@ public:
     
 private:
     std::unique_ptr<CardDetector> card_detector_;
-   
 };
 
 #endif

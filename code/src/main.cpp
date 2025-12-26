@@ -10,6 +10,7 @@
 #include "../include/detection/SingleFrameProcessing.h"
 #include "../include/detection/card_detector/MaskCardDetector.h"
 #include "../include/detection/card_detector/SegmentationClassificationCardDetector.h"
+#include "../include/detection/card_detector/YoloCardDetector.h"
 #include "../include/Dataset/ImageDataset.h"
 #include "../include/Dataset/VideoDataset.h"
 #include "../include/Dataset/TemplateDataset.h"
@@ -79,10 +80,11 @@ int main(int argc, char** argv) {
     std::string single_cards_dataset_path = datasets_path + "/" + single_cards_folder;
     std::string videos_dataset_path = datasets_path + "/" + videos_folder;
 
+
     constexpr int num_classes = 53; //52 cards + background/no card class
     constexpr float iou_threshold = 0.5f;
 
-    //TemplateDataset creation
+    //TemplateDataset creation 
     TemplateDataset template_dataset(template_dataset_path);
     std::cout << "Template Dataset root: " << template_dataset.get_root() << std::endl;
     std::cout << "Template Dataset loaded with " << template_dataset.size() << " entries." << std::endl;
@@ -104,7 +106,7 @@ int main(int argc, char** argv) {
     std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, template_dataset, false, visualize);
 
     ImageFilter img_filter;
-    img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
+    img_filter.add_filter("Resize", Filters::resize, 1280, 1280); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
 
     iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + single_cards_folder, visualize, num_classes);
 
@@ -125,7 +127,9 @@ std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Da
     if (dataset->is_sequential()) {
         return std::make_unique<SequentialFrameProcessing>(detect_full_card, visualize);
     } else {
-        auto card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::POLYGON), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN,template_dataset),std::make_unique<SimpleContoursCardSegmenter>());
+        //auto card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::POLYGON), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN,template_dataset),std::make_unique<SimpleContoursCardSegmenter>());
+        std::unique_ptr<YoloCardDetector> card_detector = std::make_unique<YoloCardDetector>("../DL_approach/yolov11s_synthetic_1280.onnx");
+
         // Single-frame processing that owns the detector
         return std::make_unique<SingleFrameProcessing>(std::move(card_detector));
     }

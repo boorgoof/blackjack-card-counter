@@ -8,8 +8,6 @@ SegmentationClassificationCardDetector::SegmentationClassificationCardDetector(s
         
 }
 
-
-
 std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv::Mat& image) {
 
     std::vector<Label> detected_labels;
