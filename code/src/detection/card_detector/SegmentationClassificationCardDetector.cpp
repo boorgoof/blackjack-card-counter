@@ -14,16 +14,29 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
     std::vector<Label> detected_labels;
 
     cv::Mat mask = this->mask_card_detector_->getMask(image);
-    std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(image, mask);
+    cv::Mat masked_image(image.size(), image.type(), cv::Scalar(255,255,255));
+    image.copyTo(masked_image, mask);   
+    
+    cv::Mat mask_display = mask;
+    cv::Mat masked_image_display = masked_image;
+
+    cv::resize( mask, mask_display, cv::Size(), 0.5, 0.5);
+    cv::resize(masked_image, masked_image_display, cv::Size(), 0.5, 0.5);   
+
+    cv::imshow("Mask", mask_display);
+    cv::waitKey(0);
+    cv::imshow("Image", masked_image_display);
+    cv::waitKey(0);
+    std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(image, mask); 
    
     for (std::vector<cv::Point>& contour : cards_contour) {
         
         // we find the bounding boxes of the two corners of the card
         cv::Mat card_projected_image;
         cv::Rect bbox1, bbox2;
-        
-        cv::Mat H = CardProjection::getPerspectiveTranform(image, contour);
-        cv::warpPerspective(image, card_projected_image, H, cv::Size(250, 350));
+
+        cv::Mat H = CardProjection::getPerspectiveTranform(masked_image, contour);
+        cv::warpPerspective(masked_image, card_projected_image, H, cv::Size(250, 350), cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar(255,255,255));
         cv::Mat H_inv = H.inv();
 
         const int cardWidth = card_projected_image.cols;
@@ -34,12 +47,12 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
         if (this->object_classifier_) {
 
             const ObjectType* obj_type = nullptr;
-            //cv::imshow("Projected Card1", card_projected_image);
-            //cv::waitKey(0);
-            //card_color_utils::CardColor color = detect_card_color(card_projected_image); 
-            //card_projected_image = Filters::two_color_binarization(card_projected_image, card_color_utils::to_scalar(color), cv::Scalar(255,255,255));
-            //cv::imshow("Projected Card", card_projected_image);
-            //cv::waitKey(0);
+            cv::imshow("Projected Card1", card_projected_image);
+            cv::waitKey(0);
+            card_color_utils::CardColor color = detect_card_color(card_projected_image); 
+            card_projected_image = Filters::two_color_binarization(card_projected_image, card_color_utils::to_scalar(color), cv::Scalar(255,255,255));
+            cv::imshow("Projected Card", card_projected_image);
+            cv::waitKey(0);
             obj_type = this->object_classifier_->classify_object(card_projected_image, cv::Mat());
             
 
@@ -110,16 +123,3 @@ card_color_utils::CardColor SegmentationClassificationCardDetector::detect_card_
     
 }
 
-cv::Scalar card_color_to_scalar(card_color_utils::CardColor color)
-{
-    switch (color) {
-        case card_color_utils::CardColor::BLACK:
-            return cv::Scalar(0, 0, 0);        
-
-        case card_color_utils::CardColor::RED:
-            return cv::Scalar(0, 0, 255);       
-
-        default:
-            return cv::Scalar(0, 0, 0);          
-    }
-}
