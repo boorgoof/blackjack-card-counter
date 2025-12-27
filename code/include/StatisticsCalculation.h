@@ -68,18 +68,22 @@ namespace StatisticsCalculation {
      * @param iou_threshold IoU threshold to consider a pred_label as positive
      * @return cv::Mat confusion matrix which consider all images (num_classes x num_classes).  Note: (actual x predicted)
      */
-    cv::Mat calc_confusion_matrix(const std::vector<std::vector<Label>>& true_labels,
-                                const std::vector<std::vector<Label>>& pred_labels,
-                                int num_classes = 53,
-                                float iou_threshold = 0.5f);
+    cv::Mat calc_confusion_matrix(const std::vector<std::vector<Label>>& true_labels, const std::vector<std::vector<Label>>& pred_labels, int num_classes = 53,  float iou_threshold = 0.5f);
     
+    /**
+     * @brief Calculates accuracy from confusion matrix
+     * Accuracy = (TP + TN) / (TP + TN + FP + FN)
+     * 
+     * @param confusion_matrix the confusion matrix
+     * @return float accuracy value
+     */
+    float calc_accuracy(const cv::Mat& confusion_matrix);
     /**
      * @brief Calculates precision for each class from confusion matrix.
      * Precision = TP / (TP + FP)
      * 
      * 
      * @param confusion_matrix the confusion matrix
-     * @param label_classes number of classes
      * @return std::vector<float> of precisions: one for each class
      */
     std::vector<float> calc_precision(const cv::Mat& confusion_matrix);
@@ -109,7 +113,7 @@ namespace StatisticsCalculation {
      * 
      * @param confusion_matrix Confusion matrix to print
      */
-    void print_card_confusion_matrix(const cv::Mat& confusion_matrix);
+    void print_confusion_matrix(const cv::Mat& confusion_matrix);
     
     /**
      * @brief Utility function to print metrics
