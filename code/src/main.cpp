@@ -127,7 +127,7 @@ std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Da
     if (dataset->is_sequential()) {
         return std::make_unique<SequentialFrameProcessing>(detect_full_card, visualize);
     } else {
-        auto card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::POLYGON), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN,template_dataset),std::make_unique<SimpleContoursCardSegmenter>());
+        auto card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::HIGH_LIGHT, MaskType::POLYGON), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN,template_dataset),std::make_unique<SimpleContoursCardSegmenter>());
         //std::unique_ptr<YoloCardDetector> card_detector = std::make_unique<YoloCardDetector>("../DL_approach/yolov11s_synthetic_1280.onnx");
 
         // Single-frame processing that owns the detector
