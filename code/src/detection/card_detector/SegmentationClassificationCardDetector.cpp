@@ -1,6 +1,7 @@
 #include "../../../include/detection/card_detector/CardProjection.h"
 #include "../../../include/detection/card_detector/SegmentationClassificationCardDetector.h"
 #include "../../../include/ObjectType.h"
+#include "../../../include/ImageFilter.h"
 #include <opencv2/imgproc.hpp>
 
 SegmentationClassificationCardDetector::SegmentationClassificationCardDetector(std::unique_ptr<MaskCardDetector> mask_card_detector,std::unique_ptr<ObjectClassifier> object_classifier, std::unique_ptr<ObjectSegmenter> object_segmenter)
@@ -33,6 +34,11 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
         if (this->object_classifier_) {
 
             const ObjectType* obj_type = nullptr;
+            
+            card_projected_image = Filters::unsharp_mask(card_projected_image, 1.6, 1.5);
+            card_projected_image = Filters::CLAHE_contrast_equalization(card_projected_image, 2, 8);
+            cv::imshow("Projected Card", card_projected_image);
+            cv::waitKey(0);
             obj_type = this->object_classifier_->classify_object(card_projected_image, cv::Mat());
             
 
