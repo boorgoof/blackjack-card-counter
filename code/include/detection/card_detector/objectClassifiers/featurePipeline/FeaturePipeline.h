@@ -31,7 +31,10 @@ private:
      */
     void update_extractor_matcher_compatibility();
 
-    float computeConfidence(size_t num_inliers, size_t total_matches) const;
+    cv::Mat computeHomography(const std::vector<cv::DMatch>& matches,
+                            const std::vector<cv::KeyPoint>& model_keypoint,
+                            const std::vector<cv::KeyPoint>& scene_keypoint) const;
+
 
 public:
 

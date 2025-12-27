@@ -2,7 +2,9 @@
 #define CARD_TYPE_H
 
 #include <string>
+#include <vector>
 #include <map>
+#include <opencv2/opencv.hpp>
 #include "ObjectType.h"
 
 class CardType : public ObjectType {
@@ -10,30 +12,32 @@ class CardType : public ObjectType {
 public:
 
   enum class Suit {
-      SPADES = 0,     // S
-      CLUBS = 1,    // C
-      DIAMONDS = 2,   // D
-      HEARTS = 3,     // H
-      UNKNOWN = -1
+    SPADES = 0,     // S
+    CLUBS = 1,    // C
+    DIAMONDS = 2,   // D
+    HEARTS = 3,     // H
+    UNKNOWN = -1
   };
 
   enum class Rank {
     
-      A = 0, 
-      R2 = 1, 
-      R3 = 2,
-      R4 = 3, 
-      R5 = 4, 
-      R6 = 5,
-      R7 = 6, 
-      R8 = 7, 
-      R9 = 8,
-      R10 = 9, 
-      J = 10, 
-      Q = 11, 
-      K = 12, 
-      UNKNOWN = -1
+    A = 0, 
+    R2 = 1, 
+    R3 = 2,
+    R4 = 3, 
+    R5 = 4, 
+    R6 = 5,
+    R7 = 6, 
+    R8 = 7, 
+    R9 = 8,
+    R10 = 9, 
+    J = 10, 
+    Q = 11, 
+    K = 12, 
+    UNKNOWN = -1
   };
+
+ 
 
   
   CardType(const std::string& card_text);
@@ -61,6 +65,7 @@ public:
   void set_suit(const Suit& s) { this->suit = s; }
   void set_type(const std::string& card_text);
 
+
   static const Rank string_to_rank(const std::string& r);
   static const Suit string_to_suit(const std::string& s);
 
@@ -69,6 +74,8 @@ public:
 
   static std::map<Rank, std::string> map_rank_to_string;
   static std::map<Suit, std::string> map_suit_to_string;
+
+  
 
   bool operator<(const ObjectType& other) const;
   bool operator==(const ObjectType& other) const;
@@ -80,6 +87,20 @@ private:
   Rank rank{Rank::UNKNOWN};
   Suit suit{Suit::UNKNOWN};
 };
+
+namespace card_color_utils { 
+
+  enum class CardColor {
+    RED,
+    BLACK,
+    UNKNOWN
+  };
+
+  CardColor suit_to_color(CardType::Suit suit);
+  std::vector<CardType::Suit> color_to_suits(CardColor color);
+  cv::Scalar to_scalar(CardColor c);
+
+}
 
 namespace Yolo_index_codec {
 

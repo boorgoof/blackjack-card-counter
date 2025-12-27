@@ -2,6 +2,7 @@
 #define SEGMENTATION_CLASSIFICATION_CARD_DETECTOR_H
 
 #include "CardDetector.h"
+#include "../../CardType.h"
 #include "MaskCardDetector.h"
 #include "objectClassifiers/ObjectClassifier.h"
 #include "objectSegmenters/ObjectSegmenter.h"
@@ -14,6 +15,8 @@ public:
     ~SegmentationClassificationCardDetector() override = default;
 
     std::vector<Label> detect_cards(const cv::Mat& image) override;
+    card_color_utils::CardColor detect_card_color(const cv::Mat& card_img);
+
 
 private:
     std::unique_ptr<MaskCardDetector> mask_card_detector_;

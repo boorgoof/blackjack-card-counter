@@ -165,3 +165,23 @@ cv::Mat Filters::resize_to(const cv::Mat& src_img, int width, int height) {
     cv::resize(src_img, dst, cv::Size(width, height));
     return dst;
 }
+
+cv::Mat Filters::two_color_binarization(const cv::Mat& src_img, const cv::Scalar& fg_color, const cv::Scalar& bg_color){
+    
+    cv::Mat gray;
+    if (src_img.channels() == 3 || src_img.channels() == 4) {
+        cv::cvtColor(src_img, gray, cv::COLOR_BGR2GRAY);
+    } else {
+        gray = src_img.clone();
+    }
+
+    // Apply Otsu's thresholding
+    cv::Mat mask;
+    cv::threshold(gray, mask, 0, 255, cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+
+    cv::Mat dst(src_img.size(), CV_8UC3);
+    dst.setTo(bg_color);           
+    dst.setTo(fg_color, mask);    
+
+    return dst;
+}

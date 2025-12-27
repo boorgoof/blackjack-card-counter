@@ -1,14 +1,11 @@
 #include "../include/CardType.h"
-
 #include "../include/Label.h"
 #include "../include/Utils.h"
-
 #include <algorithm>
 #include <cctype>
 #include <stdexcept>
 
    
-
 CardType::CardType(const std::string& card_text) {
     set_type(card_text);
 }
@@ -83,6 +80,47 @@ const CardType::Rank CardType::string_to_rank(const std::string& s) {
 const CardType::Suit CardType::string_to_suit(const std::string& s) {
     auto it = map_string_to_suit.find(s);
     return it != map_string_to_suit.end() ? it->second : CardType::Suit::UNKNOWN;
+}
+
+card_color_utils::CardColor card_color_utils::suit_to_color(CardType::Suit suit) {
+    switch (suit) {
+        case CardType::Suit::SPADES:
+        case CardType::Suit::CLUBS:
+            return card_color_utils::CardColor::BLACK;
+
+        case CardType::Suit::DIAMONDS:
+        case CardType::Suit::HEARTS:
+            return card_color_utils::CardColor::RED;
+
+        case CardType::Suit::UNKNOWN:
+        default:
+            return card_color_utils::CardColor::UNKNOWN;
+    }
+}
+
+std::vector<CardType::Suit> card_color_utils::color_to_suits(card_color_utils::CardColor color) {
+    switch (color) {
+        case card_color_utils::CardColor::RED:
+            return {CardType::Suit::DIAMONDS, CardType::Suit::HEARTS};
+
+        case card_color_utils::CardColor::BLACK:
+        default:
+            return {CardType::Suit::UNKNOWN, CardType::Suit::UNKNOWN};
+    }
+}
+
+cv::Scalar card_color_utils::to_scalar(card_color_utils::CardColor c)
+{
+    switch (c) {
+        case card_color_utils::CardColor::BLACK:
+            return cv::Scalar(0, 0, 0);      
+
+        case card_color_utils::CardColor::RED:
+            return cv::Scalar(0, 0, 255);    
+
+        default:
+            return cv::Scalar(0, 0, 0);
+    }
 }
 
 
