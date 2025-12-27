@@ -9,8 +9,7 @@
 #include <memory>
 
 ImageDataset::ImageDataset(const std::string& dataset_path)
-    : ImageDataset(std::filesystem::path(dataset_path) / "Images" / "Images",
-                   std::filesystem::path(dataset_path) / "YOLO_Annotations" / "YOLO_Annotations") { }
+    : ImageDataset(std::filesystem::path(dataset_path) / "Images" / "Images", std::filesystem::path(dataset_path) / "YOLO_Annotations" / "YOLO_Annotations") { }
 
 ImageDataset::ImageDataset(const std::string& image_dir, const std::string& annotation_dir)
     : ImageDataset(std::filesystem::path(image_dir), std::filesystem::path(annotation_dir)) { }

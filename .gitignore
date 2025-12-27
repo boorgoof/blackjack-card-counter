@@ -4,6 +4,8 @@
 **/output/
 **/.DS_Store/
 .DS_Store
-data/datasets/YoloDataset
+DL_approach/datasets/**
+DL_approach/runs/**
+data/datasets/**
 yolo11s.pt
 __pycache__/train_yolo.cpython-314.pyc

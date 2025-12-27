@@ -1,4 +1,5 @@
 #include "../include/Utils.h"
+#include "../include/CardType.h"
 
 std::string Utils::Path::longestCommonPath(const std::string& path1_str, const std::string& path2_str) {
     std::filesystem::path path1(path1_str);
@@ -92,7 +93,7 @@ void Utils::Save::save_metrics(const std::string &file_path, const float accurac
     file << "Accuracy: " << accuracy << "\n\n";
     file << "Class,Precision,Recall,F1-Score\n";
     for (size_t i = 0; i < precision.size(); ++i) {
-        file << i << "," << precision[i] << "," << recall[i] << "," << f1[i] << "\n";
+        file << Yolo_index_codec::yolo_index_to_card(i) << "," << precision[i] << "," << recall[i] << "," << f1[i] << "\n";
     }
     file.close();
 }

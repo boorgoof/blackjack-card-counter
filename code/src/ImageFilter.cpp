@@ -141,3 +141,27 @@ cv::Mat Filters::resize(const cv::Mat& src_img, const float width_mult, const fl
     cv::resize(src_img, dst_img, cv::Size(), width_mult, height_mult);
     return dst_img;
 }
+
+cv::Mat Filters::padding_to_square(const cv::Mat& src_img, const cv::Scalar& color)
+{
+    int h = src_img.rows;
+    int w = src_img.cols;
+
+    int side = std::max(w, h);
+
+
+    int pad_top = (side - h) / 2;
+    int pad_bottom = side - h - pad_top;
+    int pad_left = (side - w) / 2;
+    int pad_right = side - w - pad_left;
+
+    cv::Mat squared;
+    cv::copyMakeBorder(src_img, squared, pad_top, pad_bottom, pad_left, pad_right, cv::BORDER_CONSTANT, color);
+    return squared;
+}
+
+cv::Mat Filters::resize_to(const cv::Mat& src_img, int width, int height) {
+    cv::Mat dst;
+    cv::resize(src_img, dst, cv::Size(width, height));
+    return dst;
+}
