@@ -5,22 +5,24 @@
 #include "../include/Utils.h"
 #include "../include/Loaders.h"
 #include "../include/ImageFilter.h"
-#include "../include/card_detector/CardDetector.h"
-#include "../include/card_detector/SequentialCardDetector.h"
-#include "../include/card_detector/SingleCardDetector.h"
-#include "../include/card_detector/RoughCardDetector.h"
+#include "../include/detection/ProcessingMode.h"
+#include "../include/detection/SequentialFrameProcessing.h"
+#include "../include/detection/SingleFrameProcessing.h"
+#include "../include/detection/card_detector/MaskCardDetector.h"
+#include "../include/detection/card_detector/SegmentationClassificationCardDetector.h"
+#include "../include/detection/card_detector/YoloCardDetector.h"
 #include "../include/Dataset/ImageDataset.h"
 #include "../include/Dataset/VideoDataset.h"
 #include "../include/Dataset/TemplateDataset.h"
 #include "../include/SampleInfo/TemplateInfo.h"
 #include "../include/StatisticsCalculation.h"
-#include "../include/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
-#include "../include/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
-#include "../include/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
-#include "../include/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
+#include "../include/detection/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
+#include "../include/detection/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
+#include "../include/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
+#include "../include/detection/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
 
-std::unique_ptr<CardDetector> create_card_detector_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize);
-void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<CardDetector>& card_detector, const std::string& output_folder_path, const bool visualize, const int num_classes = 53, const float iou_threshold = 0.5f);
+std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize);
+void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<ProcessingMode>& mode, const std::string& output_folder_path, const bool visualize, const int num_classes = 53, const float iou_threshold = 0.5f);
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
@@ -78,10 +80,11 @@ int main(int argc, char** argv) {
     std::string single_cards_dataset_path = datasets_path + "/" + single_cards_folder;
     std::string videos_dataset_path = datasets_path + "/" + videos_folder;
 
+
     constexpr int num_classes = 53; //52 cards + background/no card class
     constexpr float iou_threshold = 0.5f;
 
-    //TemplateDataset creation
+    //TemplateDataset creation 
     TemplateDataset template_dataset(template_dataset_path);
     std::cout << "Template Dataset root: " << template_dataset.get_root() << std::endl;
     std::cout << "Template Dataset loaded with " << template_dataset.size() << " entries." << std::endl;
@@ -99,13 +102,13 @@ int main(int argc, char** argv) {
     std::unique_ptr<Dataset> single_cards_dataset(new ImageDataset(single_cards_dataset_path));
 
     //depending on the dataset type, create the appropriate card detector
-    // change create_card_detector_for_dataset to return std::unique_ptr<CardDetector>
-    std::unique_ptr<CardDetector> card_detector = create_card_detector_for_dataset(single_cards_dataset, template_dataset, false, visualize);
+    // change create_mode_for_dataset to return std::unique_ptr<ProcessingMode>
+    std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, template_dataset, false, visualize);
 
     ImageFilter img_filter;
-    img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); //resize to halve image size in both dimensions, 1/4 computational cost (check if performances decrease or not)
+    //img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); 
 
-    iterate_dataset(single_cards_dataset, img_filter, card_detector, output_path + "/" + single_cards_folder, visualize, num_classes);
+    iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + single_cards_folder, visualize, num_classes);
 
     //----------  VIDEO DATASET  ----------
 
@@ -113,21 +116,26 @@ int main(int argc, char** argv) {
     std::unique_ptr<Dataset> video_dataset(new VideoDataset(videos_dataset_path));
 
     //depending on the dataset type, create the appropriate card detector
-    card_detector.release();
-    card_detector = create_card_detector_for_dataset(video_dataset, template_dataset, true, visualize);
+    mode.release();
+    mode = create_mode_for_dataset(video_dataset, template_dataset, true, visualize);
 
-    iterate_dataset(video_dataset, img_filter, card_detector, output_path + "/" + videos_folder, visualize, num_classes);
+    iterate_dataset(video_dataset, img_filter, mode, output_path + "/" + videos_folder, visualize, num_classes);
 }
 
-std::unique_ptr<CardDetector> create_card_detector_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize) {
+// todo onestamente io toglierei il complete card. Facciamo gli angolini e stop ho cambiato la funzione rispetto a prima e tengo solo gli angolini
+std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize) {
     if (dataset->is_sequential()) {
-        return std::make_unique<SequentialCardDetector>(detect_full_card, visualize);
+        return std::make_unique<SequentialFrameProcessing>(detect_full_card, visualize);
     } else {
-        return std::make_unique<SingleCardDetector>(std::make_unique<RoughCardDetector>(PipelinePreset::DEFAULT, MaskType::POLYGON), std::make_unique<FeaturePipeline>(ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, template_dataset), std::make_unique<SimpleContoursCardSegmenter>(), detect_full_card, visualize);
+        auto card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::POLYGON), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN,template_dataset),std::make_unique<SimpleContoursCardSegmenter>());
+        //std::unique_ptr<YoloCardDetector> card_detector = std::make_unique<YoloCardDetector>("../DL_approach/yolov11s_synthetic_1280.onnx");
+
+        // Single-frame processing that owns the detector
+        return std::make_unique<SingleFrameProcessing>(std::move(card_detector));
     }
 }
 
-void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<CardDetector>& card_detector, const std::string& output_folder_path, const bool visualize, const int num_classes, const float iou_threshold) {
+void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<ProcessingMode>& mode, const std::string& output_folder_path, const bool visualize, const int num_classes, const float iou_threshold) {
 
     std::string annotations_folder = output_folder_path + "/annotations/";
     std::string images_folder = output_folder_path + "/images/";
@@ -175,7 +183,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         double load_ms = std::chrono::duration<double, std::milli>(time_load_end - time_start).count();
 
         //detects cards in image and adds the result of the detection to the vector
-        predicted_labels = card_detector->detect_image(img);
+        predicted_labels = mode->detect_image(img);
         auto time_detect_end = std::chrono::steady_clock::now();
         double detect_ms = std::chrono::duration<double, std::milli>(time_detect_end - time_load_end).count();
 
@@ -266,19 +274,18 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         total_save_image_time += (time_save_img_end - time_draw_labels_end);
         total_total_time += (time_end - time_start);
 
-    
-        std::cout << "Time for card: " << img_info->get_name()
-                  << " | load: " << load_ms
-                  << " | detect: " << detect_ms
-                  << " | gt: " << gt_ms
-                  << " | save_ann: " << save_pred_ann_ms
-                  << " | draw: " << draw_ms
-                  << " | save_img: " << save_image_ms
-                  << " | overhead: " << overhead_ms
-                  << " | total: " << total_ms
-                  << " ms"
-                  << std::endl;
-
+        std::cout << " Time for card: " << img_info->get_name()
+                << " | load: " << load_ms
+                << " | detect: " << detect_ms
+                << " | gt: " << gt_ms
+                << " | save_ann: " << save_pred_ann_ms
+                << " | draw: " << draw_ms
+                << " | save_img: " << save_image_ms
+                << " | overhead: " << overhead_ms
+                << " | total: " << total_ms
+                << " ms"
+                << std::endl;
+        
         if (total_images > 0) {
             Utils::Visualization::printProgressBar(static_cast<float>(idx) / static_cast<float>(total_images), 50, "Processing images: ", "Complete");
         }
