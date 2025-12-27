@@ -94,6 +94,10 @@ namespace Filters{
     cv::Mat unsharp_mask(const cv::Mat& src_img, double sigma, double alpha);
 
     cv::Mat resize(const cv::Mat& src_img, const float width_mult, const float height_mult);
+    cv::Mat resize_to(const cv::Mat& src_img, int width, int height);
+    cv::Mat padding_to_square(const cv::Mat& src_img, const cv::Scalar& color = cv::Scalar(0, 0, 0));
+    cv::Mat two_color_binarization(const cv::Mat& src_img, const cv::Scalar& fg_color, const cv::Scalar& bg_color);
+
 }
 
 template<typename FilterFunction, typename... Args>

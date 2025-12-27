@@ -5,7 +5,7 @@
 #include "Label.h"
 #include <map>
 #include <filesystem>
-
+#include <fstream>
 /**
  * @brief utility functions.
  */
@@ -19,9 +19,57 @@ namespace Utils{
         std::string longestCommonPath(const std::string& path1_str, const std::string& path2_str);
         std::filesystem::path longestCommonPath(const std::filesystem::path& path1, const std::filesystem::path& path2);
     }
-    
+
+    namespace Save{
+        void saveLabelsToYoloFile(const std::string& file_path, const std::vector<Label>& labels, const int image_width, const int image_height);
+        void saveImageToFile(const std::string& file_path, const cv::Mat& image);
+        void save_confusion_matrix(const std::string& file_path, const cv::Mat& confusion_matrix);
+        void save_metrics(const std::string& file_path, const float accuracy, const std::vector<float>& precision, const std::vector<float>& recall, const std::vector<float>& f1);
+    }
+
+    /**
+     * @brief functions for visualizing data and progress.
+     */
     namespace Visualization{
+        /**
+         * @brief Prints a progress bar to the console.
+         * @param progress a float between 0 and 1 indicating the progress
+         * @param barwidth the width of the progress bar
+         * @param prefix a string to print before the progress bar
+         * @param suffix a string to print after the progress bar
+         */
         void printProgressBar(float progress, size_t barwidth, const std::string& prefix = "", const std::string& suffix = "");
+        /**
+         * @brief Shows an image in a window.
+         * @param image the image to show
+         * @param window_name the name of the window
+         * @param time the time to wait before closing the window (0 means wait indefinitely)
+         * @param resize_factor the factor by which to resize the image
+         */
+        void showImage(cv::Mat& image, const std::string& window_name = "Image", const int time = 0, const float resize_factor = 1.0);
+        /**
+         * @brief Shows an image in a window.
+         * @param image the image to show
+         * @param window_name the name of the window
+         * @param time the time to wait before closing the window (0 means wait indefinitely)
+         * @param size the size to resize the image to
+         */
+        void showImage(cv::Mat& image, const std::string& window_name = "Image", const int time = 0, const cv::Size& size = cv::Size());
+        /**
+         * @brief draws the provided labels directly on the image.
+         * @param image the image to draw the labels on
+         * @param labels the labels to draw
+         * @param box_color the color of the bounding boxes
+         * @param text_color the color of the text
+         */
+        void printLabelsOnImage(cv::Mat& image, const std::vector<Label>& labels, const cv::Scalar& box_color, const cv::Scalar& text_color);
+        /**
+         * @brief Creates a clone of the input image and shows it with ground truth and predicted labels drawn on it.
+         * @param image the image to show
+         * @param ground_truth_labels the ground truth labels to draw
+         * @param predicted_labels the predicted labels to draw
+         * @param window_name the name of the window to show the image in
+         */
     }
 
     /**
