@@ -1,13 +1,5 @@
-<<<<<<< HEAD:code/src/card_detector/CardProjection.cpp
-#include "../../include/card_detector/CardProjection.h"
-#include <algorithm>
-#include <cmath>
-#include <iostream>
-#include <vector>
-=======
 #include "../../../include/detection/card_detector/CardProjection.h"
 #include <opencv2/imgproc.hpp>
->>>>>>> e68cb53f36897b1afe3b4075b7e0754354f03e72:code/src/detection/card_detector/CardProjection.cpp
 
 namespace CardProjection {
 
@@ -55,8 +47,7 @@ cv::Mat flatten(const cv::Mat &image, const cv::Mat &mask) {
     return cv::Mat();
   }
 
-  // Find largest contour (assuming the mask was already filtered, but just in
-  // case)
+  // Find largest contour
   size_t maxIdx = 0;
   double maxArea = 0;
   for (size_t i = 0; i < contours.size(); ++i) {
@@ -79,7 +70,6 @@ cv::Mat flatten(const cv::Mat &image, const cv::Mat &mask) {
       corners.push_back(cv::Point2f((float)p.x, (float)p.y));
     }
   } else {
-    // Fallback: Use RotatedRect unique corners
     cv::RotatedRect rect = cv::minAreaRect(contour);
     cv::Point2f pts[4];
     rect.points(pts);
@@ -88,39 +78,119 @@ cv::Mat flatten(const cv::Mat &image, const cv::Mat &mask) {
     }
   }
 
-  // Sort corners
   std::vector<cv::Point2f> srcPoints = sortCorners(corners);
 
-  // Define destination size (Standard playing card ratio ~ 2.5 : 3.5 = 5 : 7)
-  // Let's use 400x560 for high quality
   int width = 400;
   int height = 560;
 
-  // Check aspect ratio of source points to determine if card is sideways
   float w1 = cv::norm(srcPoints[0] - srcPoints[1]);
   float h1 = cv::norm(srcPoints[1] - srcPoints[2]);
 
-  // If width > height in source (landscape), and we want portrait output:
-  // Rotate points so the short side (TR-BR) becomes the top side (TL-TR)
   if (w1 > h1) {
     std::rotate(srcPoints.begin(), srcPoints.begin() + 1, srcPoints.end());
   }
 
-  // Consistent portrait destination points
   std::vector<cv::Point2f> dstPoints = {{0, 0},
                                         {(float)width, 0},
                                         {(float)width, (float)height},
                                         {0, (float)height}};
-
-  // If the detected card is "wide", we might be mapping a wide rect to a tall
-  // rect This effectively rotates it 90 degrees, which is good for storage
-  // consistency No special handling needed if we always want portrait output.
 
   cv::Mat M = cv::getPerspectiveTransform(srcPoints, dstPoints);
   cv::Mat warped;
   cv::warpPerspective(image, warped, M, cv::Size(width, height));
 
   return warped;
+}
+
+bool getCornerBboxes(const cv::Mat &image,
+                     const std::vector<cv::Point> &contour,
+                     cv::Rect &bbox1,
+                     cv::Rect &bbox2,
+                     cv::Mat &card_projected_image,
+                     cv::Size outputSize,
+                     float cornerFraction) {
+  if (contour.size() < 4) {
+    std::cerr << "[CardProjection] Contour has less than 4 points." << std::endl;
+    return false;
+  }
+
+  // Approximate polygon to get corners
+  std::vector<cv::Point2f> corners;
+  double perimeter = cv::arcLength(contour, true);
+  std::vector<cv::Point> approx;
+  cv::approxPolyDP(contour, approx, 0.02 * perimeter, true);
+
+  if (approx.size() == 4) {
+    for (const auto &p : approx) {
+      corners.push_back(cv::Point2f((float)p.x, (float)p.y));
+    }
+  } else {
+    cv::RotatedRect rect = cv::minAreaRect(contour);
+    cv::Point2f pts[4];
+    rect.points(pts);
+    for (int i = 0; i < 4; ++i) {
+      corners.push_back(pts[i]);
+    }
+  }
+
+  // Sort corners: TL, TR, BR, BL
+  std::vector<cv::Point2f> srcPoints = sortCorners(corners);
+
+  int width = outputSize.width;
+  int height = outputSize.height;
+
+  // Check aspect ratio to handle landscape vs portrait orientation
+  float w1 = cv::norm(srcPoints[0] - srcPoints[1]);
+  float h1 = cv::norm(srcPoints[1] - srcPoints[2]);
+
+  if (w1 > h1) {
+    std::rotate(srcPoints.begin(), srcPoints.begin() + 1, srcPoints.end());
+  }
+
+  // Destination points for portrait card
+  std::vector<cv::Point2f> dstPoints = {{0, 0},
+                                        {(float)width, 0},
+                                        {(float)width, (float)height},
+                                        {0, (float)height}};
+
+  // Get perspective transform and warp
+  cv::Mat H = cv::getPerspectiveTransform(srcPoints, dstPoints);
+  cv::warpPerspective(image, card_projected_image, H, outputSize, 
+                      cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255));
+
+  // Inverse transform to map back to original coordinates
+  cv::Mat H_inv = H.inv();
+
+  // Define corner regions (where card number is) in projected card space
+  int cornerW = static_cast<int>(width * cornerFraction);
+  int cornerH = static_cast<int>(height * cornerFraction);
+
+  // Top-left corner (in projected space)
+  std::vector<cv::Point2f> topLeftCorner = {
+    cv::Point2f(0, 0),
+    cv::Point2f((float)cornerW, 0),
+    cv::Point2f((float)cornerW, (float)cornerH),
+    cv::Point2f(0, (float)cornerH)
+  };
+
+  // Bottom-right corner (in projected space)
+  std::vector<cv::Point2f> bottomRightCorner = {
+    cv::Point2f((float)(width - cornerW), (float)(height - cornerH)),
+    cv::Point2f((float)width, (float)(height - cornerH)),
+    cv::Point2f((float)width, (float)height),
+    cv::Point2f((float)(width - cornerW), (float)height)
+  };
+
+  // Transform back to original image coordinates
+  std::vector<cv::Point2f> topLeftOriginal, bottomRightOriginal;
+  cv::perspectiveTransform(topLeftCorner, topLeftOriginal, H_inv);
+  cv::perspectiveTransform(bottomRightCorner, bottomRightOriginal, H_inv);
+
+  // Get bounding rects in original image coords
+  bbox1 = cv::boundingRect(topLeftOriginal);
+  bbox2 = cv::boundingRect(bottomRightOriginal);
+
+  return true;
 }
 
 } // namespace CardProjection

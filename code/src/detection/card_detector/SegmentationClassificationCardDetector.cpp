@@ -31,18 +31,11 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
    
     for (std::vector<cv::Point>& contour : cards_contour) {
         
-        // we find the bounding boxes of the two corners of the card
+        // Get projected card and corner bounding boxes in original image coordinates
         cv::Mat card_projected_image;
         cv::Rect bbox1, bbox2;
 
-        cv::Mat H = CardProjection::getPerspectiveTranform(masked_image, contour);
-        cv::warpPerspective(masked_image, card_projected_image, H, cv::Size(250, 350), cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar(255,255,255));
-        cv::Mat H_inv = H.inv();
-
-        const int cardWidth = card_projected_image.cols;
-        const int cardHeight = card_projected_image.rows; 
-        CardProjection::compute_two_opposite_corners_bboxes(H_inv, cardWidth, cardHeight, bbox1, bbox2);
-
+        CardProjection::getCornerBboxes(masked_image, contour, bbox1, bbox2, card_projected_image);
 
         if (this->object_classifier_) {
 

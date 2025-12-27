@@ -12,6 +12,7 @@
  * DEFAULT: Standard pipeline: HSV threshold → Filter by size → Morphology
  * LOW_LIGHT: Optimized for low lighting conditions
  * HIGH_LIGHT: Optimized for high lighting conditions
+ * SINGLE_CARD: Optimized for single card detection
  */
 enum class PipelinePreset { NONE, DEFAULT, LOW_LIGHT, HIGH_LIGHT, SINGLE_CARD };
 
@@ -25,18 +26,10 @@ enum class PipelinePreset { NONE, DEFAULT, LOW_LIGHT, HIGH_LIGHT, SINGLE_CARD };
 enum class MaskType { POLYGON, CONVEX_HULL, BOUNDING_BOX };
 
 /**
-<<<<<<< HEAD:code/include/card_detector/RoughCardDetector.h
- * @brief RoughCardDetector: Detects card-like objects in an image using a
- * customizable pipeline.
- *
- * The pipeline consists of a series of image processing steps, each taking a
- * cv::Mat and returning a cv::Mat. Users can either:
-=======
  * @brief MaskCardDetector: Detects card-like objects in an image using a customizable pipeline.
  * 
  * The pipeline consists of a series of image processing steps, each taking a cv::Mat
  * and returning a cv::Mat. Users can either:
->>>>>>> e68cb53f36897b1afe3b4075b7e0754354f03e72:code/include/detection/card_detector/MaskCardDetector.h
  * 1. Use a predefined pipeline preset (DEFAULT, LOW_LIGHT, HIGH_LIGHT)
  * 2. Build a custom pipeline manually using add_step()
  * 3. Start with a preset and add steps as needed
@@ -62,43 +55,25 @@ private:
   cv::Mat applyPipeline(const cv::Mat &img) const;
 
 public:
-  /**
-   * @brief Constructor: Initializes the pipeline based on the specified preset.
-   * @param preset: Predefined pipeline configuration (default: DEFAULT)
-   * @param maskType: Type of mask to generate when getMask() is called
-   * (default: CONVEX_HULL)
-   *
-   * Available presets:
-   * - NONE: Empty pipeline, requires manual configuration
-   * - DEFAULT: HSV threshold → Size filter (2000) → Morphology (5,9)
-   * - LOW_LIGHT: HSV threshold (lo={0,0,80}, hi={179,60,255}, alpha=2.0,
-   * beta=40.0) → Size filter (2000) → Morphology (5,9)
-   * - HIGH_LIGHT: HSV threshold (lo={0,0,140}, hi={179,40,255}, alpha=1.2,
-   * beta=10.0) → Size filter (2000) → Morphology (5,9)
-   */
-  RoughCardDetector(PipelinePreset preset = PipelinePreset::DEFAULT,
-                    MaskType maskType = MaskType::CONVEX_HULL);
 
-<<<<<<< HEAD:code/include/card_detector/RoughCardDetector.h
+  /**
+    * @brief Constructor: Initializes the pipeline based on the specified preset.
+    * @param preset: Predefined pipeline configuration (default: DEFAULT)
+    * @param maskType: Type of mask to generate when getMask() is called (default: CONVEX_HULL)
+    * 
+    * Available presets:
+    * - NONE: Empty pipeline, requires manual configuration
+    * - DEFAULT: HSV threshold → Size filter (2000) → Morphology (5,9)
+    * - LOW_LIGHT: HSV threshold (lo={0,0,80}, hi={179,60,255}, alpha=2.0, beta=40.0) → Size filter (2000) → Morphology (5,9)
+    * - HIGH_LIGHT: HSV threshold (lo={0,0,140}, hi={179,40,255}, alpha=1.2, beta=10.0) → Size filter (2000) → Morphology (5,9)
+    */
+  MaskCardDetector(PipelinePreset preset = PipelinePreset::DEFAULT, MaskType maskType = MaskType::CONVEX_HULL);
+
   /**
    * @brief loadPreset: Replaces the current pipeline with a predefined preset.
    * @param preset: The preset configuration to load
    */
   void loadPreset(PipelinePreset preset);
-=======
-    /**
-     * @brief Constructor: Initializes the pipeline based on the specified preset.
-     * @param preset: Predefined pipeline configuration (default: DEFAULT)
-     * @param maskType: Type of mask to generate when getMask() is called (default: CONVEX_HULL)
-     * 
-     * Available presets:
-     * - NONE: Empty pipeline, requires manual configuration
-     * - DEFAULT: HSV threshold → Size filter (2000) → Morphology (5,9)
-     * - LOW_LIGHT: HSV threshold (lo={0,0,80}, hi={179,60,255}, alpha=2.0, beta=40.0) → Size filter (2000) → Morphology (5,9)
-     * - HIGH_LIGHT: HSV threshold (lo={0,0,140}, hi={179,40,255}, alpha=1.2, beta=10.0) → Size filter (2000) → Morphology (5,9)
-     */
-    MaskCardDetector(PipelinePreset preset = PipelinePreset::DEFAULT, MaskType maskType = MaskType::CONVEX_HULL);
->>>>>>> e68cb53f36897b1afe3b4075b7e0754354f03e72:code/include/detection/card_detector/MaskCardDetector.h
 
   /**
    * @brief clearPipeline: Removes all steps from the pipeline.
