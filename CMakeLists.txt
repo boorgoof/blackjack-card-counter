@@ -20,6 +20,7 @@ add_executable(main
     code/src/detection/ProcessingMode.cpp
     code/src/detection/SequentialFrameProcessing.cpp
     code/src/detection/SingleFrameProcessing.cpp
+    code/src/detection/CardTracker.cpp
 
     code/src/detection/card_detector/MaskCardDetector.cpp
     code/src/detection/card_detector/CardProjection.cpp
@@ -53,6 +54,7 @@ add_executable(main_gian
     code/src/detection/ProcessingMode.cpp
     code/src/detection/SequentialFrameProcessing.cpp
     code/src/detection/SingleFrameProcessing.cpp
+    code/src/detection/CardTracker.cpp
 
     code/src/detection/card_detector/MaskCardDetector.cpp
     code/src/detection/card_detector/CardProjection.cpp
