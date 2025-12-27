@@ -1,12 +1,11 @@
 #include "../../../include/detection/card_detector/MaskCardDetector.h"
 
-<<<<<<< HEAD:code/src/card_detector/RoughCardDetector.cpp
-RoughCardDetector::RoughCardDetector(const PipelinePreset preset, const MaskType maskType) {
+MaskCardDetector::MaskCardDetector(const PipelinePreset preset, const MaskType maskType) {
   loadPreset(preset);
   loadMaskPreset(maskType);
 }
 
-void RoughCardDetector::loadPreset(const PipelinePreset preset) {
+void MaskCardDetector::loadPreset(const PipelinePreset preset) {
   clearPipeline();
 
   switch (preset) {
@@ -40,7 +39,7 @@ void RoughCardDetector::loadPreset(const PipelinePreset preset) {
   }
 }
 
-void RoughCardDetector::loadMaskPreset(const MaskType maskType) {
+void MaskCardDetector::loadMaskPreset(const MaskType maskType) {
   switch (maskType) {
   case MaskType::POLYGON:
     maskType_ = [this](const cv::Mat &img) { return applyPipeline(img); };
@@ -62,7 +61,7 @@ void RoughCardDetector::loadMaskPreset(const MaskType maskType) {
   }
 }
 
-cv::Mat RoughCardDetector::applyPipeline(const cv::Mat &img) const {
+cv::Mat MaskCardDetector::applyPipeline(const cv::Mat &img) const {
   cv::Mat current = img.clone();
   for (size_t stepIndex = 0; stepIndex < steps_.size(); ++stepIndex) {
     const std::function<cv::Mat(const cv::Mat&)> &currentStep = steps_[stepIndex];
@@ -70,72 +69,6 @@ cv::Mat RoughCardDetector::applyPipeline(const cv::Mat &img) const {
     current = processedImage;
   }
   return current;
-=======
-MaskCardDetector::MaskCardDetector(const PipelinePreset preset, const MaskType maskType) {
-    loadPreset(preset);
-    loadMaskPreset(maskType);
-}
-
-void MaskCardDetector::loadPreset(const PipelinePreset preset) {
-    clearPipeline();
-    
-    switch (preset) {
-        case PipelinePreset::NONE:
-            break;
-            
-        case PipelinePreset::DEFAULT:
-            add_step(preprocessing::hsvWhiteThreshold, cv::Scalar(0,0,180), cv::Scalar(179,20,255), 1.2, 10.0);
-            add_step(preprocessing::filterBySize, 2000);
-            add_step(preprocessing::morphOpenClose, 5, 9);
-            break;
-            
-        case PipelinePreset::LOW_LIGHT:
-            add_step(preprocessing::hsvWhiteThreshold, cv::Scalar(0,0,80), cv::Scalar(179,60,255), 2.0, 40.0);
-            add_step(preprocessing::filterBySize, 2000);
-            add_step(preprocessing::morphOpenClose, 5, 9);
-            break;
-            
-        case PipelinePreset::HIGH_LIGHT:
-            add_step(preprocessing::hsvWhiteThreshold, cv::Scalar(0,0,140), cv::Scalar(179,40,255), 1.2, 10.0);
-            add_step(preprocessing::filterBySize, 2000);
-            add_step(preprocessing::morphOpenClose, 5, 9);
-            break;
-    }
-}
-
-void MaskCardDetector::loadMaskPreset(const MaskType maskType) {
-    switch (maskType) {
-        case MaskType::POLYGON:
-            maskType_ = [this](const cv::Mat& img) { 
-                return applyPipeline(img); 
-            };
-            break;
-            
-        case MaskType::CONVEX_HULL:
-            maskType_ = [this](const cv::Mat& img) { 
-                cv::Mat processed = applyPipeline(img);
-                return mask::getCardsConvexHullsMask(processed); 
-            };
-            break;
-            
-        case MaskType::BOUNDING_BOX:
-            maskType_ = [this](const cv::Mat& img) { 
-                cv::Mat processed = applyPipeline(img);
-                return mask::getBoundingBoxesMask(processed); 
-            };
-            break;
-    }
-}
-
-cv::Mat MaskCardDetector::applyPipeline(const cv::Mat& img) const {
-    cv::Mat current = img.clone();
-    for (size_t stepIndex = 0; stepIndex < steps_.size(); ++stepIndex) {
-        const std::function<cv::Mat(const cv::Mat&)>& currentStep = steps_[stepIndex];
-        cv::Mat processedImage = currentStep(current);
-        current = processedImage;
-    }
-    return current;
->>>>>>> e68cb53f36897b1afe3b4075b7e0754354f03e72:code/src/detection/card_detector/MaskCardDetector.cpp
 }
 
 namespace preprocessing {
