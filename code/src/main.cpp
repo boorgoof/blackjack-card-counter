@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
     std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, template_dataset, false, visualize);
 
     ImageFilter img_filter;
-    //img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); 
+    img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); 
 
     iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + single_cards_folder, visualize, num_classes);
 

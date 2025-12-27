@@ -85,3 +85,33 @@ const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const
 
 }
 
+cv::Mat FeaturePipeline::computeHomography(const std::vector<cv::DMatch>& matches,
+                                           const std::vector<cv::KeyPoint>& model_keypoint,
+                                           const std::vector<cv::KeyPoint>& scene_keypoint) const {
+    const int minMatches = 4;
+
+    if (matches.size() < static_cast<size_t>(minMatches)) {
+        std::cout << "Warning: not enough matches are found - "
+                  << matches.size() << "/" << minMatches << std::endl;
+        return cv::Mat(); 
+    }
+
+    std::vector<cv::Point2f> scene_pts;
+    std::vector<cv::Point2f> model_pts;
+    scene_pts.reserve(matches.size());
+    model_pts.reserve(matches.size());
+
+    for (const auto& match : matches) {
+        model_pts.push_back(model_keypoint[match.queryIdx].pt);
+        scene_pts.push_back(scene_keypoint[match.trainIdx].pt);
+    }
+
+    cv::Mat homography_mask;
+    cv::Mat H = cv::findHomography(model_pts, scene_pts, cv::RANSAC, 5.0, homography_mask);
+
+    if (H.empty()) {
+        std::cerr << "Warning: homography matrix empty" << std::endl;
+    }
+
+    return H;  
+}
