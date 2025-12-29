@@ -106,7 +106,8 @@ int main(int argc, char** argv) {
     std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, template_dataset, false, visualize);
 
     ImageFilter img_filter;
-    img_filter.add_filter("Resize", Filters::resize, 0.5, 0.5); 
+    img_filter.add_filter("Resize", Filters::resize, 0.25, 0.25); 
+    img_filter.add_filter("CLAHE", Filters::CLAHE_contrast_equalization, 5.0, 20);
 
     iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + single_cards_folder, visualize, num_classes);
 
@@ -127,7 +128,7 @@ std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Da
     if (dataset->is_sequential()) {
         return std::make_unique<SequentialFrameProcessing>(detect_full_card, visualize);
     } else {
-        auto card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::SINGLE_CARD, MaskType::CONVEX_HULL), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN,template_dataset),std::make_unique<SimpleContoursCardSegmenter>());
+        auto card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::CONVEX_HULL), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN,template_dataset),std::make_unique<SimpleContoursCardSegmenter>());
         //std::unique_ptr<YoloCardDetector> card_detector = std::make_unique<YoloCardDetector>("../DL_approach/yolov11s_synthetic_1280.onnx");
 
         // Single-frame processing that owns the detector
@@ -178,7 +179,12 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         //load and filter image
         SampleInfo* img_info = &(*it);
         cv::Mat img = dataset->load(it);
+        cv::Mat temp_img = img.clone();
+        temp_img = Filters::resize(temp_img, 0.25, 0.25);
+        cv::imshow("Image_noFIlters", temp_img);
         img = image_filter.apply_filters(img);
+        cv::imshow("ImageFilters", img);
+        cv::waitKey(0);
         auto time_load_end = std::chrono::steady_clock::now();
         double load_ms = std::chrono::duration<double, std::milli>(time_load_end - time_start).count();
 

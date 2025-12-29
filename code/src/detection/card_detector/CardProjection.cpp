@@ -4,15 +4,12 @@
 namespace CardProjection {
 
 // Helper to sort points: Top-Left, Top-Right, Bottom-Right, Bottom-Left
-static std::vector<cv::Point2f>
-sortCorners(const std::vector<cv::Point2f> &corners) {
+static std::vector<cv::Point2f> sortCorners(const std::vector<cv::Point2f> &corners) {
   std::vector<cv::Point2f> sorted(4);
   std::vector<cv::Point2f> pts = corners;
 
   // Sort by Y to separate top and bottom
-  std::sort(
-      pts.begin(), pts.end(),
-      [](const cv::Point2f &a, const cv::Point2f &b) { return a.y < b.y; });
+  std::sort(pts.begin(), pts.end(), [](const cv::Point2f &a, const cv::Point2f &b) { return a.y < b.y; });
 
   // Top points (first 2) sorted by X
   if (pts[0].x < pts[1].x) {

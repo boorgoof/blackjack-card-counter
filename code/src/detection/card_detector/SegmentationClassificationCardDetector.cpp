@@ -23,10 +23,10 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
     cv::resize( mask, mask_display, cv::Size(), 0.5, 0.5);
     cv::resize(masked_image, masked_image_display, cv::Size(), 0.5, 0.5);   
 
-    cv::imshow("Mask", mask_display);
-    cv::waitKey(0);
+    //cv::imshow("Mask", mask_display);
+    //cv::waitKey(0);
     cv::imshow("Image", masked_image_display);
-    cv::waitKey(0);
+    //cv::waitKey(0);
     std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(image, mask); 
    
     for (std::vector<cv::Point>& contour : cards_contour) {
@@ -41,11 +41,11 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
 
             const ObjectType* obj_type = nullptr;
             cv::imshow("Projected Card1", card_projected_image);
-            cv::waitKey(0);
+            //cv::waitKey(0);
             card_color_utils::CardColor color = detect_card_color(card_projected_image); 
             card_projected_image = Filters::two_color_binarization(card_projected_image, card_color_utils::to_scalar(color), cv::Scalar(255,255,255));
             cv::imshow("Projected Card", card_projected_image);
-            cv::waitKey(0);
+            //cv::waitKey(0);
             obj_type = this->object_classifier_->classify_object(card_projected_image, cv::Mat());
             
 

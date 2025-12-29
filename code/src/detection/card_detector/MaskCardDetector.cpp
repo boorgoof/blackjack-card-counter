@@ -16,6 +16,7 @@ void MaskCardDetector::loadPreset(const PipelinePreset preset) {
     add_step(preprocessing::hsvWhiteThreshold, cv::Scalar(0,0,180), cv::Scalar(179,20,255), 1.2, 10.0);
     add_step(preprocessing::filterBySize, 2000);
     add_step(preprocessing::morphOpenClose, 5, 9);
+    add_step(preprocessing::keepLargestObject);
     break;
 
   case PipelinePreset::LOW_LIGHT:
@@ -35,6 +36,7 @@ void MaskCardDetector::loadPreset(const PipelinePreset preset) {
     add_step(preprocessing::filterBySize, 300000);
     add_step(preprocessing::morphOpenClose, 10, 20);
     add_step(preprocessing::keepLargestObject);
+    //add_step();//todo: add a check to verify if the mask is done or it did not find anything and do it with different parameters if not found)
     break;
   }
 }
