@@ -1,5 +1,0 @@
-
-In Images there are the Images of the test set
-In Labels there are the labels in YOLO style (so bounding box)
-In BlackjackLabels there is the json of the bounding box
-In BlackjackLabelsSegmentation there is the jason with all points of the polygon 

@@ -27,7 +27,7 @@ public:
      * @param sample_fps Frames per second to sample from the video (default: 1.0).
      *                   For example, 10.0 means extract 10 frames per second.
      */
-    VideoDataset(const std::string& video_path, double sample_fps = 1.0);
+    VideoDataset(const std::string& video_path, const bool has_annotations = false, const double sample_fps = 1.0);
     ~VideoDataset() override = default;
 
     // Implement pure virtual methods from Dataset

@@ -7,9 +7,8 @@
 
 class CardDetector {
 public:
-//todo vedere bene cosa eliminare 
 //delete default constructor, copy constructor and assignment operator
- CardDetector(bool detect_full_card = false, bool visualize = false) : detect_full_card(detect_full_card), visualize(visualize) {}
+ CardDetector(bool visualize) : visualize(visualize) {}
  CardDetector(const CardDetector&) = delete;
  CardDetector& operator=(const CardDetector&) = delete;
 
@@ -17,7 +16,6 @@ public:
     virtual std::vector<Label> detect_cards(const cv::Mat& image) = 0;
 
 protected:
-    bool detect_full_card;
     bool visualize;
 };
 

@@ -48,6 +48,11 @@ private:
   std::function<cv::Mat(const cv::Mat &)> maskType_;
 
   /**
+   * @brief visualize_: whether to visualize the output mask
+   */
+  bool visualize_;
+
+  /**
    * @brief applyPipeline: Applies the entire pipeline to an input image.
    * @param img: Input image to process through the pipeline.
    * @return cv::Mat: Processed image after applying all pipeline steps.
@@ -67,7 +72,7 @@ public:
     * - LOW_LIGHT: HSV threshold (lo={0,0,80}, hi={179,60,255}, alpha=2.0, beta=40.0) → Size filter (2000) → Morphology (5,9)
     * - HIGH_LIGHT: HSV threshold (lo={0,0,140}, hi={179,40,255}, alpha=1.2, beta=10.0) → Size filter (2000) → Morphology (5,9)
     */
-  MaskCardDetector(PipelinePreset preset = PipelinePreset::DEFAULT, MaskType maskType = MaskType::CONVEX_HULL);
+  MaskCardDetector(PipelinePreset preset = PipelinePreset::DEFAULT, MaskType maskType = MaskType::CONVEX_HULL, bool visualize = false);
 
   /**
    * @brief loadPreset: Replaces the current pipeline with a predefined preset.

@@ -1,6 +1,7 @@
 #include "../../../include/detection/card_detector/MaskCardDetector.h"
 
-MaskCardDetector::MaskCardDetector(const PipelinePreset preset, const MaskType maskType) {
+MaskCardDetector::MaskCardDetector(const PipelinePreset preset, const MaskType maskType, bool visualize) 
+  : visualize_{visualize} {
   loadPreset(preset);
   loadMaskPreset(maskType);
 }

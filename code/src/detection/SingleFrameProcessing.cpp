@@ -3,8 +3,8 @@
 #include "../../include/ObjectType.h"
 #include <opencv2/imgproc.hpp>
 
-SingleFrameProcessing::SingleFrameProcessing(std::unique_ptr<CardDetector> card_detector, const bool detect_full_card, const bool visualize)
-    : ProcessingMode(detect_full_card, visualize), card_detector_(std::move(card_detector)) {
+SingleFrameProcessing::SingleFrameProcessing(std::unique_ptr<CardDetector> card_detector, const bool visualize)
+    : ProcessingMode(visualize), card_detector_(std::move(card_detector)) {
 
 }
 

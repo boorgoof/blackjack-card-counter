@@ -1,20 +1,11 @@
 #include "../../include/detection/SequentialFrameProcessing.h"
 
-SequentialFrameProcessing::SequentialFrameProcessing(bool detect_full_card, bool visualize, double fps) 
-    : ProcessingMode(detect_full_card, visualize), tracker_(fps) {
-    init_detector();
+SequentialFrameProcessing::SequentialFrameProcessing(std::unique_ptr<CardDetector> card_detector, bool visualize, double fps) 
+    : ProcessingMode(visualize), card_detector_(std::move(card_detector)), tracker_(fps) {
+
 }
 
 SequentialFrameProcessing::~SequentialFrameProcessing() {}
-
-void SequentialFrameProcessing::set_model_path(const std::string& path) {
-    model_path_ = path;
-    init_detector();
-}
-
-void SequentialFrameProcessing::init_detector() {
-    card_detector_ = std::make_unique<YoloCardDetector>(model_path_, detect_full_card, visualize);
-}
 
 std::vector<Label> SequentialFrameProcessing::detect_image(const cv::Mat& image) {
     std::vector<Label> detections = card_detector_->detect_cards(image);

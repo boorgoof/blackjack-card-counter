@@ -8,7 +8,7 @@
 class ProcessingMode {
 public:
 //delete default constructor, copy constructor and assignment operator
- ProcessingMode(bool detect_full_card = false, bool visualize = false) : detect_full_card(detect_full_card), visualize(visualize) {}
+ ProcessingMode(bool visualize) : visualize(visualize) {}
  ProcessingMode(const ProcessingMode&) = delete;
  ProcessingMode& operator=(const ProcessingMode&) = delete;
 

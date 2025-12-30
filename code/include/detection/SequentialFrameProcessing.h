@@ -12,12 +12,11 @@
  */
 class SequentialFrameProcessing : public ProcessingMode {
 public:
-    SequentialFrameProcessing(bool detect_full_card = false, bool visualize = false, double fps = 1.0);
+    SequentialFrameProcessing(std::unique_ptr<CardDetector> card_detector, bool visualize, double fps = 60.0);
     ~SequentialFrameProcessing();
     
     std::vector<Label> detect_image(const cv::Mat& image) override;
 
-    void set_model_path(const std::string& path);
     void set_fps(double fps) { tracker_.set_fps(fps); }
     double get_fps() const { return tracker_.get_fps(); }
     
@@ -28,11 +27,8 @@ public:
     void reset_tracking() { tracker_.reset(); }
 
 private:
-    std::string model_path_ = "../DL_approach/yolov11s_synthetic_1280.onnx";
-    std::unique_ptr<YoloCardDetector> card_detector_;
+    std::unique_ptr<CardDetector> card_detector_;
     CardTracker tracker_;
-    
-    void init_detector();
 };
 
 #endif

@@ -11,7 +11,7 @@
 class SegmentationClassificationCardDetector : public CardDetector {
 public:
 
-    SegmentationClassificationCardDetector(std::unique_ptr<MaskCardDetector> mask_card_detector, std::unique_ptr<ObjectClassifier> object_classifier, std::unique_ptr<ObjectSegmenter> object_segmenter);
+    SegmentationClassificationCardDetector(std::unique_ptr<MaskCardDetector> mask_card_detector, std::unique_ptr<ObjectClassifier> object_classifier, std::unique_ptr<ObjectSegmenter> object_segmenter, bool visualize);
     ~SegmentationClassificationCardDetector() override = default;
 
     std::vector<Label> detect_cards(const cv::Mat& image) override;

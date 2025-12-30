@@ -126,11 +126,19 @@ public:
      */
     virtual std::filesystem::path get_annotation_root() const = 0;
 
+    const bool get_has_annotations(){return this->has_annotations_;}
+    void set_has_annotations(const bool has_annotations){this->has_annotations_ = has_annotations;}
+
 protected:
     /**
-     * @brief Default constructor for derived classes.
+     * @brief Flag, true if the dataset has the ground truth, false elsewhere
      */
-    Dataset() = default;
+    bool has_annotations_;
+
+    /**
+     * @brief Constructor for derived classes.
+     */
+    Dataset(const bool has_annotations = false) : has_annotations_{has_annotations}{};
 
     /**
      * @brief Copy constructor (protected to prevent slicing).
