@@ -52,7 +52,6 @@ cv::Mat VideoDataset::load(const Dataset::Iterator& it) {
     // Read the actual frame data into a cv::Mat
     cv::Mat frame;
     if (!state.capture.read(frame)) {
-        std::cerr << "VideoDataset: failed to read frame " << target_index << " from " << video_path << std::endl;
         return {};
     }
 
@@ -94,16 +93,16 @@ void VideoDataset::append_frames(const std::filesystem::path& video_file, std::v
         if (fps > 0.0) {
             frame_idx = static_cast<std::size_t>(std::llround(timestamp * fps)); // Corresponding frame index
             if (frame_idx >= frame_count) {
-                frame_idx = frame_count - 1;
+                break; // Stop if we've gone beyond the video
             }
         } else {
             frame_idx = std::min<std::size_t>(i, frame_count - 1);
+            if (frame_idx >= frame_count - 1 && i > 0) {
+                break; // Stop if we've reached the last frame
+            }
         }
         std::string name = video_name + "_t_" + std::to_string(timestamp); 
         entries.emplace_back(std::make_shared<FrameInfo>(name, video_file.string(), frame_idx, timestamp));
-        if (frame_idx + 1 >= frame_count) {
-            break;
-        }
     }
 }
 

@@ -28,9 +28,9 @@ int main() {
     // Dataset configuration
     const bool use_video_dataset = true;
     std::unique_ptr<Dataset> dataset;
-    
+    const double sample_fps = 1.0;
     if (use_video_dataset) {
-        dataset = std::make_unique<VideoDataset>(std::string("../data/datasets/VideoBlackjack.mp4"), 10.0);
+        dataset = std::make_unique<VideoDataset>(std::string("../data/datasets/VideoBlackjack.mp4"), sample_fps);
     } else {
         dataset = std::make_unique<ImageDataset>(
             std::string("../data/datasets/single_cards/Images/Images"), 
@@ -40,9 +40,9 @@ int main() {
     std::cout << "Dataset loaded with " << dataset->size() << " frames" << std::endl;
 
     // Initialize processing mode with card tracking (FPS must match video sample rate)
-    const double sample_fps = 10.0;
+    
     std::unique_ptr<SequentialFrameProcessing> mode = std::make_unique<SequentialFrameProcessing>(sample_fps);
-    VideoWriter videoW("output_video.mp4", 15.0);
+    VideoWriter videoW("output_video.mp4", sample_fps*1.5);
 
     int frame_number = 0;
     for (Dataset::Iterator it = dataset->begin(); it != dataset->end(); ++it) {

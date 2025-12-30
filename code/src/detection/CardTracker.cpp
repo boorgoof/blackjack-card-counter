@@ -15,7 +15,6 @@ void CardTracker::update_frame_thresholds() {
     frames_occlusion_ = static_cast<int>(std::ceil(SECONDS_OCCLUSION * fps_));
     frames_background_ = static_cast<int>(std::ceil(SECONDS_BACKGROUND * fps_));
     
-    // Minimum 1 frame for each threshold
     if (frames_to_confirm_ < 1) frames_to_confirm_ = 1;
     if (frames_occlusion_ < 1) frames_occlusion_ = 1;
     if (frames_background_ < 1) frames_background_ = 1;
