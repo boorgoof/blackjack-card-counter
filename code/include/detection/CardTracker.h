@@ -13,11 +13,6 @@
  * 
  * All timing thresholds are in SECONDS and converted to frames using FPS.
  * 
- * Key insight: Each physical card has 2 visible labels (corners).
- * So we count by card ID and divide by 2 to get actual card count:
- * - 1-2 detections = 1 physical card
- * - 3-4 detections = 2 physical cards (multi-deck)
- * 
  * State machine per card ID:
  * - CANDIDATE: Recently appeared, not yet confirmed
  * - CONFIRMED: Stable on table
@@ -35,9 +30,9 @@ public:
 
     struct TrackedCard {
         CardType card;
-        int detection_count;          // Labels detected this frame (1 or 2 per physical card)
-        int confirmed_card_count;     // = ceil(detection_count / 2)
-        int frames_detected;          // Frames this card has been seen
+        int detection_count;
+        int confirmed_card_count;
+        int frames_detected;
         int frames_since_last_seen;
         CardState state;
 

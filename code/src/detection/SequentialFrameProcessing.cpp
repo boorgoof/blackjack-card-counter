@@ -1,6 +1,6 @@
 #include "../../include/detection/SequentialFrameProcessing.h"
 
-SequentialFrameProcessing::SequentialFrameProcessing(double fps, bool detect_full_card, bool visualize) 
+SequentialFrameProcessing::SequentialFrameProcessing(bool detect_full_card, bool visualize, double fps) 
     : ProcessingMode(detect_full_card, visualize), tracker_(fps) {
     init_detector();
 }

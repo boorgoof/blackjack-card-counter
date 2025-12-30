@@ -12,7 +12,7 @@
  */
 class SequentialFrameProcessing : public ProcessingMode {
 public:
-    SequentialFrameProcessing(double fps = 1.0, bool detect_full_card = false, bool visualize = false);
+    SequentialFrameProcessing(bool detect_full_card = false, bool visualize = false, double fps = 1.0);
     ~SequentialFrameProcessing();
     
     std::vector<Label> detect_image(const cv::Mat& image) override;
