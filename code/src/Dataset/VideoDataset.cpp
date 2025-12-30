@@ -7,8 +7,8 @@
 #include <memory>
 #include <opencv2/videoio.hpp>
 
-VideoDataset::VideoDataset(const std::string& video_path, double sample_fps)
-    : video_root_{video_path}, frame_interval_seconds_{1.0 / sample_fps}, entries_{build_entries(video_root_, frame_interval_seconds_)} { }
+VideoDataset::VideoDataset(const std::string& video_path, const bool has_annotations, const double sample_fps)
+    : Dataset(has_annotations), video_root_{video_path}, frame_interval_seconds_{1.0 / sample_fps}, entries_{build_entries(video_root_, frame_interval_seconds_)} { }
 
 
 cv::Mat VideoDataset::load(const Dataset::Iterator& it) {

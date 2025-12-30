@@ -4,6 +4,7 @@
 #include <iostream>
 
 TemplateDataset::TemplateDataset(const std::string &dataset_path)
+    : Dataset(false)
 {
     image_root_ = std::filesystem::path(dataset_path);
     entries_ = build_entries();

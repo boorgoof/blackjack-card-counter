@@ -4,8 +4,8 @@
 #include "../../../include/ImageFilter.h"
 #include <opencv2/imgproc.hpp>
 
-SegmentationClassificationCardDetector::SegmentationClassificationCardDetector(std::unique_ptr<MaskCardDetector> mask_card_detector,std::unique_ptr<ObjectClassifier> object_classifier, std::unique_ptr<ObjectSegmenter> object_segmenter)
-    : CardDetector(), mask_card_detector_(std::move(mask_card_detector)), object_classifier_(std::move(object_classifier)), object_segmenter_(std::move(object_segmenter)) {
+SegmentationClassificationCardDetector::SegmentationClassificationCardDetector(std::unique_ptr<MaskCardDetector> mask_card_detector,std::unique_ptr<ObjectClassifier> object_classifier, std::unique_ptr<ObjectSegmenter> object_segmenter, bool visualize)
+    : CardDetector(visualize), mask_card_detector_(std::move(mask_card_detector)), object_classifier_(std::move(object_classifier)), object_segmenter_(std::move(object_segmenter)) {
         
 }
 
@@ -40,11 +40,11 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
         if (this->object_classifier_) {
 
             const ObjectType* obj_type = nullptr;
-            cv::imshow("Projected Card1", card_projected_image);
+            //cv::imshow("Projected Card1", card_projected_image);
             //cv::waitKey(0);
             card_color_utils::CardColor color = detect_card_color(card_projected_image); 
             card_projected_image = Filters::two_color_binarization(card_projected_image, card_color_utils::to_scalar(color), cv::Scalar(255,255,255));
-            cv::imshow("Projected Card", card_projected_image);
+            //cv::imshow("Projected Card", card_projected_image);
             //cv::waitKey(0);
             obj_type = this->object_classifier_->classify_object(card_projected_image, cv::Mat());
             

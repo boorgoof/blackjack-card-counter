@@ -7,7 +7,7 @@
 
 class SingleFrameProcessing : public ProcessingMode {
 public:
-    SingleFrameProcessing(std::unique_ptr<CardDetector> card_detector, const bool detect_full_card = false, const bool visualize = false);
+    SingleFrameProcessing(std::unique_ptr<CardDetector> card_detector, const bool visualize);
     ~SingleFrameProcessing();
 
     std::vector<Label> detect_image(const cv::Mat& image) override;

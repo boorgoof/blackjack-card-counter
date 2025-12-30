@@ -5,7 +5,7 @@
 
 class YoloCardDetector : public CardDetector {
 public:
-    YoloCardDetector(const std::string& modelPath, bool detect_full_card = false, bool visualize = false);
+    YoloCardDetector(const std::string& modelPath, bool visualize);
 
     ~YoloCardDetector() override = default;
 

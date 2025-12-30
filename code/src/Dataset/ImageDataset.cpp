@@ -15,7 +15,7 @@ ImageDataset::ImageDataset(const std::string& image_dir, const std::string& anno
     : ImageDataset(std::filesystem::path(image_dir), std::filesystem::path(annotation_dir)) { }
 
 ImageDataset::ImageDataset(std::filesystem::path image_root, std::filesystem::path annotation_root)
-    : image_root_{image_root},
+    : Dataset(true), image_root_{image_root},
       annotation_root_{annotation_root}
 { 
     entries_ = build_entries();

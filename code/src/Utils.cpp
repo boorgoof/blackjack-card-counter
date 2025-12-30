@@ -99,15 +99,29 @@ void Utils::Save::save_metrics(const std::string &file_path, const float accurac
 }
 
 void Utils::Visualization::printProgressBar(float progress, size_t barwidth, const std::string& prefix, const std::string& suffix) {
-    std::cout << "\r" << prefix << " [";
+    static int lines_to_move_up = 0;
+
+    if (lines_to_move_up > 0) {
+        std::cout << "\033[" << lines_to_move_up << "A";
+    }
+
+    std::cout << "\r\033[J" << prefix << " [";
+
     size_t pos = static_cast<size_t>(barwidth * progress);
     for (size_t i = 0; i < barwidth; ++i) {
         if (i < pos) std::cout << "=";
         else if (i == pos) std::cout << ">";
         else std::cout << " ";
     }
+
     std::cout << "] " << int(progress * 100.0) << "% " << suffix << std::flush;
-    if (progress >= 1.0) std::cout << std::endl;
+
+    lines_to_move_up = std::count(suffix.begin(), suffix.end(), '\n');
+
+    if (progress >= 1.0) {
+        std::cout << std::endl;
+        lines_to_move_up = 0;
+    }
 }
 
 void Utils::Visualization::showImage(cv::Mat &image, const std::string &window_name, const int time, const float resize_factor)

@@ -4,7 +4,8 @@
 
 #include <opencv2/dnn.hpp>
 
-YoloCardDetector::YoloCardDetector(const std::string& modelPath, bool detect_full_card, bool visualize) {
+YoloCardDetector::YoloCardDetector(const std::string& modelPath, bool visualize) 
+    : CardDetector(visualize) {
     net = cv::dnn::readNetFromONNX(modelPath);
     net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
     net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
