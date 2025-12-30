@@ -21,24 +21,26 @@
 #include "../include/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
 #include "../include/detection/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
 
-std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize);
+#include <exception>
+
+std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Dataset>& dataset, const bool use_templates, const bool visualize, TemplateDataset* const template_dataset = nullptr);
 void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<ProcessingMode>& mode, const std::string& output_folder_path, const bool visualize, const int num_classes = 53, const float iou_threshold = 0.5f);
 
 int main(int argc, char** argv) {
     //TODO: use a proper argument parser library or make this more flexible
-    if (argc < 4) {
-        std::cerr << "Usage: ./program <datasets_path> <template_dataset_path> <output_path> <visualize_flag>" << std::endl;
+    if (argc < 5) {
+        std::cerr << "Usage: ./program <datasets_path> <template_dataset_path> <output_path> <dataset_name_to_use> <visualize_flag>" << std::endl;
         std::cerr << "datasets_path: path to the folder containing the datasets (single_cards and videos folders)" << std::endl;
         std::cerr << "template_dataset_path: path to the folder containing the template cards dataset" << std::endl;
         std::cerr << "output_path: path to the folder where the output will be saved" << std::endl;
-
-        std::cerr << "visualize_flag: FOR NOW JUST FOR DEVELOPMENT PURPOSE whether to visualize the detected images (true/false), optional, default is false" << std::endl;
+        std::cerr << "dataset_name_to_use: name of the dataset to use. Possible values are 'single_cards' or 'video'" << std::endl;
+        std::cerr << "visualize_flag (JUST FOR DEVELOPMENT PURPOSE): whether to visualize the detected images (true/false), optional, default is false" << std::endl;
         return 1;
     }
     std::string datasets_path = argv[1];
     std::string template_dataset_path = argv[2];
     std::string output_path = argv[3];
-    bool visualize = (argc > 4) ? (std::string(argv[4]) == "true") : false;
+    std::string dataset_to_use = argv[4];
 
     if (!std::filesystem::exists(datasets_path)) {
         std::cerr << "The datasets path does not exist!" << std::endl;
@@ -68,70 +70,81 @@ int main(int argc, char** argv) {
         std::cout << "The output path has been created!" << std::endl;
     }
 
+    const std::string SINGLE_CARD_DATASET_NAME = "single_cards";
+    const std::string VIDEO_DATASET_NAME = "video";
+
+    std::string dataset_path = "";
+
+    if(dataset_to_use == SINGLE_CARD_DATASET_NAME){
+        dataset_path = datasets_path + "/" + "single_cards";
+    }
+    else if(dataset_to_use == VIDEO_DATASET_NAME){
+        dataset_path = datasets_path + "/" + "videos";
+    }
+    else{
+        std::cerr << "The selected dataset (" << dataset_to_use << ") is not a valid option! Possible options are 'single_cards' or 'video'" << std::endl;
+        return 1;
+    }
+
+    bool visualize = (argc > 5) ? (std::string(argv[4]) == "true") : false;
+
     std::cout << "Program started with the following parameters:" << std::endl;
     std::cout << "datasets_path: " << datasets_path << std::endl;
     std::cout << "template_dataset_path: " << template_dataset_path << std::endl;
     std::cout << "output_path: " << output_path << std::endl;
     std::cout << "visualize: " << (visualize ? "true" : "false") << std::endl;
 
-    std::string single_cards_folder = "single_cards";
-    std::string videos_folder = "videos";
-
-    std::string single_cards_dataset_path = datasets_path + "/" + single_cards_folder;
-    std::string videos_dataset_path = datasets_path + "/" + videos_folder;
-
-
     constexpr int num_classes = 53; //52 cards + background/no card class
     constexpr float iou_threshold = 0.5f;
 
-    //TemplateDataset creation 
-    TemplateDataset template_dataset(template_dataset_path);
-    std::cout << "Template Dataset root: " << template_dataset.get_root() << std::endl;
-    std::cout << "Template Dataset loaded with " << template_dataset.size() << " entries." << std::endl;
-    if (visualize) {
-        for (auto it = template_dataset.begin(); it != template_dataset.end(); ++it) {
-            const TemplateInfo& sample = dynamic_cast<const TemplateInfo&>(*it);
-            cv::Mat img = template_dataset.load(it);
-            Utils::Visualization::showImage(img, "Template Card: " + sample.get_name(), 200, 1);
-        }
-    }
-
-    //----------  SINGLE CARD DATASET  ----------
-
-    //Dataset object creation
-    std::unique_ptr<Dataset> single_cards_dataset(new ImageDataset(single_cards_dataset_path));
-
-    //depending on the dataset type, create the appropriate card detector
-    // change create_mode_for_dataset to return std::unique_ptr<ProcessingMode>
-    std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, template_dataset, false, visualize);
-
     ImageFilter img_filter;
-    img_filter.add_filter("Resize", Filters::resize, 0.25, 0.25); 
-    img_filter.add_filter("CLAHE", Filters::CLAHE_contrast_equalization, 5.0, 20);
 
-    iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + single_cards_folder, visualize, num_classes);
+    if(dataset_to_use == SINGLE_CARD_DATASET_NAME){
+        //TemplateDataset creation 
+        TemplateDataset template_dataset(template_dataset_path);
+        std::cout << "Template Dataset root: " << template_dataset.get_root() << std::endl;
+        std::cout << "Template Dataset loaded with " << template_dataset.size() << " entries." << std::endl;
+        if (visualize) {
+            for (auto it = template_dataset.begin(); it != template_dataset.end(); ++it) {
+                const TemplateInfo& sample = dynamic_cast<const TemplateInfo&>(*it);
+                cv::Mat img = template_dataset.load(it);
+                Utils::Visualization::showImage(img, "Template Card: " + sample.get_name(), 200, 1);
+            }
+        }
+        //Dataset object creation
+        std::unique_ptr<Dataset> single_cards_dataset(new ImageDataset(dataset_path));
 
-    //----------  VIDEO DATASET  ----------
+        //depending on the dataset type, create the appropriate card detector
+        std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, true, visualize, &template_dataset);
+        //image preprocesing (resize to faster computations)
+        img_filter.add_filter("Resize", Filters::resize, 0.25, 0.25); 
+        //img_filter.add_filter("CLAHE", Filters::CLAHE_contrast_equalization, 5.0, 20);
+        //iterate through dataset and detect each image
+        //output is saved into output_path/single_cards
+        iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + SINGLE_CARD_DATASET_NAME, visualize, num_classes);
+    }
+    else if(dataset_to_use == VIDEO_DATASET_NAME){
+        //Dataset object creation
+        std::unique_ptr<Dataset> video_dataset(new VideoDataset(dataset_path));
 
-    //Dataset object creation
-    std::unique_ptr<Dataset> video_dataset(new VideoDataset(videos_dataset_path));
-
-    //depending on the dataset type, create the appropriate card detector
-    mode.release();
-    mode = create_mode_for_dataset(video_dataset, template_dataset, true, visualize);
-
-    iterate_dataset(video_dataset, img_filter, mode, output_path + "/" + videos_folder, visualize, num_classes);
+        //depending on the dataset type, create the appropriate card detector
+        std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(video_dataset, false, visualize);
+        //iterate through dataset and detect each image
+        //output is saved into output_path/video
+        iterate_dataset(video_dataset, img_filter, mode, output_path + "/" + VIDEO_DATASET_NAME, visualize, num_classes);
+    }
 }
 
-// todo onestamente io toglierei il complete card. Facciamo gli angolini e stop ho cambiato la funzione rispetto a prima e tengo solo gli angolini
-std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Dataset>& dataset, TemplateDataset& template_dataset, const bool detect_full_card, const bool visualize) {
+std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Dataset>& dataset, const bool use_templates, const bool visualize, TemplateDataset* const template_dataset) {
+    if (use_templates && !template_dataset){
+        throw std::runtime_error("Template dataset is required but reference to it is nullptr!");
+    }
+    
+    
     if (dataset->is_sequential()) {
-        return std::make_unique<SequentialFrameProcessing>(detect_full_card, visualize);
+        return std::make_unique<SequentialFrameProcessing>(false, visualize);
     } else {
-        auto card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::CONVEX_HULL), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN,template_dataset),std::make_unique<SimpleContoursCardSegmenter>());
-        //std::unique_ptr<YoloCardDetector> card_detector = std::make_unique<YoloCardDetector>("../DL_approach/yolov11s_synthetic_1280.onnx");
-
-        // Single-frame processing that owns the detector
+        auto card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::SINGLE_CARD, MaskType::CONVEX_HULL), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, *template_dataset),std::make_unique<SimpleContoursCardSegmenter>());
         return std::make_unique<SingleFrameProcessing>(std::move(card_detector));
     }
 }
@@ -233,7 +246,6 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
             //draw true labels in green
             for (const auto& label : true_labels) {
                 const std::vector<cv::Rect>& boxes = label.get_bounding_boxes();
-
                 for (const cv::Rect& box : boxes) {
                     cv::rectangle(vis_img, box, cv::Scalar(0, 255, 0), 2);
                     if (label.get_object()) {
@@ -241,12 +253,9 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
                                 cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
                     }
                 }
-
-                
             }
-            //draw predicted labels in red
+            //draw predicted labels in blue
             for (const auto& label : predicted_labels) {
-
                 const std::vector<cv::Rect>& boxes = label.get_bounding_boxes();
                 for (const cv::Rect& box : boxes) {
                     cv::rectangle(vis_img, box, cv::Scalar(0, 0, 255), 2);
@@ -255,14 +264,12 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
                                 cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 2);
                      }
                 }
-
-                
             }
             //resize image
             float ratio = 0.5;
             cv::resize(vis_img, vis_img, cv::Size(), ratio, ratio, cv::INTER_LINEAR);
             cv::imshow("Detections", vis_img);
-            cv::waitKey(0); //display each image for 500 ms
+            cv::waitKey(0);
             cv::destroyAllWindows();
         }
 
