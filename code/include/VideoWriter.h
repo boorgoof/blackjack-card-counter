@@ -39,6 +39,9 @@ public:
      * @brief Finalize and close the video file
      */
     void close();
+
+    const std::string get_output_path() const {return outputPath_;}
+    void set_output_path(const std::string outputPath){outputPath_=outputPath;}
     
 private:
     /**

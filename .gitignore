@@ -8,4 +8,4 @@ DL_approach/datasets/**
 DL_approach/runs/**
 data/datasets/single_cards/**
 yolo11s.pt
-__pycache__/train_yolo.cpython-314.pyc
+__pycache__/**
