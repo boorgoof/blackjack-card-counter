@@ -44,6 +44,7 @@ public:
      * @param sample_fps Frames per second to sample from the video.
      */
     void setSampleFPS(double sample_fps);
+    const double getSampleFPS(){return frame_interval_seconds_;}
 
 private:
     /**

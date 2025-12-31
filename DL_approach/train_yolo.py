@@ -12,7 +12,9 @@ else:
     device = 'cpu'
     print("No GPU detected, using CPU (this will be slow!)")
 
-DATASET_PATH = '../../card_dataset_generation/data/synthetic_dataset_2/data.yaml'
+DATASET_NAME = "synthetic_dataset_1280x1280"
+
+DATASET_PATH = f'../../card_dataset_generation/data/{DATASET_NAME}/data.yaml'
 
 if not os.path.isfile(DATASET_PATH):
     print(f"{DATASET_PATH} does not exist!")
@@ -27,5 +29,5 @@ results = model.train(
     mosaic=1.0,
     degrees=10.0,
     fliplr=0.0,
-    project="output/yolo_synthetic_2"
+    project=f"output/{DATASET_NAME}"
 )

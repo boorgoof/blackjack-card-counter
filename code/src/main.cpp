@@ -20,6 +20,7 @@
 #include "../include/detection/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
 #include "../include/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
 #include "../include/detection/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
+#include "../include/VideoWriter.h"
 
 #include <exception>
 
@@ -31,6 +32,7 @@ enum class DETECTION_MODE{
 
 std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Dataset>& dataset, const bool visualize, const DETECTION_MODE detection_mode, TemplateDataset* const template_dataset = nullptr, std::string* const model_path=nullptr);
 void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image_filter, std::unique_ptr<ProcessingMode>& mode, const std::string& output_folder_path, const bool visualize, const int num_classes = 53, const float iou_threshold = 0.5f);
+cv::Mat draw_hi_low_count(const cv::Mat& image, const SequentialFrameProcessing& mode, int frame_number);
 
 int main(int argc, char** argv) {
     try{
@@ -178,7 +180,7 @@ std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Da
     }
 
     if (dataset->is_sequential()) {
-        return std::make_unique<SequentialFrameProcessing>(std::move(card_detector), visualize, 1.0);
+        return std::make_unique<SequentialFrameProcessing>(std::move(card_detector), visualize, 60.0);
     } else {
         return std::make_unique<SingleFrameProcessing>(std::move(card_detector), visualize);
     }
@@ -216,6 +218,12 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     cv::Mat cumulative_confusion_matrix = cv::Mat::zeros(num_classes, num_classes, CV_32S);
     const int save_cm_every = 10;
 
+    std::unique_ptr<VideoWriter> video_writer;
+    if(dataset->is_sequential()){
+        video_writer = std::make_unique<VideoWriter>(output_folder_path+"/"+dataset->get_root().filename().string(), 60);
+    }
+
+    int frame_number = 0;
     for (auto it = dataset->begin(); it != dataset->end(); ++it) {
 
         //vectors to hold predicted and true labels for the current image
@@ -231,8 +239,12 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         //load and filter image
         SampleInfo* img_info = &(*it);
         cv::Mat img = dataset->load(it);
-        cv::Mat temp_img = img.clone();
-        temp_img = Filters::resize(temp_img, 0.25, 0.25);
+
+        if(img.empty()){
+            std::cerr << "\n[Warning] Found empty image at: " << img_info->get_name() << std::endl;
+            break;
+        }
+
         img = image_filter.apply_filters(img);
         load_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - step_start).count();
 
@@ -250,8 +262,6 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
             step_start = std::chrono::steady_clock::now();
             //load ground truth labels
             true_labels = Loader::Annotation::load_yolo_image_annotations(img_info->get_pathLabel(), img.cols, img.rows);
-            
-
             //update cumulative confusion matrix
             cumulative_confusion_matrix += StatisticsCalculation::calc_confusion_matrix(true_labels, predicted_labels, num_classes, iou_threshold);
             ++idx;
@@ -275,6 +285,13 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
             Utils::Visualization::printLabelsOnImage(output_img, true_labels, cv::Scalar(0,255,0), cv::Scalar(0,255,0)); //true labels in green
         }
         Utils::Visualization::printLabelsOnImage(output_img, predicted_labels, cv::Scalar(255,0,0), cv::Scalar(255,0,0)); //predicted labels in red
+
+        if(dataset->is_sequential()){
+            auto* seq_mode = dynamic_cast<SequentialFrameProcessing*>(mode.get());
+            output_img = draw_hi_low_count(output_img, *seq_mode, frame_number);
+            video_writer->addFrame(output_img);
+        }
+
         draw_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - step_start).count();
 
         step_start = std::chrono::steady_clock::now();
@@ -317,6 +334,13 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         if (total_images > 0) {
             Utils::Visualization::printProgressBar(static_cast<float>(idx) / static_cast<float>(total_images), 50, "Processing: ", "Complete"+time_output);
         }
+
+        frame_number++;
+    }
+
+    if(dataset->is_sequential()){
+        video_writer->close();
+        std::cout << "\nVideo saved to: " << video_writer->get_output_path() << std::endl;
     }
 
     // final cumulative confusion matrix + metrics
@@ -327,19 +351,57 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     std::vector<float> f1 = StatisticsCalculation::calc_f1(cumulative_confusion_matrix);
     Utils::Save::save_metrics(stats_folder + "metrics.txt", final_accuracy, precision, recall, f1);
 
-    // Summary time
-    std::cout << "Dataset image path: " << dataset->get_root() << std::endl;
-    std::cout << "Dataset annotation path: " << dataset->get_annotation_root() << std::endl;
     std::cout << "Total images processed: " << total_images << std::endl;
 
     if (total_images > 0) {
         std::cout << "Average load time per image: " << total_load_time.count() / total_images << " ms" << std::endl;
         std::cout << "Average detect time per image: " << total_detect_time.count() / total_images << " ms" << std::endl;
-        std::cout << "Average gt time per image: " << total_gt_time.count() / total_images << " ms" << std::endl;
+        std::cout << "Average gt time per image: " << (dataset->get_has_annotations() ? std::to_string(total_gt_time.count() / total_images) : "N/A")  << " ms" << std::endl;
         std::cout << "Average save annotations time per image: " << total_save_annotations_time.count() / total_images << " ms" << std::endl;
         std::cout << "Average draw time per image: " << total_draw_time.count() / total_images << " ms" << std::endl;
         std::cout << "Average save image time per image: " << total_save_image_time.count() / total_images << " ms" << std::endl;
         std::cout << "Average total time per image: " << total_total_time.count() / total_images << " ms" << std::endl;
     }
 
+}
+
+cv::Mat draw_hi_low_count(const cv::Mat& image, const SequentialFrameProcessing& mode, int frame_number){
+    cv::Mat output_img = image.clone();
+    // Display Hi-Lo count
+    int count = mode.get_running_count();
+    std::string count_text = "Hi-Lo Count: " + std::to_string(count);
+    cv::putText(output_img, count_text, cv::Point(20, 50), 
+        cv::FONT_HERSHEY_SIMPLEX, 1.5, cv::Scalar(255, 255, 255), 3);
+    cv::putText(output_img, count_text, cv::Point(20, 50), 
+        cv::FONT_HERSHEY_SIMPLEX, 1.5, cv::Scalar(0, 0, 255), 2);
+
+    // Display frame number
+    cv::putText(output_img, "Frame: " + std::to_string(frame_number), cv::Point(20, 100), 
+        cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(255, 255, 255), 2);
+
+    // Display tracked cards status (card ID, state, and physical card count)
+    const std::map<std::string, CardTracker::TrackedCard>& tracked_cards = mode.get_tracked_cards();
+    int y_offset = 140;
+    for (std::map<std::string, CardTracker::TrackedCard>::const_iterator it = tracked_cards.begin();
+            it != tracked_cards.end(); ++it) {
+        const std::string& card_id = it->first;
+        const CardTracker::TrackedCard& tracked = it->second;
+        std::string state_str;
+        cv::Scalar color;
+        switch (tracked.state) {
+            case CardTracker::CardState::CANDIDATE: 
+                state_str = "CAND"; color = cv::Scalar(0, 255, 255); break;
+            case CardTracker::CardState::CONFIRMED: 
+                state_str = "CONF"; color = cv::Scalar(0, 255, 0); break;
+            case CardTracker::CardState::OCCLUDED: 
+                state_str = "OCCL"; color = cv::Scalar(0, 165, 255); break;
+            default: continue;
+        }
+        // Show card ID, state, and count (e.g., "AS [CONF] x1" or "AS [CONF] x2")
+        std::string info = card_id + " [" + state_str + "] x" + std::to_string(tracked.confirmed_card_count);
+        cv::putText(output_img, info, cv::Point(20, y_offset), 
+            cv::FONT_HERSHEY_SIMPLEX, 0.6, color, 2);
+        y_offset += 25;
+    }
+    return output_img;
 }
