@@ -29,10 +29,13 @@ add_executable(main
     code/src/detection/card_detector/YoloCardDetector.cpp
 
     code/src/detection/card_detector/objectClassifiers/ObjectClassifier.cpp
-    code/src/detection/card_detector/objectClassifiers/featurePipeline/FeatureExtractor.cpp
-    code/src/detection/card_detector/objectClassifiers/featurePipeline/FeatureMatcher.cpp
+    code/src/detection/card_detector/objectClassifiers/featurePipeline/extractors/KeypointExtractor.cpp
+    code/src/detection/card_detector/objectClassifiers/featurePipeline/extractors/HashExtractor.cpp
+
+    code/src/detection/card_detector/objectClassifiers/featurePipeline/matchers/KeypointMatcher.cpp
+    code/src/detection/card_detector/objectClassifiers/featurePipeline/matchers/HashMatcher.cpp
+
     code/src/detection/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.cpp
-    code/src/detection/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.cpp
 
     code/src/detection/card_detector/objectSegmenters/ObjectSegmenter.cpp
     code/src/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.cpp

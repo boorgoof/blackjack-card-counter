@@ -25,7 +25,7 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
 
     //cv::imshow("Mask", mask_display);
     //cv::waitKey(0);
-    cv::imshow("Image", masked_image_display);
+    //cv::imshow("Image", masked_image_display);
     //cv::waitKey(0);
     std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(image, mask); 
    
