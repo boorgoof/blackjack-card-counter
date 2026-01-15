@@ -46,7 +46,7 @@ namespace Utils{
          * @param time the time to wait before closing the window (0 means wait indefinitely)
          * @param resize_factor the factor by which to resize the image
          */
-        void showImage(cv::Mat& image, const std::string& window_name = "Image", const int time = 0, const float resize_factor = 1.0);
+        void showImage(const cv::Mat& image, const std::string& window_name = "Image", const int time = 0, const float resize_factor = 1.0);
         /**
          * @brief Shows an image in a window.
          * @param image the image to show
@@ -54,7 +54,7 @@ namespace Utils{
          * @param time the time to wait before closing the window (0 means wait indefinitely)
          * @param size the size to resize the image to
          */
-        void showImage(cv::Mat& image, const std::string& window_name = "Image", const int time = 0, const cv::Size& size = cv::Size());
+        void showImage(const cv::Mat& image, const std::string& window_name = "Image", const int time = 0, const cv::Size& size = cv::Size());
         /**
          * @brief draws the provided labels directly on the image.
          * @param image the image to draw the labels on

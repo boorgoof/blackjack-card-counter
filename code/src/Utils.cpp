@@ -124,18 +124,25 @@ void Utils::Visualization::printProgressBar(float progress, size_t barwidth, con
     }
 }
 
-void Utils::Visualization::showImage(cv::Mat &image, const std::string &window_name, const int time, const float resize_factor)
+void Utils::Visualization::showImage(const cv::Mat &image, const std::string &window_name, const int time, const float resize_factor)
 {
-    if (resize_factor != 1.0 && resize_factor > 0.0) {
-        cv::Size new_size(static_cast<int>(image.cols * resize_factor), static_cast<int>(image.rows * resize_factor));
-        cv::resize(image, image, new_size);
+    //clone the image to avoid modifying the original
+    cv::Mat resized_image = image.clone();
+    if (resize_factor > 0.0) {
+        if(resize_factor != 1.0){
+            cv::Size new_size(static_cast<int>(image.cols * resize_factor), static_cast<int>(image.rows * resize_factor));
+            showImage(resized_image, window_name, time, new_size);
+        }
+        else{
+            showImage(resized_image, window_name, time, cv::Size());
+        }
     }
-    cv::imshow(window_name, image);
-    cv::waitKey(time);
-    cv::destroyAllWindows();
+    else{
+        std::cerr << "Invalid resize factor: " << resize_factor << ". It must be greater than 0." << std::endl;
+    }
 }
 
-void Utils::Visualization::showImage(cv::Mat &image, const std::string &window_name, const int time, const cv::Size& size)
+void Utils::Visualization::showImage(const cv::Mat &image, const std::string &window_name, const int time, const cv::Size& size)
 {
     if (size != cv::Size()) {
         cv::resize(image, image, size);

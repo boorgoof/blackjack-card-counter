@@ -1,11 +1,12 @@
-#include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/FeatureExtractor.h"
+#include "../../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/extractors/KeypointExtractor.h"
+#include "../../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/features/KeypointFeature.h"
 
-FeatureExtractor::~FeatureExtractor() {
+KeypointExtractor::~KeypointExtractor() {
     this->features_extractor.release();
 }
 
-void FeatureExtractor::init(){
-    switch (this->extractor_type) {
+void KeypointExtractor::init(){
+    switch (this->type_) {
         case ExtractorType::FeatureDescriptorAlgorithm::SIFT:
             this->features_extractor = cv::SIFT::create(); //3500, 3, 0.02, 12, 1.6
             break;
@@ -13,11 +14,11 @@ void FeatureExtractor::init(){
             this->features_extractor = cv::ORB::create();
             break;
         default:
-            throw std::invalid_argument("Invalid featureExtractor type");
+            throw std::invalid_argument("Invalid KeypointExtractor type");
     }
 }
 
-Feature* FeatureExtractor::extractFeatures(const cv::Mat& img, const cv::Mat& mask) const {
+Feature* KeypointExtractor::extractFeatures(const cv::Mat& img, const cv::Mat& mask) const {
     
     std::vector<cv::KeyPoint> keypoints;
     cv::Mat descriptors;

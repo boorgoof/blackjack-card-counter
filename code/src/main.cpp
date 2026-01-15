@@ -35,6 +35,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
 cv::Mat draw_hi_low_count(const cv::Mat& image, const SequentialFrameProcessing& mode, int frame_number);
 
 int main(int argc, char** argv) {
+
     try{
     //TODO: use a proper argument parser library or make this more flexible
     if (argc < 5) {
@@ -97,7 +98,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    bool visualize = (argc > 6) ? (std::string(argv[4]) == "true") : false;
+    bool visualize = (argc > 6) ? (std::string(argv[6]) == "true") : false;
 
     std::cout << "Program started with the following parameters:" << std::endl;
     std::cout << "datasets_path: " << datasets_path << std::endl;
@@ -120,7 +121,8 @@ int main(int argc, char** argv) {
             for (auto it = template_dataset.begin(); it != template_dataset.end(); ++it) {
                 const TemplateInfo& sample = dynamic_cast<const TemplateInfo&>(*it);
                 cv::Mat img = template_dataset.load(it);
-                Utils::Visualization::showImage(img, "Template Card: " + sample.get_name(), 200, 1);
+                std::cout << "Visualizing template sample: " << sample << std::endl;
+                Utils::Visualization::showImage(img, "Template Card: " + sample.get_name(), 200, 1.0);
             }
         }
         //Dataset object creation
@@ -167,7 +169,7 @@ std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Da
         if (!template_dataset){
             throw std::runtime_error("Template dataset is required but pointer to it is nullptr!");
         }
-        card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::CONVEX_HULL, visualize), std::make_unique<FeaturePipeline>( ExtractorType::FeatureDescriptorAlgorithm::SIFT, MatcherType::MatcherAlgorithm::FLANN, *template_dataset),std::make_unique<SimpleContoursCardSegmenter>(), visualize);
+        card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::CONVEX_HULL, visualize), std::make_unique<FeaturePipeline>(ExtractorType::FeatureDescriptorAlgorithm::SIFT, 0.7, *template_dataset),std::make_unique<SimpleContoursCardSegmenter>(), visualize);
         break;
     case DETECTION_MODE::MODEL:
         if (!model_path){
@@ -331,10 +333,11 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         std::string time_output = ss.str();
 
         idx++;
-        if (total_images > 0) {
-            Utils::Visualization::printProgressBar(static_cast<float>(idx) / static_cast<float>(total_images), 50, "Processing: ", "Complete"+time_output);
-        }
-
+        
+        //if (total_images > 0) {
+        //    Utils::Visualization::printProgressBar(static_cast<float>(idx) / static_cast<float>(total_images), 50, "Processing: ", "Complete"+time_output);
+        //}
+        
         frame_number++;
     }
 

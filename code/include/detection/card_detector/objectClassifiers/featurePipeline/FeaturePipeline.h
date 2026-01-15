@@ -2,8 +2,8 @@
 #define FEATUREPIPELINE_H
 
 #include "../ObjectClassifier.h"
-#include "FeatureExtractor.h"
-#include "FeatureMatcher.h"
+#include "extractors/FeatureExtractor.h"
+#include "matchers/FeatureMatcher.h"
 
 #include "../../../../Label.h"
 #include "features/FeatureContainer.h"
@@ -24,23 +24,13 @@ private:
      */
     std::unique_ptr<FeatureMatcher> matcher_;
 
-    const std::map<const ObjectType*, const Feature*>& template_features_;
+    const std::map<const ObjectType*, const Feature*>* template_features_;
 
-    /**
-     * @brief  check and to update the compatibility between the extractor and matcher.
-     */
-    void update_extractor_matcher_compatibility();
-
-    cv::Mat computeHomography(const std::vector<cv::DMatch>& matches,
-                            const std::vector<cv::KeyPoint>& model_keypoint,
-                            const std::vector<cv::KeyPoint>& scene_keypoint) const;
-
-
+    double lowe_ratio_threshold_ = 0.8;
+    
 public:
 
-    FeaturePipeline(FeatureExtractor* extractor, FeatureMatcher* matcher, TemplateDataset& template_dataset);
-
-    FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, TemplateDataset& template_dataset);
+    FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm extractor_agorithm, const double lowe_ratio_threshold, TemplateDataset& template_dataset);
 
     ~FeaturePipeline();
 

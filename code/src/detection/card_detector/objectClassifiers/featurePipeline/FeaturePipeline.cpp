@@ -1,117 +1,99 @@
 #include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
 #include "../../../../../include/Dataset/TemplateDataset.h"
 #include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
-#include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/features/KeypointFeature.h"
+
+#include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/extractors/KeypointExtractor.h"
+#include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/extractors/HashExtractor.h"
+#include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/matchers/KeypointMatcher.h"
+#include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/matchers/HashMatcher.h"
+
+
+#include "../../../../../include/Utils.h"
 #include "../../../../../include/StatisticsCalculation.h"
 #include "../../../../../include/Loaders.h"
 
-
-
-void FeaturePipeline::update_extractor_matcher_compatibility() {
-    
-    if (this->extractor_->getType() == ExtractorType::ORB && this->matcher_->getType() == MatcherType::FLANN) {
-        this->matcher_.release();
-        this->matcher_ = std::make_unique<FeatureMatcher>(FeatureMatcher(MatcherType::FLANN, new cv::FlannBasedMatcher(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2))));
-    }
-}
-
 FeaturePipeline::~FeaturePipeline() {}
 
-FeaturePipeline::FeaturePipeline(FeatureExtractor *extractor, FeatureMatcher *matcher, TemplateDataset& template_dataset)
-    : extractor_{extractor}, matcher_{matcher}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_dataset, *extractor)}
+FeaturePipeline::FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm extractor_algorithm, const double lowe_ratio_threshold, TemplateDataset& template_dataset)
+    : extractor_{nullptr}, matcher_{nullptr}, lowe_ratio_threshold_{lowe_ratio_threshold}, template_features_{nullptr}
 {
-    this->update_extractor_matcher_compatibility();
+    switch (extractor_algorithm) {
+    case ExtractorType::SIFT:
+        extractor_ = std::make_unique<KeypointExtractor>(extractor_algorithm);
+        matcher_ = std::make_unique<KeypointMatcher>(MatcherType::FLANN, 10, 0.8f); // min 10 matches and lowe's ratio 0.8
+        break;
+    case ExtractorType::ORB:
+        extractor_ = std::make_unique<KeypointExtractor>(extractor_algorithm);
+        matcher_ = std::make_unique<KeypointMatcher>(MatcherType::BRUTEFORCE_HAMMING, 10, 0.8f); // min 10 matches and lowe's ratio 0.8
+        break;
+    case ExtractorType::PHASH:
+        extractor_ = std::make_unique<HashExtractor>(extractor_algorithm);
+        matcher_ = std::make_unique<HashMatcher>(MatcherType::PHASH, 15.0); // PHash distance threshold 15.0
+        break;
+    case ExtractorType::COLOR_MOMENT_HASH:
+        extractor_ = std::make_unique<HashExtractor>(extractor_algorithm);
+        matcher_ = std::make_unique<HashMatcher>(MatcherType::COLOR_MOMENT_HASH, 0.1); // Color Moment Hash distance threshold 0.1
+        break;
+    default:
+        throw std::invalid_argument("Unsupported extractor type for FeaturePipeline");
+    }
 
-    std::string method_name = ExtractorType::toString(extractor->getType()) + "-" + MatcherType::toString(matcher->getType());
-    this->set_method_name(method_name);
-}
+    // Populate the Singleton
+    FeatureContainer::getInstance().loadTemplates(template_dataset, *extractor_);
+    
+    // Store reference to the map for classification
+    template_features_ = &FeatureContainer::getInstance().getFeatures();
 
-FeaturePipeline::FeaturePipeline(const ExtractorType::FeatureDescriptorAlgorithm extractor, const MatcherType::MatcherAlgorithm matcher, TemplateDataset& template_dataset)
-    : extractor_{std::make_unique<FeatureExtractor>(extractor)}, matcher_{std::make_unique<FeatureMatcher>(matcher)}, template_features_{Utils::FeatureContainerSingleton::get_templates_features(template_dataset, *this->extractor_)}
-{
-    this->update_extractor_matcher_compatibility();
-
-    std::string method_name = ExtractorType::toString(extractor) + "-" + MatcherType::toString(matcher);
+    std::string method_name = ExtractorType::toString(extractor_->getType()) + "-" + MatcherType::toString(matcher_->getType());
     this->set_method_name(method_name);
 }
 
 
 const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const cv::Mat &src_mask) {
-    
-    const ObjectType* best_obj = nullptr;
 
-    //1) Extracts test image features
-    std::unique_ptr<KeypointFeature> imageFeatures(dynamic_cast<KeypointFeature*>(this->extractor_->extractFeatures(src_img, src_mask)));
+    //Extracts test image features
+    std::unique_ptr<Feature> imageFeatures(this->extractor_->extractFeatures(src_img, src_mask));
     if (!imageFeatures) { 
-        std::cerr << "The dynamic cast from Feature* to KeypointFeature is not possible for the img ";
-        return nullptr; 
+        return nullptr;
     }
 
-    //2) The template descriptors are already extracted and passed to the pipeline in the constuctor(they always remain the same for every test image, so they are detected only once)
+    Utils::Visualization::showImage(src_img, "Classify Object - Input Image", 3000, 1.0);
 
-    //3) For each template, match its descriptors with the test image descriptors and find the bounding boxes of the templ_object in the test image
-    size_t best_score = 0;
-    const size_t MIN_MATCHES_THRESHOLD = 10;
-    for (const auto& [templ_object, templ_feature] : this->template_features_) {
+    const ObjectType* best_obj = nullptr;
+    double best_score = matcher_->getWorstScore();
+    double second_best_score = matcher_->getWorstScore();
+
+    //The template descriptors are already extracted and passed to the pipeline in the constuctor(they always remain the same for every test image, so they are detected only once)
+
+    //For each template, match its descriptors with the test image descriptors and find the bounding boxes of the templ_object in the test image
+    for (const auto& [templ_object, templ_feature] : *this->template_features_) {
         
         if (!templ_object || !templ_feature) continue;
 
-        const KeypointFeature* templFeatures = dynamic_cast<const KeypointFeature*>(templ_feature);
-        if (!templFeatures) {
-            std::cerr << "The dynamic cast from Feature* to KeypointFeature is not possible for the object" << templ_object->get_id() << "\n";
-            continue;
-        }
+        double current_score = matcher_->matchFeatures(imageFeatures.get(), templ_feature);
 
-        // get the descriptors of the template
-        const cv::Mat& templ_desciptors = templFeatures->getDescriptors();
-        if (templ_desciptors.empty() || imageFeatures->getDescriptors().empty()) continue;
+        if(matcher_->isValid(current_score)) {
+            std::cout << "Object " << templ_object->to_string() << " is a valid match with score: " << current_score << std::endl;
 
-        // obtains the matches between the template and the test image
-        std::vector<cv::DMatch> matches;
-        try {
-            this->matcher_->matchFeatures(templ_desciptors, imageFeatures->getDescriptors(),  matches);
-        } catch (const cv::Exception& e) {
-            std::cerr << "Error during feature matching: " << e.what() << '\n';
-            continue;
+            if (matcher_->isBetter(current_score, best_score)) {
+                second_best_score = best_score;
+                best_score = current_score;
+                best_obj = templ_object;
+                std::cout << "Object " << templ_object->to_string() << " is the best match so far with score: " << best_score << std::endl;
+            }
+            else if (matcher_->isBetter(current_score, second_best_score)) {
+                second_best_score = current_score;
+            }
         }
-
-        if (matches.size() >= MIN_MATCHES_THRESHOLD && matches.size() > best_score) {
-            best_score = matches.size();
-            best_obj = templ_object; 
-        }
-        
     }
+
+    double ratio = matcher_->calculateRatio(best_score, second_best_score);
+    std::cout << "Best score: " << best_score << ", Second best score: " << second_best_score << ", Ratio: " << ratio << std::endl;
+
+    if(ratio > this->lowe_ratio_threshold_) {
+        std::cout << "No reliable match found. Best ratio " << ratio << " is above the threshold of " << this->lowe_ratio_threshold_ << std::endl;
+        return nullptr;
+    }
+
     return best_obj;
-
-}
-
-cv::Mat FeaturePipeline::computeHomography(const std::vector<cv::DMatch>& matches,
-                                           const std::vector<cv::KeyPoint>& model_keypoint,
-                                           const std::vector<cv::KeyPoint>& scene_keypoint) const {
-    const int minMatches = 4;
-
-    if (matches.size() < static_cast<size_t>(minMatches)) {
-        std::cout << "Warning: not enough matches are found - "
-                  << matches.size() << "/" << minMatches << std::endl;
-        return cv::Mat(); 
-    }
-
-    std::vector<cv::Point2f> scene_pts;
-    std::vector<cv::Point2f> model_pts;
-    scene_pts.reserve(matches.size());
-    model_pts.reserve(matches.size());
-
-    for (const auto& match : matches) {
-        model_pts.push_back(model_keypoint[match.queryIdx].pt);
-        scene_pts.push_back(scene_keypoint[match.trainIdx].pt);
-    }
-
-    cv::Mat homography_mask;
-    cv::Mat H = cv::findHomography(model_pts, scene_pts, cv::RANSAC, 5.0, homography_mask);
-
-    if (H.empty()) {
-        std::cerr << "Warning: homography matrix empty" << std::endl;
-    }
-
-    return H;  
 }

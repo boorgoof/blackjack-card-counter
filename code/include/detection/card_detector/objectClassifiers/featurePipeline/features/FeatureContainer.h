@@ -5,26 +5,22 @@
 #include <map>
 #include "../../../../../CardType.h"
 #include "../../../../../Loaders.h"
-#include "../FeatureExtractor.h"
+#include "../extractors/FeatureExtractor.h"
 #include "Feature.h"
 
-//TODO: adapt this class and overall architecture to support different feature extractors other than keypoint-based ones (e.g. image hash)
-
-template<ExtractorType::FeatureDescriptorAlgorithm alg>
 class FeatureContainer {
 public:
-    static FeatureContainer<alg>& getInstance() {
-        static FeatureContainer<alg> inst;
+    static FeatureContainer& getInstance() {
+        static FeatureContainer inst;
         return inst;
     }
 
-    const std::map<const ObjectType*, const Feature*>& get_features(TemplateDataset& dataset, const FeatureExtractor& extractor){
-        if (!features_) {
-            features_ = std::unique_ptr<const std::map<const ObjectType*, const Feature*>>(Loader::TemplateObject::load_template_feature(dataset, extractor));
-        }
-
-        return *features_;
+    void loadTemplates(TemplateDataset& dataset, const FeatureExtractor& extractor) {
+        features_ = std::unique_ptr<const std::map<const ObjectType*, const Feature*>>(
+            Loader::TemplateObject::load_template_feature(dataset, extractor)
+        );
     }
+    const std::map<const ObjectType*, const Feature*>& getFeatures() const { return *features_; }
 
 private:
 
@@ -35,9 +31,4 @@ private:
     std::unique_ptr<const std::map<const ObjectType*, const Feature*>> features_;
 };
 
-namespace Utils {
-    namespace FeatureContainerSingleton {
-        const std::map<const ObjectType*, const Feature*>& get_templates_features(TemplateDataset& dataset, const FeatureExtractor& extractor);
-    }
-}
 #endif // FEATURECONTAINER_H
