@@ -137,8 +137,9 @@ int main(int argc, char** argv) {
         iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + SINGLE_CARD_DATASET_NAME, visualize, num_classes);
     }
     else if(dataset_to_use == VIDEO_DATASET_NAME){
-        //Dataset object creation
-        std::unique_ptr<Dataset> video_dataset(new VideoDataset(dataset_path, false));
+        //Dataset object creation - sample at 10 FPS for smoother output
+        constexpr double VIDEO_SAMPLE_FPS = 10.0;
+        std::unique_ptr<Dataset> video_dataset(new VideoDataset(dataset_path, false, VIDEO_SAMPLE_FPS));
 
         //depending on the dataset type, create the appropriate card detector
         std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(video_dataset, visualize, DETECTION_MODE::MODEL, nullptr, &model_path);
@@ -182,7 +183,7 @@ std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Da
     }
 
     if (dataset->is_sequential()) {
-        return std::make_unique<SequentialFrameProcessing>(std::move(card_detector), visualize, 60.0);
+        return std::make_unique<SequentialFrameProcessing>(std::move(card_detector), visualize, 10.0);
     } else {
         return std::make_unique<SingleFrameProcessing>(std::move(card_detector), visualize);
     }
@@ -222,7 +223,8 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
 
     std::unique_ptr<VideoWriter> video_writer;
     if(dataset->is_sequential()){
-        video_writer = std::make_unique<VideoWriter>(output_folder_path+"/"+dataset->get_root().filename().string(), 60);
+        // Output at 15 FPS for slightly faster than realtime playback
+        video_writer = std::make_unique<VideoWriter>(output_folder_path+"/"+dataset->get_root().filename().string(), 15);
     }
 
     int frame_number = 0;
@@ -243,8 +245,8 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         cv::Mat img = dataset->load(it);
 
         if(img.empty()){
-            std::cerr << "\n[Warning] Found empty image at: " << img_info->get_name() << std::endl;
-            break;
+            // Skip unreadable frames (common at video end due to corruption/encoding issues)
+            continue;
         }
 
         img = image_filter.apply_filters(img);
