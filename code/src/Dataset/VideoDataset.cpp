@@ -83,12 +83,18 @@ void VideoDataset::append_frames(const std::filesystem::path& video_file, std::v
     const std::string video_name = video_file.stem().string();
 
     double duration_seconds = static_cast<double>(frame_count) / fps;
-    std::size_t steps = static_cast<std::size_t>(std::ceil(duration_seconds / frame_interval_seconds));
+    // Use floor to avoid going past the end, subtract 2x interval for safety margin
+    double safe_duration = duration_seconds - (2.0 * frame_interval_seconds);
+    std::size_t steps = static_cast<std::size_t>(std::floor(safe_duration / frame_interval_seconds)) + 1;
     
-    entries.reserve(entries.size() + steps + 1);
+    entries.reserve(entries.size() + steps);
     
-    for (std::size_t i = 0; i <= steps && frame_count > 0; ++i) {
+    for (std::size_t i = 0; i < steps && frame_count > 0; ++i) {
         double timestamp = static_cast<double>(i) * frame_interval_seconds;
+        // Stop if timestamp exceeds safe video duration
+        if (timestamp >= safe_duration) {
+            break;
+        }
         std::size_t frame_idx = 0;
         if (fps > 0.0) {
             frame_idx = static_cast<std::size_t>(std::llround(timestamp * fps)); // Corresponding frame index
