@@ -9,4 +9,4 @@ DL_approach/runs/**
 data/datasets/single_cards/**
 yolo11s.pt
 __pycache__/**
-data/datasets/YoloDataset/**
+data/datasets/YoloDataset/**data/datasets/videos/video_blue_bg/VideoBlackjack.mp4
