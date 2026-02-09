@@ -84,17 +84,21 @@ void Utils::Save::save_confusion_matrix(const std::string &file_path, const cv::
     }
     file.close();
 }
-void Utils::Save::save_metrics(const std::string &file_path, const float accuracy, const std::vector<float> &precision, const std::vector<float> &recall, const std::vector<float> &f1)
+
+void Utils::Save::save_metrics(const std::string& file_path, const float accuracy, const std::vector<float>& precision, const std::vector<float>& recall, const std::vector<float>& f1, const std::set<int>& classes_to_select) 
 {
     std::ofstream file(file_path);
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file for writing: " + file_path);
     }
+
     file << "Accuracy: " << accuracy << "\n\n";
     file << "Class,Precision,Recall,F1-Score\n";
-    for (size_t i = 0; i < precision.size(); ++i) {
-        file << Yolo_index_codec::yolo_index_to_card(i) << "," << precision[i] << "," << recall[i] << "," << f1[i] << "\n";
+
+    for (int cls : classes_to_select) {
+        file << Yolo_index_codec::yolo_index_to_card(cls) << "," << precision[cls] << "," << recall[cls] << "," << f1[cls] << "\n";
     }
+
     file.close();
 }
 
