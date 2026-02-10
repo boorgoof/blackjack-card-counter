@@ -57,7 +57,7 @@ const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const
         return nullptr;
     }
 
-    Utils::Visualization::showImage(src_img, "Classify Object - Input Image", 3000, 1.0);
+    //Utils::Visualization::showImage(src_img, "Classify Object - Input Image", 3000, 1.0);
 
     const ObjectType* best_obj = nullptr;
     double best_score = matcher_->getWorstScore();
@@ -73,13 +73,13 @@ const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const
         double current_score = matcher_->matchFeatures(imageFeatures.get(), templ_feature);
 
         if(matcher_->isValid(current_score)) {
-            std::cout << "Object " << templ_object->to_string() << " is a valid match with score: " << current_score << std::endl;
+            //std::cout << "Object " << templ_object->to_string() << " is a valid match with score: " << current_score << std::endl;
 
             if (matcher_->isBetter(current_score, best_score)) {
                 second_best_score = best_score;
                 best_score = current_score;
                 best_obj = templ_object;
-                std::cout << "Object " << templ_object->to_string() << " is the best match so far with score: " << best_score << std::endl;
+                //std::cout << "Object " << templ_object->to_string() << " is the best match so far with score: " << best_score << std::endl;
             }
             else if (matcher_->isBetter(current_score, second_best_score)) {
                 second_best_score = current_score;
@@ -88,7 +88,7 @@ const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const
     }
 
     double ratio = matcher_->calculateRatio(best_score, second_best_score);
-    std::cout << "Best score: " << best_score << ", Second best score: " << second_best_score << ", Ratio: " << ratio << std::endl;
+    //std::cout << "Best score: " << best_score << ", Second best score: " << second_best_score << ", Ratio: " << ratio << std::endl;
 
     if(ratio > this->lowe_ratio_threshold_) {
         std::cout << "No reliable match found. Best ratio " << ratio << " is above the threshold of " << this->lowe_ratio_threshold_ << std::endl;

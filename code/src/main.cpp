@@ -83,12 +83,17 @@ int main(int argc, char** argv) {
     }
 
     const std::string SINGLE_CARD_DATASET_NAME = "single_cards";
+    const std::string MULTIPLE_CARDS_DATASET_NAME = "multiple_cards";
     const std::string VIDEO_DATASET_NAME = "video";
 
     std::string dataset_path = "";
 
     if(dataset_to_use == SINGLE_CARD_DATASET_NAME){
         dataset_path = datasets_path + "/" + "single_cards";
+
+    } else if(dataset_to_use == MULTIPLE_CARDS_DATASET_NAME){
+        dataset_path = datasets_path + "/" + "multiple_cards";
+
     }
     else if(dataset_to_use == VIDEO_DATASET_NAME){
         dataset_path = datasets_path + "/" + "videos" + "/" + "video_blue_bg/VideoBlackjack.mp4";
@@ -135,8 +140,19 @@ int main(int argc, char** argv) {
         //iterate through dataset and detect each image
         //output is saved into output_path/single_cards
         iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + SINGLE_CARD_DATASET_NAME, visualize, num_classes);
-    }
-    else if(dataset_to_use == VIDEO_DATASET_NAME){
+
+    } else if(dataset_to_use == MULTIPLE_CARDS_DATASET_NAME){
+        
+        //Dataset object creation
+        std::unique_ptr<Dataset> multiple_cards_dataset(new ImageDataset(dataset_path));
+        
+        //depending on the dataset type, create the appropriate card detector
+        std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(multiple_cards_dataset, visualize, DETECTION_MODE::MODEL, nullptr, &model_path);
+        //iterate through dataset and detect each image
+        //output is saved into output_path/multiple_cards
+        iterate_dataset(multiple_cards_dataset, img_filter, mode, output_path + "/" + dataset_to_use, visualize, num_classes);
+
+    } else if(dataset_to_use == VIDEO_DATASET_NAME){
         //Dataset object creation - sample at 10 FPS for smoother output
         constexpr double VIDEO_SAMPLE_FPS = 10.0;
         std::unique_ptr<Dataset> video_dataset(new VideoDataset(dataset_path, false, VIDEO_SAMPLE_FPS));
@@ -170,7 +186,7 @@ std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Da
         if (!template_dataset){
             throw std::runtime_error("Template dataset is required but pointer to it is nullptr!");
         }
-        card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::CONVEX_HULL, visualize), std::make_unique<FeaturePipeline>(ExtractorType::FeatureDescriptorAlgorithm::SIFT, 0.7, *template_dataset),std::make_unique<SimpleContoursCardSegmenter>(), visualize);
+        card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::CONVEX_HULL, visualize), std::make_unique<FeaturePipeline>(ExtractorType::FeatureDescriptorAlgorithm::SIFT, 1, *template_dataset),std::make_unique<SimpleContoursCardSegmenter>(), visualize);
         break;
     case DETECTION_MODE::MODEL:
         if (!model_path){
@@ -228,6 +244,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     }
 
     int frame_number = 0;
+    std::set<int> encountered_classes;
     for (auto it = dataset->begin(); it != dataset->end(); ++it) {
 
         //vectors to hold predicted and true labels for the current image
@@ -266,9 +283,14 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
             step_start = std::chrono::steady_clock::now();
             //load ground truth labels
             true_labels = Loader::Annotation::load_yolo_image_annotations(img_info->get_pathLabel(), img.cols, img.rows);
+            for (const auto& label : true_labels) {
+                if (const CardType* card = dynamic_cast<const CardType*>(label.get_object())) {
+                    encountered_classes.insert(Yolo_index_codec::card_to_yolo_index(*card));
+                }
+            }
+
             //update cumulative confusion matrix
             cumulative_confusion_matrix += StatisticsCalculation::calc_confusion_matrix(true_labels, predicted_labels, num_classes, iou_threshold);
-            ++idx;
             float accuracy = StatisticsCalculation::calc_accuracy(cumulative_confusion_matrix);
             if (save_cm_every > 0 && (idx % save_cm_every == 0)) {
                 Utils::Save::save_confusion_matrix(stats_folder + "confusion_matrix.txt", cumulative_confusion_matrix);
@@ -276,7 +298,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
                 std::vector<float> precision = StatisticsCalculation::calc_precision(cumulative_confusion_matrix);
                 std::vector<float> recall = StatisticsCalculation::calc_recall(cumulative_confusion_matrix);
                 std::vector<float> f1 = StatisticsCalculation::calc_f1(cumulative_confusion_matrix);
-                Utils::Save::save_metrics(stats_folder + "metrics.txt",accuracy, precision, recall, f1);
+                Utils::Save::save_metrics(stats_folder + "metrics.txt",accuracy, precision, recall, f1, encountered_classes);
             }
 
             gt_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - step_start).count();
@@ -336,9 +358,9 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
 
         idx++;
         
-        //if (total_images > 0) {
-        //    Utils::Visualization::printProgressBar(static_cast<float>(idx) / static_cast<float>(total_images), 50, "Processing: ", "Complete"+time_output);
-        //}
+        if (total_images > 0) {
+            Utils::Visualization::printProgressBar(static_cast<float>(idx) / static_cast<float>(total_images), 50, "Processing: ", "Complete"+time_output);
+        }
         
         frame_number++;
     }
@@ -354,7 +376,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     std::vector<float> precision = StatisticsCalculation::calc_precision(cumulative_confusion_matrix);
     std::vector<float> recall = StatisticsCalculation::calc_recall(cumulative_confusion_matrix);
     std::vector<float> f1 = StatisticsCalculation::calc_f1(cumulative_confusion_matrix);
-    Utils::Save::save_metrics(stats_folder + "metrics.txt", final_accuracy, precision, recall, f1);
+    Utils::Save::save_metrics(stats_folder + "metrics.txt", final_accuracy, precision, recall, f1, encountered_classes);
 
     std::cout << "Total images processed: " << total_images << std::endl;
 
@@ -387,8 +409,7 @@ cv::Mat draw_hi_low_count(const cv::Mat& image, const SequentialFrameProcessing&
     // Display tracked cards status (card ID, state, and physical card count)
     const std::map<std::string, CardTracker::TrackedCard>& tracked_cards = mode.get_tracked_cards();
     int y_offset = 140;
-    for (std::map<std::string, CardTracker::TrackedCard>::const_iterator it = tracked_cards.begin();
-            it != tracked_cards.end(); ++it) {
+    for (std::map<std::string, CardTracker::TrackedCard>::const_iterator it = tracked_cards.begin(); it != tracked_cards.end(); ++it) {
         const std::string& card_id = it->first;
         const CardTracker::TrackedCard& tracked = it->second;
         std::string state_str;

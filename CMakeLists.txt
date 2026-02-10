@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(EasyPeasyCV-Blackjack)
 
 
-find_package(OpenCV 4.9 REQUIRED)
+find_package(OpenCV 4.8 REQUIRED)
 
 add_executable(main
     code/src/main.cpp
@@ -38,8 +38,7 @@ add_executable(main
     code/src/detection/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.cpp
 
     code/src/detection/card_detector/objectSegmenters/ObjectSegmenter.cpp
-    code/src/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.cpp
-    code/src/detection/card_detector/objectSegmenters/DistanceTransformCardSegmenter.cpp)
+    code/src/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.cpp)
 
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/code/include)
     
