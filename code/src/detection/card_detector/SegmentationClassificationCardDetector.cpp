@@ -37,6 +37,7 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
 
         CardProjection::getCornerBboxes(masked_image, contour, bbox1, bbox2, card_projected_image);
 
+        // now we classify the card using the projected image
         if (this->object_classifier_) {
 
             const ObjectType* obj_type = nullptr;
@@ -48,7 +49,7 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
             //cv::waitKey(0);
             obj_type = this->object_classifier_->classify_object(card_projected_image, cv::Mat());
             
-
+            // create label only if the classification is valid
             if (obj_type && obj_type->isValid()) {
 
                 std::vector<cv::Rect> bboxes;

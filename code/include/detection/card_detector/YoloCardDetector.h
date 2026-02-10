@@ -10,7 +10,6 @@ public:
     ~YoloCardDetector() override = default;
 
     std::vector<Label> detect_cards(const cv::Mat& image) override;
-
     int mapCardIndex(int inputIndex);
 
 private:

@@ -38,13 +38,14 @@ std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
     std::vector<float> confidences;
     std::vector<cv::Rect> boxes;
 
-    // Fattori di scala per riportare le coordinate alla dimensione dell'immagine originale
+    // scale factors to convert back to original image size
     float x_factor = image.cols / input_size;
     float y_factor = image.rows / input_size;
 
     for (int i = 0; i < res.rows; ++i) {
         cv::Mat row = res.row(i);
-        // Le colonne 4-55 sono i punteggi delle 52 classi
+
+        
         cv::Mat scores = row.colRange(4, 56);
         cv::Point class_id_point;
         double score;
@@ -56,7 +57,6 @@ std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
             float w = row.at<float>(2);
             float h = row.at<float>(3);
 
-            // Convertiamo da centro (cx, cy) a angolo (x, y) e scaliamo
             int left = static_cast<int>((cx - 0.5 * w) * x_factor);
             int top = static_cast<int>((cy - 0.5 * h) * y_factor);
             int width = static_cast<int>(w * x_factor);
@@ -68,7 +68,7 @@ std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
         }
     }
 
-    // Non-Maximum Suppression (NMS)
+    // Non-Maximum Suppression 
     std::vector<int> indices;
     cv::dnn::NMSBoxes(boxes, confidences, conf_threshold, nms_threshold, indices);
 
@@ -76,7 +76,6 @@ std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
 
         CardType card = Yolo_index_codec::yolo_index_to_card(this->mapCardIndex(class_ids[idx]));
         std::vector<cv::Rect> bboxes = { boxes[idx] };
-        // Costruttore: Label(std::unique_ptr<ObjectType> obj, const std::vector<cv::Rect>& bboxes, float conf)
         detections.emplace_back(card.clone(), bboxes, confidences[idx]);
     }
 

@@ -38,7 +38,8 @@ add_executable(main
     code/src/detection/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.cpp
 
     code/src/detection/card_detector/objectSegmenters/ObjectSegmenter.cpp
-    code/src/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.cpp)
+    code/src/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.cpp
+)
 
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/code/include)
     

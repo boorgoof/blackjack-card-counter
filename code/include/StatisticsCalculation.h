@@ -108,23 +108,6 @@ namespace StatisticsCalculation {
     std::vector<float> calc_f1(const cv::Mat& confusion_matrix);
     
     
-    /**
-     * @brief Utility function to print confusion matrix
-     * 
-     * @param confusion_matrix Confusion matrix to print
-     */
-    void print_confusion_matrix(const cv::Mat& confusion_matrix);
-    
-    /**
-     * @brief Utility function to print metrics
-     *
-     * @param precision vector of precisions per class
-     * @param recall vector of recalls per class
-     * @param f1_scores vector of F1-scores per class
-     */
-    void print_metrics(const std::vector<float>& precision, 
-                      const std::vector<float>& recall, 
-                      const std::vector<float>& f1_scores);
     
 } 
 
