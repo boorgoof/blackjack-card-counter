@@ -22,7 +22,7 @@
 class CardTracker {
 public:
     // Timing thresholds in SECONDS
-    static constexpr double SECONDS_TO_CONFIRM = 3.0;
+    static constexpr double SECONDS_TO_CONFIRM = 2.0;
     static constexpr double SECONDS_OCCLUSION = 3.0;
     static constexpr double SECONDS_BACKGROUND = 30.0;
 
@@ -70,6 +70,7 @@ private:
     int running_count_ = 0;
 
     void update_frame_thresholds();
+    void recalculate_running_count();
     static const CardType* extract_card(const Label& label);
 };
 

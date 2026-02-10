@@ -88,8 +88,6 @@ void CardTracker::update_frame(const std::vector<Label>& detections) {
                     int num_cards = tracked.confirmed_card_count;
                     for (int c = 0; c < num_cards; ++c) {
                         removed_this_frame_.push_back(tracked.card);
-                        Blackjack::HiLo value = Blackjack::rank_to_HiLo(tracked.card.get_rank());
-                        running_count_ += Blackjack::HiLo_to_int(value);
                     }
                     cards_removed_count_this_frame_ += num_cards;
                     to_remove.push_back(card_id);
@@ -118,6 +116,9 @@ void CardTracker::update_frame(const std::vector<Label>& detections) {
             tracked_cards_.insert(std::make_pair(card_id, TrackedCard(*card_ptr, det_count)));
         }
     }
+
+    // Recalculate running count based on all currently confirmed cards
+    recalculate_running_count();
 }
 
 std::vector<CardType> CardTracker::get_removed_cards_this_frame() const {
@@ -134,6 +135,21 @@ void CardTracker::reset() {
     removed_this_frame_.clear();
     cards_removed_count_this_frame_ = 0;
     running_count_ = 0;
+}
+
+void CardTracker::recalculate_running_count() {
+    running_count_ = 0;
+    for (std::map<std::string, TrackedCard>::const_iterator it = tracked_cards_.begin();
+         it != tracked_cards_.end(); ++it) {
+        const TrackedCard& tracked = it->second;
+        if (tracked.state == CardState::CONFIRMED || tracked.state == CardState::OCCLUDED) {
+            int num_cards = tracked.confirmed_card_count;
+            for (int c = 0; c < num_cards; ++c) {
+                Blackjack::HiLo value = Blackjack::rank_to_HiLo(tracked.card.get_rank());
+                running_count_ += Blackjack::HiLo_to_int(value);
+            }
+        }
+    }
 }
 
 const CardType* CardTracker::extract_card(const Label& label) {
