@@ -8,7 +8,7 @@ KeypointExtractor::~KeypointExtractor() {
 void KeypointExtractor::init(){
     switch (this->type_) {
         case ExtractorType::FeatureDescriptorAlgorithm::SIFT:
-            this->features_extractor = cv::SIFT::create(0, 3, 0.04, 10, 1.6);
+            this->features_extractor = cv::SIFT::create(1200, 3, 0.02, 8, 1.2);
             break;
         case ExtractorType::FeatureDescriptorAlgorithm::ORB:
             this->features_extractor = cv::ORB::create();

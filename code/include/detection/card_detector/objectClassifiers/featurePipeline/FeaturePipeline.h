@@ -26,7 +26,7 @@ private:
 
     const std::map<const ObjectType*, const Feature*>* template_features_;
 
-    double lowe_ratio_threshold_ = 0.8;
+    double ratio_threshold_ = 0.8;
     
 public:
 

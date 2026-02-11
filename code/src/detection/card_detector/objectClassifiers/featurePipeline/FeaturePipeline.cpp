@@ -14,8 +14,8 @@
 
 FeaturePipeline::~FeaturePipeline() {}
 
-FeaturePipeline::FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm extractor_algorithm, const double lowe_ratio_threshold, TemplateDataset& template_dataset)
-    : extractor_{nullptr}, matcher_{nullptr}, lowe_ratio_threshold_{lowe_ratio_threshold}, template_features_{nullptr}
+FeaturePipeline::FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm extractor_algorithm, const double ratio_threshold, TemplateDataset& template_dataset)
+    : extractor_{nullptr}, matcher_{nullptr}, ratio_threshold_{ratio_threshold}, template_features_{nullptr}
 {
     switch (extractor_algorithm) {
     case ExtractorType::SIFT:
@@ -70,7 +70,7 @@ const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const
         
         if (!templ_object || !templ_feature) continue;
 
-        double current_score = matcher_->matchFeatures(imageFeatures.get(), templ_feature);
+        double current_score = matcher_->matchFeatures(templ_feature, imageFeatures.get());
 
         if(matcher_->isValid(current_score)) {
             //std::cout << "Object " << templ_object->to_string() << " is a valid match with score: " << current_score << std::endl;
@@ -88,10 +88,11 @@ const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const
     }
 
     double ratio = matcher_->calculateRatio(best_score, second_best_score);
+    
     //std::cout << "Best score: " << best_score << ", Second best score: " << second_best_score << ", Ratio: " << ratio << std::endl;
 
-    if(ratio > this->lowe_ratio_threshold_) {
-        std::cout << "No reliable match found. Best ratio " << ratio << " is above the threshold of " << this->lowe_ratio_threshold_ << std::endl;
+    if(ratio > this->ratio_threshold_) {
+        std::cout << "No reliable match found. Best ratio " << ratio << " is above the threshold of " << this->ratio_threshold_ << std::endl;
         return nullptr;
     }
 

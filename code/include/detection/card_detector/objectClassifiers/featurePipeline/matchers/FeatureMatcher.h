@@ -43,8 +43,8 @@ public:
 
     /**
      * @brief match features between two images (the query and the target)
-     * @param query the feature of the query image
-     * @param target the feature of the target image
+     * @param query the feature of the query (model) image
+     * @param target the feature of the target (scene) image
      * @return a score representing how well the features match
      */
     virtual double matchFeatures(const Feature* query, const Feature* target) const = 0;
