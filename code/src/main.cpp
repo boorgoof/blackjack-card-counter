@@ -19,7 +19,6 @@
 #include "../include/detection/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
 #include "../include/detection/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
 #include "../include/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
-#include "../include/detection/card_detector/objectSegmenters/DistanceTransformCardSegmenter.h"
 #include "../include/VideoWriter.h"
 
 #include <exception>

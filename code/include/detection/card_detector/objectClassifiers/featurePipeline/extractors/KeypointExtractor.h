@@ -4,10 +4,15 @@
 #include <opencv2/opencv.hpp>
 #include "FeatureExtractor.h"
 
+/**
+ * @brief KeypointExtractor class to extract keypoint features from images
+ */
+
 class KeypointExtractor : public FeatureExtractor {
 private:
+
     /**
-     * @brief the OpenCV feature Extractor
+     * @brief the OpenCV feature2D Extractor
      */
     cv::Ptr<cv::Feature2D> features_extractor;
     
@@ -20,4 +25,4 @@ public:
     Feature* extractFeatures(const cv::Mat& img, const cv::Mat& mask) const;
 };
 
-#endif
+#endif //  KEYPOINT_EXTRACTOR_H

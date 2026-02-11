@@ -5,6 +5,11 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
+/**
+ * @brief KeypointFeature class to represent keypoint features extracted from images.
+ *        This class inherits from the Feature class and contains a cv::Mat to store the descriptors, 
+ *        a vector of cv::KeyPoint to store the keypoints, and a vector of cv::Point2f to store the rectangle points.
+ */
 class KeypointFeature : public Feature {
 private:
     cv::Mat descriptors_;
