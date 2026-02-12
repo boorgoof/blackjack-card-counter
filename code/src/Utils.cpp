@@ -169,3 +169,40 @@ void Utils::Visualization::printLabelsOnImage(cv::Mat &image, const std::vector<
         }
     }
 }
+
+void Utils::Visualization::printLabelsOnImageHiLo(cv::Mat &image, const std::vector<Label> &labels)
+{
+    // Hi-Lo color coding (BGR format):
+    // Green = +1 (cards 2-6)
+    // Blue  =  0 (cards 7-9)
+    // Red   = -1 (cards 10, J, Q, K, A)
+    const cv::Scalar COLOR_POS(0, 255, 0);      // Green
+    const cv::Scalar COLOR_NEUTRAL(255, 150, 0); // Blue
+    const cv::Scalar COLOR_NEG(0, 0, 255);       // Red
+
+    for (const auto& label : labels) {
+        const std::vector<cv::Rect>& bboxes = label.get_bounding_boxes();
+        
+        // Determine color based on Hi-Lo value
+        cv::Scalar box_color = COLOR_NEUTRAL;  // default
+        const ObjectType* obj = label.get_object();
+        if (obj) {
+            const CardType* card = dynamic_cast<const CardType*>(obj);
+            if (card && card->isValid()) {
+                Blackjack::HiLo hilo = Blackjack::rank_to_HiLo(card->get_rank());
+                int value = Blackjack::HiLo_to_int(hilo);
+                if (value > 0) box_color = COLOR_POS;
+                else if (value < 0) box_color = COLOR_NEG;
+                else box_color = COLOR_NEUTRAL;
+            }
+        }
+
+        for (const auto& bbox : bboxes) {
+            cv::rectangle(image, bbox, box_color, 2);
+            if (obj) {
+                cv::putText(image, obj->to_string(), cv::Point(bbox.x, bbox.y - 10),
+                            cv::FONT_HERSHEY_SIMPLEX, 0.5, box_color, 2);
+            }
+        }
+    }
+}

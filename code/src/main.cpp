@@ -310,7 +310,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         if(dataset->get_has_annotations()){
             Utils::Visualization::printLabelsOnImage(output_img, true_labels, cv::Scalar(0,255,0), cv::Scalar(0,255,0)); //true labels in green
         }
-        Utils::Visualization::printLabelsOnImage(output_img, predicted_labels, cv::Scalar(255,0,0), cv::Scalar(255,0,0)); //predicted labels in red
+        Utils::Visualization::printLabelsOnImageHiLo(output_img, predicted_labels); //Hi-Lo color-coded bounding boxes
 
         if(dataset->is_sequential()){
             auto* seq_mode = dynamic_cast<SequentialFrameProcessing*>(mode.get());

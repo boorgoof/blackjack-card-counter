@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Label.h"
+#include "CardType.h"
 #include <map>
 #include <filesystem>
 #include <fstream>
@@ -63,6 +64,13 @@ namespace Utils{
          * @param text_color the color of the text
          */
         void printLabelsOnImage(cv::Mat& image, const std::vector<Label>& labels, const cv::Scalar& box_color, const cv::Scalar& text_color);
+        /**
+         * @brief draws the provided labels on the image with Hi-Lo color-coded bounding boxes.
+         * Green = +1 (2-6), Blue = 0 (7-9), Red = -1 (10, J, Q, K, A)
+         * @param image the image to draw the labels on
+         * @param labels the labels to draw
+         */
+        void printLabelsOnImageHiLo(cv::Mat& image, const std::vector<Label>& labels);
         /**
          * @brief Creates a clone of the input image and shows it with ground truth and predicted labels drawn on it.
          * @param image the image to show
