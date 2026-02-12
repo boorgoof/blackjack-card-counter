@@ -131,6 +131,16 @@ namespace Blackjack {
     }
   }
 
+  inline cv::Scalar HiLo_to_cv_color(HiLo v) {
+    
+    switch (v) {
+      case HiLo::Pos: return cv::Scalar(0, 255, 0);  // Green
+      case HiLo::Neutral: return cv::Scalar(255, 0, 0);  // Blue
+      case HiLo::Neg: return cv::Scalar(0, 0, 255);  // Red
+      default: return cv::Scalar(255, 0, 0);   
+    }
+  }
+
   
 }
 
