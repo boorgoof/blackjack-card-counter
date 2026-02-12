@@ -54,10 +54,7 @@ namespace StatisticsCalculation {
      * @param iou_threshold IoU threshold to consider a pred_label as positive
      * @return cv::Mat confusion matrix (num_classes x num_classes). Note: (actual x predicted)
      */
-    cv::Mat calc_confusion_matrix(const std::vector<Label>& true_labels, 
-                                const std::vector<Label>& pred_labels, 
-                                int num_classes,
-                                float iou_threshold = 0.5f);
+    cv::Mat calc_confusion_matrix(const std::vector<Label>& true_labels, const std::vector<Label>& pred_labels, int num_classes, float iou_threshold = 0.5f);
     
     /**
      * @brief Calculates confusion matrix from a dataset (multiple images)

@@ -12,8 +12,14 @@ public:
  CardDetector(const CardDetector&) = delete;
  CardDetector& operator=(const CardDetector&) = delete;
 
-    virtual  ~CardDetector();
-    virtual std::vector<Label> detect_cards(const cv::Mat& image) = 0;
+virtual  ~CardDetector();
+
+/**
+ * @brief detect cards in an image. It is virtual and should be implemented by the specific card detector classes (e.g. SegmentationClassificationCardDetector, YoloCardDetector, DistanceTrasformCardDetector..)
+ * @param image the image to detect cards in
+ * @return a vector of Labels, where each Label contains the detected card and its bounding box
+ */
+virtual std::vector<Label> detect_cards(const cv::Mat& image) = 0;
 
 protected:
     bool visualize;

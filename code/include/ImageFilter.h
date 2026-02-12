@@ -93,9 +93,38 @@ namespace Filters{
      */
     cv::Mat unsharp_mask(const cv::Mat& src_img, double sigma, double alpha);
 
+    /**
+     * @brief Resizes the input image by the specified width and height multipliers.
+     * @param src_img The input image to be resized.        
+     * @param width_mult The multiplier for the width of the image. Must be positive.
+     * @param height_mult The multiplier for the height of the image. Must be positive.
+     *  @return The resized image.
+     */
     cv::Mat resize(const cv::Mat& src_img, const float width_mult, const float height_mult);
+
+    /**
+     * @brief Resizes the input image to the specified width and height.
+     * @param src_img The input image to be resized.
+     * @param width The target width.
+     * @param height The target height.
+     * @return The resized image.
+     */
     cv::Mat resize_to(const cv::Mat& src_img, int width, int height);
+
+    /**
+     * @brief Adds padding to the input image to make it square.
+     * @param src_img The input image to be padded.
+     * @param color The color of the padding. Default is black (0, 0, 0).
+     * @return The padded image.
+     */
     cv::Mat padding_to_square(const cv::Mat& src_img, const cv::Scalar& color = cv::Scalar(0, 0, 0));
+    
+    /**
+     * @brief Applies a two-color binarization to the input image.
+     * @param src_img The input image to be filtered.
+     * @param fg_color The color to be used for the foreground
+     * @param bg_color The color to be used for the background
+     */
     cv::Mat two_color_binarization(const cv::Mat& src_img, const cv::Scalar& fg_color, const cv::Scalar& bg_color);
 
 }

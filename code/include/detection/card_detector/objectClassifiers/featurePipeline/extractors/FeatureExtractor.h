@@ -31,6 +31,7 @@ public:
     }
            
 private:
+
     /**
      * @brief the type of the Extractor
      */
@@ -41,12 +42,24 @@ private:
 class FeatureExtractor {
 public:
     virtual ~FeatureExtractor() = default;
+
+    /**
+     * @brief extract features from an image given a mask
+     * @param img the image to extract features from
+     * @param mask the mask to apply to the image before extracting features (optional)
+     * @return a pointer to a Feature object containing the extracted features
+     */
     virtual Feature* extractFeatures(const cv::Mat& img, const cv::Mat& mask = cv::Mat()) const = 0;
 
+    /**
+     * @brief constructor for the FeatureExtractor class
+     * @param type the type of the extractor
+     */
     FeatureExtractor(ExtractorType::FeatureDescriptorAlgorithm type) : type_(type) {}
     ExtractorType::FeatureDescriptorAlgorithm getType() const { return type_; }
     void setType(const ExtractorType::FeatureDescriptorAlgorithm& t) { type_ = t; }
 protected:
+
     ExtractorType::FeatureDescriptorAlgorithm type_;
 };
 

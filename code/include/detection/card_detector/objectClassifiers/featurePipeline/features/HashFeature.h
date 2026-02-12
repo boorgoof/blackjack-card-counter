@@ -4,7 +4,10 @@
 #include "Feature.h"
 #include <opencv2/opencv.hpp>
 
-
+/**
+ * @brief HashFeature class to represent hash features extracted from images.
+ *        This class inherits from the Feature class and contains a cv::Mat to store the hash values.
+ */
 class HashFeature : public Feature {
     cv::Mat hash_;
 public:

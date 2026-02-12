@@ -18,13 +18,14 @@ void KeypointMatcher::init(){
     }
 }
 
-double KeypointMatcher::matchFeatures(const Feature* target, const Feature* query) const{
+double KeypointMatcher::matchFeatures(const Feature* query, const Feature* target) const{
+    
     auto q = dynamic_cast<const KeypointFeature*>(query);
     auto t = dynamic_cast<const KeypointFeature*>(target);
     if (!q || !t || q->getDescriptors().empty() || t->getDescriptors().empty()) return 0.0;
 
     std::vector<std::vector<cv::DMatch>> knn_matches;
-    this->features_matcher->knnMatch(t->getDescriptors(), q->getDescriptors(), knn_matches, 2);
+    this->features_matcher->knnMatch(q->getDescriptors(), t->getDescriptors(), knn_matches, 2);
     
     //apply Lowe's ratio test to select good matches
     std::vector<cv::DMatch> good_matches;
@@ -40,6 +41,7 @@ double KeypointMatcher::matchFeatures(const Feature* target, const Feature* quer
     
     return good_matches.size();
 }
+
 double KeypointMatcher::calculateRatio(double best, double second_best) const
 {
     //scores go from 0 (worst) to +inf (best)
