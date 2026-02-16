@@ -18,7 +18,7 @@ private:
     
 
     /**
-     * @brief Identifies peaks in the distance transform image to serve as markers for watershed segmentation
+     * @brief find peaks in the distance transform image to serve as markers for watershed segmentation
      * @param dist The distance transform image where each pixel value represents the distance to the nearest background pixel 
      * @return A binary image where peaks are marked as white and non-peaks as black
      */
@@ -27,7 +27,7 @@ private:
     /**
      * @brief Generates watershed markers from the identified peaks
      * @param peaks A binary image where peaks are marked as white and non-peaks as black
-     * @param contours parameter that will contain the contours of the identified markers
+     * @param marker_contours  the contours of the identified markers
      * @return A marker image where each marker is labeled with a unique integer value
      */
     cv::Mat markersFromPeaks(const cv::Mat& peaks, std::vector<std::vector<cv::Point>>& marker_contours);
@@ -36,10 +36,9 @@ private:
      * @brief Applies watershed segmentation to the input image using the markers
      * @param srcColor The original color image to be segmented
      * @param markers The marker image where each marker is labeled with a unique integer value
-     * @param contours The contours of the identified markers, which will be used to extract the final segmented object contours
-     * @return A binary image where segmented objects are marked as white and background is black
+     * @param marker_contours The contours of the identified markers
      */
-    cv::Mat watershedSegmentation(const cv::Mat& srcColor, cv::Mat& markers,const std::vector<std::vector<cv::Point>>& contours);
+    cv::Mat watershedSegmentation(const cv::Mat& srcColor, cv::Mat& markers,const std::vector<std::vector<cv::Point>>& marker_contours);
 };
 
 #endif // WATERSHED_OBJECT_SEGMENTER_H

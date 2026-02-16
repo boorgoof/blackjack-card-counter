@@ -245,6 +245,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
 
     int frame_number = 0;
     std::set<int> encountered_classes;
+    
     for (auto it = dataset->begin(); it != dataset->end(); ++it) {
 
         //vectors to hold predicted and true labels for the current image

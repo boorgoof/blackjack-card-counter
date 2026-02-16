@@ -13,7 +13,8 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
 
     std::vector<Label> detected_labels;
 
-    cv::Mat mask = this->mask_card_detector_->getMask(image);
+    cv::Mat filtered_image = Filters::delete_gray_background(image);
+    cv::Mat mask = this->mask_card_detector_->getMask(filtered_image);
     cv::Mat white_masked_image(image.size(), image.type(), cv::Scalar(255,255,255));
     cv::Mat black_masked_image(image.size(), image.type(), cv::Scalar(0,0,0));
     image.copyTo(white_masked_image, mask);   
@@ -35,7 +36,7 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
 
     std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(black_masked_image, mask); 
 
-    // debuggin ----
+    // debugging ----
     cv::Mat conotour_image = black_masked_image.clone();
     cv::drawContours(conotour_image, cards_contour, -1,  cv::Scalar(0, 0, 255),2                  );
     cv::imshow("Contours", conotour_image);

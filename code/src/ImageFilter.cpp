@@ -211,10 +211,10 @@ cv::Mat Filters::laplaceFilter(const cv::Mat& src)
     cv::Mat imgResult = sharp - imgLaplacian;
 
     // Convert back to original type
-    cv::Mat result8U;
-    imgResult.convertTo(result8U, src.type());
+    cv::Mat result;
+    imgResult.convertTo(result, src.type());
  
-    return result8U;
+    return result;
 }
 
 cv::Mat Filters::binaryImage(const cv::Mat& src)
@@ -254,4 +254,26 @@ cv::Mat Filters::distanceTransformFilter(const cv::Mat& binaryImage)
     return dist;
 }
 
+
+cv::Mat Filters::delete_gray_background(const cv::Mat& input)
+{
+    cv::Mat hsv;
+    cv::cvtColor(input, hsv, cv::COLOR_BGR2HSV);
+
+    // create a gray mask to identify the gray background
+    cv::Mat grayMask;
+    cv::inRange(hsv, cv::Scalar(0, 0, 50), cv::Scalar(180, 60, 180), grayMask);
+
+
+    // Invert the mask 
+    cv::Mat fgMask;
+    cv::bitwise_not(grayMask, fgMask);
+
+
+    // Apply the mask to the original image, in this way we remove the gray background 
+    cv::Mat result;
+    input.copyTo(result, fgMask);
+
+    return result;
+}
 

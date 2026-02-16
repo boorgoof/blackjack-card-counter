@@ -13,6 +13,7 @@ std::vector<std::vector<cv::Point>> WatershedObjectSegmenter::segment_objects(co
     if (src_img.empty() || src_mask.empty())
         return final_contours;
 
+
     // Apply mask
     cv::Mat masked = cv::Mat::zeros(src_img.size(), src_img.type());
     src_img.copyTo(masked, src_mask);
@@ -33,6 +34,9 @@ std::vector<std::vector<cv::Point>> WatershedObjectSegmenter::segment_objects(co
 
     
     // --- Debug visualization ---
+    cv::imshow("Binary Image", bw);
+    cv::imshow("Laplacian Filter", imgResult);
+
     cv::imshow("Binary Image", bw);
     cv::imshow("Laplacian Filter", imgResult);
 
@@ -75,11 +79,13 @@ std::vector<std::vector<cv::Point>> WatershedObjectSegmenter::segment_objects(co
     return final_contours;
 }
 
-/* This is the version that follows the documentation, but in this case we prefer to use a single seed for the watershed algorithm, since we are looking for a single card in the image.
+/*
+//This is the version that follows the documentation, but in this case we prefer to use a single seed for the watershed algorithm, since we are looking for a single card in the image.
+cv::Mat WatershedObjectSegmenter::peaksFromDistance(const cv::Mat& dist)
 {
     cv::Mat peaks = dist.clone();
     // Threshold to obtain the peaks. This will be the markers for the foreground objects
-    cv::threshold(peaks, peaks, 1, 1.0, cv::THRESH_BINARY);
+    cv::threshold(peaks, peaks, 0.1, 1.0, cv::THRESH_BINARY);
     
     cv::Mat kernel = cv::Mat::ones(3, 3, CV_8U);
     cv::dilate(peaks, peaks, kernel);
@@ -87,6 +93,7 @@ std::vector<std::vector<cv::Point>> WatershedObjectSegmenter::segment_objects(co
     return peaks;
 }
 */
+
 
 // In this case return only the strongest peak
 cv::Mat WatershedObjectSegmenter::peaksFromDistance(const cv::Mat& dist)

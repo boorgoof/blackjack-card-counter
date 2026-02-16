@@ -149,6 +149,12 @@ namespace Filters{
     cv::Mat distanceTransformFilter(const cv::Mat& binaryImage);
 
 
+    /**
+     * @brief Converts the input image to a binary image where the background is set to black and the foreground is set to white.
+     */
+    cv::Mat delete_gray_background(const cv::Mat& input);
+
+
 
 }
 
