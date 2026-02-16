@@ -1,0 +1,73 @@
+# Location of the compilation database
+compilation_database_dir: build
+# Where the diagrams will be saved
+output_directory: docs/diagrams
+
+diagrams:
+  class_diagram_rough:
+    type: class
+    glob:
+      - code/src/**/*.cpp
+      - code/include/**/*.hpp
+      - code/include/**/*.h
+    
+    # Relationships and namespaces are defined inside the 'include' block
+    include:
+      # If you leave namespaces empty, it includes everything found in 'glob'
+      namespaces: [] 
+      # This is how you tell clang-uml which relationships to draw
+      relationships:
+        - inheritance
+        - aggregation   # For member variables and containers (std::vector)
+        - association   # For pointers and references (Design patterns)
+        - dependency    # For general usage (optional, can make diagram messy)
+    
+    exclude:
+      namespaces:
+        - std
+      access:
+        - public
+        - private
+        - protected
+
+  sequence_diagram:
+    type: sequence
+    from:
+      - function: "main(int,char **)"
+    glob:
+      - code/src/**/*.cpp
+
+    combine_free_functions_into_file_participants: true
+    inline_lambda_messages: true
+    fold_repeated_activities: true
+
+    include:
+      namespaces: []
+    exclude:
+      namespaces:
+        - std
+
+  package_diagram:
+    # Type of diagram (has to be `package`)
+    type: package
+    # Include only translation units matching the following patterns
+    glob:
+      - code/src/**/*.cpp
+      - code/include/**/*.hpp
+      - code/include/**/*.h
+    # Include only classes and functions from files in `src` directory
+    include:
+      namespaces: []
+    exclude:
+      namespaces:
+        - std
+
+  header_dependencies:
+    type: include
+    glob:
+      - code/include/**/*.hpp
+      - code/include/**/*.h
+    include:
+      # Only show headers from your own project
+      paths:
+        - code/include

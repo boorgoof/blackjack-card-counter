@@ -1,0 +1,1008 @@
+@startuml
+class "std::string" as C_0001275076681856179721
+class C_0001275076681856179721 {
+__
+}
+class "std::shared_ptr<SampleInfo>" as C_0015566072941132315274
+class C_0015566072941132315274 {
+__
+}
+class "std::allocator<std::shared_ptr<SampleInfo>>" as C_0010232060224989068182
+class C_0010232060224989068182 {
+__
+}
+class "std::vector<std::shared_ptr<SampleInfo>,std::allocator<std::shared_ptr<SampleInfo>>>" as C_0001539691038043531547
+class C_0001539691038043531547 {
+__
+}
+class "std::vector<std::shared_ptr<SampleInfo>>" as C_0008878595832405346637
+class C_0008878595832405346637 {
+__
+}
+class "std::unique_ptr<ObjectType>" as C_0000707917606992746202
+class C_0000707917606992746202 {
+__
+}
+class "std::vector<cv::Rect_<int>>" as C_0004850842852600913134
+class C_0004850842852600913134 {
+__
+}
+class "std::unordered_map<std::string,VideoDataset::CaptureState>" as C_0002634819410101952305
+class C_0002634819410101952305 {
+__
+}
+class "std::vector<Label>" as C_0004248354086648873954
+class C_0004248354086648873954 {
+__
+}
+class "std::vector<CardType>" as C_0011079427344484802258
+class C_0011079427344484802258 {
+__
+}
+class "std::map<std::string,CardTracker::TrackedCard>" as C_0002925046613441195256
+class C_0002925046613441195256 {
+__
+}
+class "std::set<std::string>" as C_0000727039560643301762
+class C_0000727039560643301762 {
+__
+}
+class "std::unique_ptr<CardDetector>" as C_0006208498491227441482
+class C_0006208498491227441482 {
+__
+}
+class "std::function<cv::Mat(cv::Mat const&)>" as C_0013364143136632321438
+class C_0013364143136632321438 {
+__
+}
+class "std::vector<std::function<cv::Mat(cv::Mat const&)>>" as C_0011725672682188397534
+class C_0011725672682188397534 {
+__
+}
+class "std::vector<cv::Point_<int>>" as C_0010860753582162658785
+class C_0010860753582162658785 {
+__
+}
+class "std::vector<std::vector<cv::Point_<int>>>" as C_0015263769300784040416
+class C_0015263769300784040416 {
+__
+}
+class "std::unique_ptr<MaskCardDetector>" as C_0012423838823793160830
+class C_0012423838823793160830 {
+__
+}
+class "std::unique_ptr<ObjectClassifier>" as C_0001470882016648604204
+class C_0001470882016648604204 {
+__
+}
+class "std::unique_ptr<ObjectSegmenter>" as C_0014015296291735907691
+class C_0014015296291735907691 {
+__
+}
+class "std::function<cv::Mat(cv::Mat)>" as C_0011408021672875766523
+class C_0011408021672875766523 {
+__
+}
+class "std::pair<std::string,std::function<cv::Mat(cv::Mat)>>" as C_0014936526050192325249
+class C_0014936526050192325249 {
+__
+}
+class "std::vector<std::pair<std::string,std::function<cv::Mat(cv::Mat)>>>" as C_0006626742219283869244
+class C_0006626742219283869244 {
+__
+}
+class "std::map<ObjectType const*,Feature const*>" as C_0006803870178338607239
+class C_0006803870178338607239 {
+__
+}
+class "std::unique_ptr<std::map<ObjectType const*,Feature const*>>" as C_0010831799435090887199
+class C_0010831799435090887199 {
+__
+}
+class "std::unique_ptr<FeatureExtractor>" as C_0007800791058805297628
+class C_0007800791058805297628 {
+__
+}
+class "std::unique_ptr<FeatureMatcher>" as C_0013282836306031638339
+class C_0013282836306031638339 {
+__
+}
+class "std::vector<cv::KeyPoint>" as C_0010150675480472172099
+class C_0010150675480472172099 {
+__
+}
+class "std::vector<cv::Point_<float>>" as C_0007469406222479762528
+class C_0007469406222479762528 {
+__
+}
+class "std::vector<std::string>" as C_0001347152004389415025
+class C_0001347152004389415025 {
+__
+}
+class "__gnu_cxx::__normal_iterator<std::shared_ptr<SampleInfo> const*,std::vector<std::shared_ptr<SampleInfo>,std::allocator<std::shared_ptr<SampleInfo>>>>" as C_0011983710000104959718
+class C_0011983710000104959718 {
+__
+}
+class "cv::Rect_<int>" as C_0011503404790081369597
+class C_0011503404790081369597 {
+__
+}
+class "cv::Point_<int>" as C_0009457203331583674562
+class C_0009457203331583674562 {
+__
+}
+class "cv::Ptr<cv::Feature2D>" as C_0008694131390083528216
+class C_0008694131390083528216 {
+__
+}
+class "cv::Ptr<cv::img_hash::ImgHashBase>" as C_0011498552137128780711
+class C_0011498552137128780711 {
+__
+}
+class "cv::Ptr<cv::DescriptorMatcher>" as C_0004455011570033198152
+class C_0004455011570033198152 {
+__
+}
+class "cv::Point_<float>" as C_0014702312740545146475
+class C_0014702312740545146475 {
+__
+}
+class "cv::Size_<int>" as C_0012828316383792434276
+class C_0012828316383792434276 {
+__
+}
+abstract "SampleInfo" as C_0012166469087437416517
+abstract C_0012166469087437416517 {
++SampleInfo() = default : void
++SampleInfo(const SampleInfo &) = deleted : void
++~SampleInfo() constexpr = default : void
+..
++operator=(const SampleInfo &) = deleted : SampleInfo &
+..
+{abstract} +empty() const noexcept = 0 : bool
+{abstract} +get_name() const noexcept = 0 : const std::string &
+{abstract} +get_pathLabel() const noexcept = 0 : const std::string &
+{abstract} +get_pathSample() const noexcept = 0 : const std::string &
+__
+}
+abstract "Dataset" as C_0003886022289860541661
+abstract C_0003886022289860541661 {
+#Dataset(const bool has_annotations = false) : void
+#Dataset(const Dataset &) = default : void
+#Dataset(Dataset &&) = default : void
++~Dataset() constexpr = default : void
+..
+#operator=(const Dataset &) = default : Dataset &
+#operator=(Dataset &&) = default : Dataset &
+..
+{abstract} +begin() const = 0 : Iterator
++empty() const noexcept : bool
+{abstract} +end() const = 0 : Iterator
+{abstract} +get_annotation_root() const = 0 : std::filesystem::path
++get_has_annotations() : const bool
+{abstract} +get_root() const = 0 : std::filesystem::path
+{abstract} +is_sequential() const noexcept = 0 : bool
+{abstract} +load(const Iterator & it) = 0 : cv::Mat
++set_has_annotations(const bool has_annotations) : void
+{abstract} +size() const noexcept = 0 : size_t
+__
+#has_annotations_ : bool
+}
+class "Dataset::Iterator" as C_0011781931224441327938
+class C_0011781931224441327938 {
++operator*() const : reference
++operator++() : Iterator &
++operator++(int) : Iterator
++operator->() const : pointer
+..
++Iterator() constexpr = default : void
++Iterator(__gnu_cxx::__normal_iterator<std::shared_ptr<SampleInfo>>::const_iterator current) : void
+__
+-current_ : std::vector<std::shared_ptr<SampleInfo>>::const_iterator
+}
+class "ImageDataset" as C_0009684978631677174329
+class C_0009684978631677174329 {
++ImageDataset(const std::string & dataset_path) : void
++ImageDataset(const std::string & image_dir, const std::string & annotation_dir) : void
++ImageDataset(std::filesystem::path image_root, std::filesystem::path annotation_root) : void
++~ImageDataset() = default : void
+..
++begin() const : Iterator
+-build_entries() : std::vector<std::shared_ptr<SampleInfo>>
++end() const : Iterator
++get_annotation_root() const : std::filesystem::path
++get_root() const : std::filesystem::path
++is_sequential() const noexcept : bool
++load(const Iterator & it) : cv::Mat
++size() const noexcept : size_t
+__
+-annotation_root_ : std::filesystem::path
+-entries_ : std::vector<std::shared_ptr<SampleInfo>>
+-image_root_ : std::filesystem::path
+}
+class "ImageInfo" as C_0003004322020137568474
+class C_0003004322020137568474 {
++ImageInfo() = default : void
++ImageInfo(std::string name, std::string image_path, std::string label_path) : void
+..
++empty() const noexcept : bool
++get_name() const noexcept : const std::string &
++get_pathLabel() const noexcept : const std::string &
++get_pathSample() const noexcept : const std::string &
+__
+-name_ : std::string
+-pathImage_ : std::string
+-pathLabel_ : std::string
+}
+abstract "ObjectType" as C_0004719306933154942241
+abstract C_0004719306933154942241 {
++ObjectType() = default : void
++ObjectType(const ObjectType &) = deleted : void
+{abstract} +~ObjectType() = 0 : void
+..
++operator=(const ObjectType &) = deleted : ObjectType &
+..
+{abstract} +operator<(const ObjectType & other) const = 0 : bool
+{abstract} +operator==(const ObjectType & other) const = 0 : bool
+..
+{abstract} +clone() const = 0 : std::unique_ptr<ObjectType>
+{abstract} +get_id() const = 0 : std::string
+{abstract} +get_id_number() const = 0 : int
+{abstract} +isValid() const = 0 : bool
+{abstract} +to_string() const = 0 : std::string
+__
+}
+class "Label" as C_0009404847911411060149
+class C_0009404847911411060149 {
++Label() : void
++Label(std::unique_ptr<ObjectType> obj, const cv::Rect & bbox, float conf = 0.f) : void
++Label(std::unique_ptr<ObjectType> obj, const std::vector<cv::Rect> & bboxes, float conf = 0.f) : void
++Label(Label && label) : void
+..
++operator=(const Label & label) : Label &
+..
++get_bounding_boxes() const : const std::vector<cv::Rect> &
++get_object() const : const ObjectType *
++set_bounding_boxes(const std::vector<cv::Rect> & bbox) : void
++set_object(std::unique_ptr<ObjectType> obj) : void
+__
+-bounding_boxes_ : std::vector<cv::Rect>
+-object_ : std::unique_ptr<ObjectType>
+}
+class "CardType" as C_0017409270863638952695
+class C_0017409270863638952695 {
++CardType(const std::string & card_text) : void
++CardType(const Rank & r, const Suit & s) : void
++CardType(const CardType & other) : void
+..
++operator=(const CardType & other) : CardType &
+..
++operator<(const ObjectType & other) const : bool
++operator==(const ObjectType & other) const : bool
+..
++clone() const : std::unique_ptr<ObjectType>
++get_id() const : std::string
++get_id_number() const : int
++get_rank() const : const Rank &
++get_suit() const : const Suit &
++get_type() const : const std::string
++isValid() const : bool
++set_rank(const Rank & r) : void
++set_suit(const Suit & s) : void
++set_type(const std::string & card_text) : void
+{static} +string_to_rank(const std::string & r) : const Rank
+{static} +string_to_suit(const std::string & s) : const Suit
++to_string() const : std::string
+__
+{static} +map_rank_to_string : std::map<Rank,std::string>
+{static} +map_string_to_rank : std::map<std::string,Rank>
+{static} +map_string_to_suit : std::map<std::string,Suit>
+{static} +map_suit_to_string : std::map<Suit,std::string>
+-rank : Rank
+-suit : Suit
+}
+enum "CardType::Suit" as C_0004406994460404523288
+enum C_0004406994460404523288 {
+SPADES
+CLUBS
+DIAMONDS
+HEARTS
+UNKNOWN
+}
+enum "CardType::Rank" as C_0017720071167233476991
+enum C_0017720071167233476991 {
+A
+R2
+R3
+R4
+R5
+R6
+R7
+R8
+R9
+R10
+J
+Q
+K
+UNKNOWN
+}
+enum "card_color_utils::CardColor" as C_0011554863457081047323
+enum C_0011554863457081047323 {
+RED
+BLACK
+UNKNOWN
+}
+enum "Blackjack::HiLo" as C_0003046886232866757199
+enum C_0003046886232866757199 {
+Pos
+Neutral
+Neg
+}
+class "Feature" as C_0013209112481675569667
+class C_0013209112481675569667 {
++Feature() = default : void
++Feature(const Feature &) = deleted : void
++~Feature() constexpr = default : void
+..
++operator=(const Feature &) = deleted : Feature &
+__
+}
+abstract "FeatureExtractor" as C_0001195104063191803326
+abstract C_0001195104063191803326 {
++FeatureExtractor(ExtractorType::FeatureDescriptorAlgorithm type) : void
++~FeatureExtractor() constexpr = default : void
+..
+{abstract} +extractFeatures(const cv::Mat & img, const cv::Mat & mask = cv::Mat()) const = 0 : Feature *
++getType() const : ExtractorType::FeatureDescriptorAlgorithm
++setType(const ExtractorType::FeatureDescriptorAlgorithm & t) : void
+__
+#type_ : ExtractorType::FeatureDescriptorAlgorithm
+}
+class "TemplateDataset" as C_0010697321092279484174
+class C_0010697321092279484174 {
++TemplateDataset(const std::string & dataset_path) : void
++~TemplateDataset() = default : void
+..
++begin() const : Iterator
+-build_entries() : std::vector<std::shared_ptr<SampleInfo>>
++end() const : Iterator
++get_annotation_root() const : std::filesystem::path
++get_root() const : std::filesystem::path
++is_sequential() const noexcept : bool
++load(const Iterator & it) : cv::Mat
++size() const noexcept : size_t
+__
+-entries_ : std::vector<std::shared_ptr<SampleInfo>>
+-image_root_ : std::filesystem::path
+}
+class "TemplateInfo" as C_0010311377900075799291
+class C_0010311377900075799291 {
++TemplateInfo(const std::string & name, const std::string & image_path, const CardType & card_type) : void
+..
++empty() const noexcept : bool
++get_card_type() const noexcept : const CardType &
++get_name() const noexcept : const std::string &
++get_pathLabel() const noexcept : const std::string &
++get_pathSample() const noexcept : const std::string &
+__
+-card_type_ : CardType
+-name_ : std::string
+-pathSample_ : std::string
+}
+class "FrameInfo" as C_0007882029088596470213
+class C_0007882029088596470213 {
++FrameInfo() = default : void
++FrameInfo(std::string name, std::string video_path, std::size_t frame_index, double timestamp_seconds = 0.0, std::string label_path = = {}) : void
+..
++empty() const noexcept : bool
++get_frame_index() const noexcept : std::size_t
++get_name() const noexcept : const std::string &
++get_pathLabel() const noexcept : const std::string &
++get_pathSample() const noexcept : const std::string &
++get_timestamp() const noexcept : double
+__
+-frame_index_ : std::size_t
+-label_path_ : std::string
+-name_ : std::string
+-timestamp_seconds_ : double
+-video_path_ : std::string
+}
+class "VideoDataset" as C_0010912529750976701490
+class C_0010912529750976701490 {
++VideoDataset(const std::string & video_path, const bool has_annotations = false, const double sample_fps = 1.0) : void
++~VideoDataset() = default : void
+..
+{static} -append_frames(const std::filesystem::path & video_file, std::vector<std::shared_ptr<SampleInfo>> & entries, double frame_interval_seconds) : void
++begin() const : Iterator
+{static} -build_entries(const std::filesystem::path & video_root, double frame_interval_seconds) : std::vector<std::shared_ptr<SampleInfo>>
++end() const : Iterator
++getSampleFPS() : const double
++get_annotation_root() const : std::filesystem::path
++get_root() const : std::filesystem::path
++is_sequential() const noexcept : bool
++load(const Iterator & it) : cv::Mat
++setSampleFPS(double sample_fps) : void
++size() const noexcept : size_t
+__
+-capture_cache_ : std::unordered_map<std::string,CaptureState>
+-entries_ : std::vector<std::shared_ptr<SampleInfo>>
+-frame_interval_seconds_ : double
+-video_root_ : std::filesystem::path
+}
+class "VideoDataset::CaptureState" as C_0014677325266602632801
+class C_0014677325266602632801 {
+__
++capture : cv::VideoCapture
++next_frame_index : std::size_t
+}
+class "CardTracker" as C_0016090048435010588019
+class C_0016090048435010588019 {
++CardTracker(double fps = 1.0) : void
++~CardTracker() = default : void
+..
+{static} -extract_card(const Label & label) : const CardType *
++get_background_cards() const : const std::set<std::string> &
++get_cards_removed_count_this_frame() const : int
++get_fps() const : double
++get_removed_cards_this_frame() const : std::vector<CardType>
++get_running_count() const : int
++get_tracked_cards() const : const std::map<std::string,TrackedCard> &
+-recalculate_running_count() : void
++reset() : void
++set_fps(double fps) : void
++update_frame(const std::vector<Label> & detections) : void
+-update_frame_thresholds() : void
+__
+{static} +SECONDS_BACKGROUND : const double
+{static} +SECONDS_OCCLUSION : const double
+{static} +SECONDS_TO_CONFIRM : const double
+-background_cards_ : std::set<std::string>
+-cards_removed_count_this_frame_ : int
+-fps_ : double
+-frames_background_ : int
+-frames_occlusion_ : int
+-frames_to_confirm_ : int
+-removed_this_frame_ : std::vector<CardType>
+-running_count_ : int
+-tracked_cards_ : std::map<std::string,TrackedCard>
+}
+enum "CardTracker::CardState" as C_0017651456855510250026
+enum C_0017651456855510250026 {
+CANDIDATE
+CONFIRMED
+OCCLUDED
+BACKGROUND
+}
+class "CardTracker::TrackedCard" as C_0016665569274605194262
+class C_0016665569274605194262 {
++TrackedCard(const CardType & c, int det_count) : void
+__
++card : CardType
++confirmed_card_count : int
++detection_count : int
++frames_detected : int
++frames_since_last_seen : int
++state : CardState
+}
+abstract "ProcessingMode" as C_0017242650593710672434
+abstract C_0017242650593710672434 {
++ProcessingMode(bool visualize) : void
++ProcessingMode(const ProcessingMode &) = deleted : void
++~ProcessingMode() : void
+..
++operator=(const ProcessingMode &) = deleted : ProcessingMode &
+..
+{abstract} +detect_image(const cv::Mat & image) = 0 : std::vector<Label>
+__
+#detect_full_card : bool
+#visualize : bool
+}
+abstract "CardDetector" as C_0011516409555189625039
+abstract C_0011516409555189625039 {
++CardDetector(bool visualize) : void
++CardDetector(const CardDetector &) = deleted : void
++~CardDetector() : void
+..
++operator=(const CardDetector &) = deleted : CardDetector &
+..
+{abstract} +detect_cards(const cv::Mat & image) = 0 : std::vector<Label>
+__
+#visualize : bool
+}
+class "YoloCardDetector" as C_0012188499077095028833
+class C_0012188499077095028833 {
++YoloCardDetector(const std::string & modelPath, bool visualize) : void
++~YoloCardDetector() = default : void
+..
++detect_cards(const cv::Mat & image) : std::vector<Label>
++mapCardIndex(int inputIndex) : int
+__
+-net : cv::dnn::Net
+}
+class "SequentialFrameProcessing" as C_0001820968804747951961
+class C_0001820968804747951961 {
++SequentialFrameProcessing(std::unique_ptr<CardDetector> card_detector, bool visualize, double fps = 60.0) : void
++~SequentialFrameProcessing() : void
+..
++detect_image(const cv::Mat & image) : std::vector<Label>
++get_background_cards() const : const std::set<std::string> &
++get_fps() const : double
++get_removed_cards_this_frame() const : std::vector<CardType>
++get_running_count() const : int
++get_tracked_cards() const : const std::map<std::string,CardTracker::TrackedCard> &
++reset_tracking() : void
++set_fps(double fps) : void
+__
+-card_detector_ : std::unique_ptr<CardDetector>
+-tracker_ : CardTracker
+}
+class "SingleFrameProcessing" as C_0000917408384075192514
+class C_0000917408384075192514 {
++SingleFrameProcessing(std::unique_ptr<CardDetector> card_detector, const bool visualize) : void
++~SingleFrameProcessing() : void
+..
++detect_image(const cv::Mat & image) : std::vector<Label>
+__
+-card_detector_ : std::unique_ptr<CardDetector>
+}
+enum "PipelinePreset" as C_0008784371108331930715
+enum C_0008784371108331930715 {
+NONE
+DEFAULT
+LOW_LIGHT
+HIGH_LIGHT
+SINGLE_CARD
+}
+enum "MaskType" as C_0001526044464984454921
+enum C_0001526044464984454921 {
+POLYGON
+CONVEX_HULL
+BOUNDING_BOX
+}
+class "MaskCardDetector" as C_0000322795484188588064
+class C_0000322795484188588064 {
++MaskCardDetector(PipelinePreset preset = PipelinePreset::DEFAULT, MaskType maskType = MaskType::CONVEX_HULL, bool visualize = false) : void
+..
++add_step<StepFn,Args...>(StepFn fn, Args &&... args) : void
+-applyPipeline(const cv::Mat & img) const : cv::Mat
++clearPipeline() : void
++getMask(const cv::Mat & img) const : cv::Mat
++getPipelineSize() const : size_t
++isEmpty() const : bool
++loadMaskPreset(MaskType maskType) : void
++loadPreset(PipelinePreset preset) : void
++setMaskType(std::function<cv::Mat (const cv::Mat &)> func) : void
+__
+-maskType_ : std::function<cv::Mat (const cv::Mat &)>
+-steps_ : std::vector<std::function<cv::Mat (const cv::Mat &)>>
+-visualize_ : bool
+}
+abstract "ObjectClassifier" as C_0013091704519496394340
+abstract C_0013091704519496394340 {
++ObjectClassifier() = default : void
++ObjectClassifier(ObjectClassifier &&) = deleted : void
+{abstract} +~ObjectClassifier() = 0 : void
+..
++operator=(ObjectClassifier &&) = deleted : ObjectClassifier &
+..
+{abstract} +classify_object(const cv::Mat & src_img, const cv::Mat & src_mask) = 0 : const ObjectType *
++get_method_name() const : const std::string &
++set_method_name(const std::string & method_name) : void
+__
+-method_name : std::string
+}
+abstract "ObjectSegmenter" as C_0011078278731095687805
+abstract C_0011078278731095687805 {
++ObjectSegmenter() = default : void
++ObjectSegmenter(ObjectSegmenter &&) = deleted : void
+{abstract} +~ObjectSegmenter() = 0 : void
+..
++operator=(ObjectSegmenter &&) = deleted : ObjectSegmenter &
+..
++get_method_name() const : const std::string &
+{abstract} +segment_objects(const cv::Mat & src_img, const cv::Mat & src_mask) = 0 : std::vector<std::vector<cv::Point>>
++set_method_name(const std::string & method_name) : void
+__
+-method_name : std::string
+}
+class "SegmentationClassificationCardDetector" as C_0006422020256051954824
+class C_0006422020256051954824 {
++SegmentationClassificationCardDetector(std::unique_ptr<MaskCardDetector> mask_card_detector, std::unique_ptr<ObjectClassifier> object_classifier, std::unique_ptr<ObjectSegmenter> object_segmenter, bool visualize) : void
++~SegmentationClassificationCardDetector() = default : void
+..
++detect_card_color(const cv::Mat & card_img) : card_color_utils::CardColor
++detect_cards(const cv::Mat & image) : std::vector<Label>
+__
+-mask_card_detector_ : std::unique_ptr<MaskCardDetector>
+-object_classifier_ : std::unique_ptr<ObjectClassifier>
+-object_segmenter_ : std::unique_ptr<ObjectSegmenter>
+}
+class "ImageFilter" as C_0000156186936286508469
+class C_0000156186936286508469 {
++ImageFilter() : void
++~ImageFilter() : void
+..
++add_filter<FilterFunction,Args...>(const std::string & filter_name, FilterFunction filter_function, Args &&... args) : void
++apply_filters(const cv::Mat & src_img) const : cv::Mat
++get_filters() const : const std::vector<std::pair<std::string,std::function<cv::Mat (cv::Mat)>>>
++remove_filter(const std::string & filter_name) : bool
+__
+-filter_pipeline : std::vector<std::pair<std::string,std::function<cv::Mat (cv::Mat)>>>
+}
+class "ExtractorType" as C_0007220931630393019779
+class C_0007220931630393019779 {
+{static} +toString(FeatureDescriptorAlgorithm type) : std::string
+__
+-type : FeatureDescriptorAlgorithm
+}
+enum "ExtractorType::FeatureDescriptorAlgorithm" as C_0007864902835755853810
+enum C_0007864902835755853810 {
+SIFT
+ORB
+PHASH
+COLOR_MOMENT_HASH
+}
+class "MatcherType" as C_0005075903470480100667
+class C_0005075903470480100667 {
+{static} +toString(MatcherAlgorithm type) : std::string
+__
+-type : MatcherAlgorithm
+}
+enum "MatcherType::MatcherAlgorithm" as C_0002412044637214463541
+enum C_0002412044637214463541 {
+BRUTEFORCE_HAMMING
+FLANN
+PHASH
+COLOR_MOMENT_HASH
+}
+abstract "FeatureMatcher" as C_0002540756556307439686
+abstract C_0002540756556307439686 {
++FeatureMatcher(const MatcherType::MatcherAlgorithm & type) : void
++~FeatureMatcher() constexpr = default : void
+..
+{abstract} +calculateRatio(double best, double second_best) const = 0 : double
++getType() const : MatcherType::MatcherAlgorithm
+{abstract} +getWorstScore() const = 0 : double
+{abstract} +isBetter(double score1, double score2) const = 0 : bool
+{abstract} +isValid(double score) const = 0 : bool
+{abstract} +matchFeatures(const Feature * query, const Feature * target) const = 0 : double
++setType(const MatcherType::MatcherAlgorithm & type) : void
+__
+#type : MatcherType::MatcherAlgorithm
+}
+class "FeatureContainer" as C_0000850561088136322465
+class C_0000850561088136322465 {
+-FeatureContainer() = default : void
+-FeatureContainer(const FeatureContainer &) = deleted : void
+..
+-operator=(const FeatureContainer &) = deleted : FeatureContainer &
+..
++getFeatures() const : const std::map<const ObjectType *,const Feature *> &
+{static} +getInstance() : FeatureContainer &
++loadTemplates(TemplateDataset & dataset, const FeatureExtractor & extractor) : void
+__
+-features_ : std::unique_ptr<const std::map<const ObjectType *,const Feature *>>
+}
+class "FeaturePipeline" as C_0007515671693990773077
+class C_0007515671693990773077 {
++FeaturePipeline(ExtractorType::FeatureDescriptorAlgorithm extractor_agorithm, const double lowe_ratio_threshold, TemplateDataset & template_dataset) : void
++~FeaturePipeline() : void
+..
++classify_object(const cv::Mat & src_img, const cv::Mat & src_mask) : const ObjectType *
++setExtractororComponent(FeatureExtractor * fd) : void
++setMatcherComponent(FeatureMatcher * fm) : void
+__
+-extractor_ : std::unique_ptr<FeatureExtractor>
+-matcher_ : std::unique_ptr<FeatureMatcher>
+-ratio_threshold_ : double
+-template_features_ : const std::map<const ObjectType *,const Feature *> *
+}
+class "KeypointExtractor" as C_0010932504481083671360
+class C_0010932504481083671360 {
++KeypointExtractor(const ExtractorType::FeatureDescriptorAlgorithm & type) : void
++~KeypointExtractor() : void
+..
++extractFeatures(const cv::Mat & img, const cv::Mat & mask) const : Feature *
+-init() : void
+__
+-features_extractor : cv::Ptr<cv::Feature2D>
+}
+class "HashFeature" as C_0010905019035547594885
+class C_0010905019035547594885 {
++HashFeature(const cv::Mat & h) : void
++HashFeature(HashFeature &&) = default : void
++~HashFeature() = default : void
+..
++operator=(HashFeature &&) = default : HashFeature &
+..
++getHash() const : const cv::Mat &
++setHash(const cv::Mat & h) : void
+__
+-hash_ : cv::Mat
+}
+class "HashExtractor" as C_0006442236536148712878
+class C_0006442236536148712878 {
++HashExtractor(const ExtractorType::FeatureDescriptorAlgorithm & type) : void
+..
++extractFeatures(const cv::Mat & img, const cv::Mat & mask = cv::Mat()) const : Feature *
+-init() : void
+__
+-hasher_ : cv::Ptr<cv::img_hash::ImgHashBase>
+}
+class "KeypointMatcher" as C_0004862978895369129534
+class C_0004862978895369129534 {
++KeypointMatcher(const MatcherType::MatcherAlgorithm & type, size_t min_matches_threshold = 10, float lowe_ratio_thresh = 0.8) : void
++~KeypointMatcher() : void
+..
++calculateRatio(double best, double second_best) const : double
++getWorstScore() const : double
+-init() : void
++isBetter(double score1, double score2) const : bool
++isValid(double score) const : bool
++matchFeatures(const Feature * target, const Feature * query) const : double
+__
+-features_matcher : cv::Ptr<cv::DescriptorMatcher>
+-lowe_ratio_thresh_ : float
+-min_matches_threshold_ : size_t
+}
+class "HashMatcher" as C_0005916434157941030715
+class C_0005916434157941030715 {
++HashMatcher(const MatcherType::MatcherAlgorithm & type, double threshold) : void
+..
++calculateRatio(double best, double second_best) const : double
++getWorstScore() const : double
++isBetter(double score1, double score2) const : bool
++isValid(double score) const : bool
++matchFeatures(const Feature * query, const Feature * target) const : double
+__
+-hasher_ : cv::Ptr<cv::img_hash::ImgHashBase>
+-threshold_ : double
+}
+class "KeypointFeature" as C_0002596638195112562051
+class C_0002596638195112562051 {
++KeypointFeature() = default : void
++KeypointFeature(const std::vector<cv::KeyPoint> & keypoints, const cv::Mat & descriptors, const std::vector<cv::Point2f> & rect_points) : void
++KeypointFeature(KeypointFeature &&) = default : void
++~KeypointFeature() = default : void
+..
++operator=(KeypointFeature &&) = default : KeypointFeature &
+..
++getDescriptors() const : const cv::Mat &
++getKeypoints() const : const std::vector<cv::KeyPoint> &
++getRectPoints() const : const std::vector<cv::Point2f> &
++setDescriptors(const cv::Mat & descriptors) : void
++setKeypoints(const std::vector<cv::KeyPoint> & keypoints) : void
++setRectPoints(const std::vector<cv::Point2f> & points) : void
+__
+-descriptors_ : cv::Mat
+-keypoints_ : std::vector<cv::KeyPoint>
+-rect_points_ : std::vector<cv::Point2f>
+}
+class "SimpleContoursCardSegmenter" as C_0018442101554143594452
+class C_0018442101554143594452 {
++SimpleContoursCardSegmenter() : void
++~SimpleContoursCardSegmenter() = default : void
+..
++getMinCardArea() const : double
++getMinContourPoints() const : int
++segment_objects(const cv::Mat & src_img, const cv::Mat & src_mask) : std::vector<std::vector<cv::Point>>
++setMinCardArea(double area) : void
++setMinContourPoints(int points) : void
+__
+-params_ : Params
+}
+class "SimpleContoursCardSegmenter::Params" as C_0014337743056613949091
+class C_0014337743056613949091 {
+__
++minCardArea : double
++minContourPoints : int
+}
+class "VideoWriter" as C_0012748391507001784930
+class C_0012748391507001784930 {
++VideoWriter(const std::string & outputPath, double fps = 1.0) : void
++~VideoWriter() : void
+..
++addFrame(const cv::Mat & frame) : void
++close() : void
++createVideoFromFolder(const std::string & folderPath) : void
+-getImageFiles(const std::string & folderPath) : std::vector<std::string>
++get_output_path() const : const std::string
+-isImageFile(const std::string & filename) : bool
++set_output_path(const std::string outputPath) : void
+__
+-fps_ : double
+-frameSize_ : cv::Size
+-initialized_ : bool
+-outputPath_ : std::string
+-videoWriter_ : cv::VideoWriter
+}
+enum "DETECTION_MODE" as C_0001862080647619590887
+enum C_0001862080647619590887 {
+TEMPLATES
+MODEL
+}
+C_0015566072941132315274 ..> C_0012166469087437416517
+C_0010232060224989068182 ..> C_0012166469087437416517
+C_0001539691038043531547 ..> C_0012166469087437416517
+C_0008878595832405346637 ..> C_0015566072941132315274
+C_0000707917606992746202 ..> C_0004719306933154942241
+C_0004850842852600913134 ..> C_0011503404790081369597
+C_0002634819410101952305 ..> C_0001275076681856179721
+C_0004248354086648873954 ..> C_0009404847911411060149
+C_0011079427344484802258 ..> C_0017409270863638952695
+C_0002925046613441195256 ..> C_0001275076681856179721
+C_0000727039560643301762 ..> C_0001275076681856179721
+C_0006208498491227441482 ..> C_0011516409555189625039
+C_0011725672682188397534 ..> C_0013364143136632321438
+C_0010860753582162658785 ..> C_0009457203331583674562
+C_0015263769300784040416 ..> C_0010860753582162658785
+C_0012423838823793160830 ..> C_0000322795484188588064
+C_0001470882016648604204 ..> C_0013091704519496394340
+C_0014015296291735907691 ..> C_0011078278731095687805
+C_0014936526050192325249 ..> C_0001275076681856179721
+C_0014936526050192325249 ..> C_0011408021672875766523
+C_0006626742219283869244 ..> C_0014936526050192325249
+C_0006803870178338607239 ..> C_0004719306933154942241
+C_0006803870178338607239 ..> C_0013209112481675569667
+C_0010831799435090887199 ..> C_0006803870178338607239
+C_0007800791058805297628 ..> C_0001195104063191803326
+C_0013282836306031638339 ..> C_0002540756556307439686
+C_0007469406222479762528 ..> C_0014702312740545146475
+C_0001347152004389415025 ..> C_0001275076681856179721
+C_0011983710000104959718 ..> C_0012166469087437416517
+C_0012166469087437416517 ..> C_0001275076681856179721
+C_0003886022289860541661 ..> C_0011781931224441327938
+C_0011781931224441327938 ..> C_0015566072941132315274
+C_0011781931224441327938 ..> C_0001539691038043531547
+C_0011781931224441327938 ..> C_0012166469087437416517
+C_0011781931224441327938 o-- C_0011983710000104959718 : -current_
+C_0009684978631677174329 ..> C_0001275076681856179721
+C_0009684978631677174329 ..> C_0011781931224441327938
+C_0009684978631677174329 ..> C_0012166469087437416517
+C_0009684978631677174329 o-- C_0008878595832405346637 : -entries_
+C_0003886022289860541661 <|-- C_0009684978631677174329
+C_0003004322020137568474 o-- C_0001275076681856179721 : -name_
+C_0003004322020137568474 o-- C_0001275076681856179721 : -pathImage_
+C_0003004322020137568474 o-- C_0001275076681856179721 : -pathLabel_
+C_0012166469087437416517 <|-- C_0003004322020137568474
+C_0004719306933154942241 ..> C_0000707917606992746202
+C_0004719306933154942241 ..> C_0001275076681856179721
+C_0009404847911411060149 ..> C_0004719306933154942241
+C_0009404847911411060149 ..> C_0011503404790081369597
+C_0009404847911411060149 o-- C_0000707917606992746202 : -object_
+C_0009404847911411060149 o-- C_0004850842852600913134 : -bounding_boxes_
+C_0017409270863638952695 ..> C_0001275076681856179721
+C_0017409270863638952695 ..> C_0000707917606992746202
+C_0017409270863638952695 o-- C_0017720071167233476991 : -rank
+C_0017409270863638952695 o-- C_0004406994460404523288 : -suit
+C_0017409270863638952695 --> C_0017720071167233476991 : +map_string_to_rank
+C_0017409270863638952695 --> C_0004406994460404523288 : +map_string_to_suit
+C_0017409270863638952695 --> C_0017720071167233476991 : +map_rank_to_string
+C_0017409270863638952695 --> C_0004406994460404523288 : +map_suit_to_string
+C_0004719306933154942241 <|-- C_0017409270863638952695
+C_0001195104063191803326 ..> C_0013209112481675569667
+C_0001195104063191803326 o-- C_0007864902835755853810 : #type_
+C_0010697321092279484174 ..> C_0001275076681856179721
+C_0010697321092279484174 ..> C_0011781931224441327938
+C_0010697321092279484174 ..> C_0012166469087437416517
+C_0010697321092279484174 o-- C_0008878595832405346637 : -entries_
+C_0003886022289860541661 <|-- C_0010697321092279484174
+C_0010311377900075799291 o-- C_0001275076681856179721 : -name_
+C_0010311377900075799291 o-- C_0001275076681856179721 : -pathSample_
+C_0010311377900075799291 o-- C_0017409270863638952695 : -card_type_
+C_0012166469087437416517 <|-- C_0010311377900075799291
+C_0007882029088596470213 o-- C_0001275076681856179721 : -name_
+C_0007882029088596470213 o-- C_0001275076681856179721 : -video_path_
+C_0007882029088596470213 o-- C_0001275076681856179721 : -label_path_
+C_0012166469087437416517 <|-- C_0007882029088596470213
+C_0010912529750976701490 ..> C_0001275076681856179721
+C_0010912529750976701490 ..> C_0011781931224441327938
+C_0010912529750976701490 ..> C_0012166469087437416517
+C_0010912529750976701490 o-- C_0008878595832405346637 : -entries_
+C_0010912529750976701490 o-- C_0002634819410101952305 : -capture_cache_
+C_0003886022289860541661 <|-- C_0010912529750976701490
+C_0016090048435010588019 ..> C_0004248354086648873954
+C_0016090048435010588019 ..> C_0009404847911411060149
+C_0016090048435010588019 ..> C_0017409270863638952695
+C_0016090048435010588019 ..> C_0016665569274605194262
+C_0016090048435010588019 o-- C_0002925046613441195256 : -tracked_cards_
+C_0016090048435010588019 o-- C_0000727039560643301762 : -background_cards_
+C_0016090048435010588019 o-- C_0011079427344484802258 : -removed_this_frame_
+C_0016665569274605194262 o-- C_0017409270863638952695 : +card
+C_0016665569274605194262 o-- C_0017651456855510250026 : +state
+C_0017242650593710672434 ..> C_0004248354086648873954
+C_0017242650593710672434 ..> C_0009404847911411060149
+C_0011516409555189625039 ..> C_0004248354086648873954
+C_0011516409555189625039 ..> C_0009404847911411060149
+C_0012188499077095028833 ..> C_0001275076681856179721
+C_0012188499077095028833 ..> C_0004248354086648873954
+C_0012188499077095028833 ..> C_0009404847911411060149
+C_0011516409555189625039 <|-- C_0012188499077095028833
+C_0001820968804747951961 ..> C_0011516409555189625039
+C_0001820968804747951961 ..> C_0004248354086648873954
+C_0001820968804747951961 ..> C_0009404847911411060149
+C_0001820968804747951961 ..> C_0011079427344484802258
+C_0001820968804747951961 ..> C_0017409270863638952695
+C_0001820968804747951961 ..> C_0002925046613441195256
+C_0001820968804747951961 ..> C_0016665569274605194262
+C_0001820968804747951961 ..> C_0000727039560643301762
+C_0001820968804747951961 o-- C_0006208498491227441482 : -card_detector_
+C_0001820968804747951961 o-- C_0016090048435010588019 : -tracker_
+C_0017242650593710672434 <|-- C_0001820968804747951961
+C_0000917408384075192514 ..> C_0011516409555189625039
+C_0000917408384075192514 ..> C_0004248354086648873954
+C_0000917408384075192514 ..> C_0009404847911411060149
+C_0000917408384075192514 o-- C_0006208498491227441482 : -card_detector_
+C_0017242650593710672434 <|-- C_0000917408384075192514
+C_0000322795484188588064 ..> C_0008784371108331930715
+C_0000322795484188588064 ..> C_0001526044464984454921
+C_0000322795484188588064 o-- C_0011725672682188397534 : -steps_
+C_0000322795484188588064 o-- C_0013364143136632321438 : -maskType_
+C_0013091704519496394340 ..> C_0004719306933154942241
+C_0013091704519496394340 o-- C_0001275076681856179721 : -method_name
+C_0011078278731095687805 ..> C_0015263769300784040416
+C_0011078278731095687805 o-- C_0001275076681856179721 : -method_name
+C_0006422020256051954824 ..> C_0000322795484188588064
+C_0006422020256051954824 ..> C_0013091704519496394340
+C_0006422020256051954824 ..> C_0011078278731095687805
+C_0006422020256051954824 ..> C_0004248354086648873954
+C_0006422020256051954824 ..> C_0009404847911411060149
+C_0006422020256051954824 ..> C_0011554863457081047323
+C_0006422020256051954824 o-- C_0012423838823793160830 : -mask_card_detector_
+C_0006422020256051954824 o-- C_0001470882016648604204 : -object_classifier_
+C_0006422020256051954824 o-- C_0014015296291735907691 : -object_segmenter_
+C_0011516409555189625039 <|-- C_0006422020256051954824
+C_0000156186936286508469 ..> C_0001275076681856179721
+C_0000156186936286508469 o-- C_0006626742219283869244 : -filter_pipeline
+C_0007220931630393019779 ..> C_0001275076681856179721
+C_0007220931630393019779 o-- C_0007864902835755853810 : -type
+C_0005075903470480100667 ..> C_0001275076681856179721
+C_0005075903470480100667 o-- C_0002412044637214463541 : -type
+C_0002540756556307439686 ..> C_0013209112481675569667
+C_0002540756556307439686 o-- C_0002412044637214463541 : #type
+C_0000850561088136322465 ..> C_0010697321092279484174
+C_0000850561088136322465 ..> C_0001195104063191803326
+C_0000850561088136322465 ..> C_0006803870178338607239
+C_0000850561088136322465 ..> C_0004719306933154942241
+C_0000850561088136322465 ..> C_0013209112481675569667
+C_0000850561088136322465 o-- C_0010831799435090887199 : -features_
+C_0007515671693990773077 ..> C_0007864902835755853810
+C_0007515671693990773077 ..> C_0010697321092279484174
+C_0007515671693990773077 ..> C_0001195104063191803326
+C_0007515671693990773077 ..> C_0002540756556307439686
+C_0007515671693990773077 o-- C_0007800791058805297628 : -extractor_
+C_0007515671693990773077 o-- C_0013282836306031638339 : -matcher_
+C_0007515671693990773077 --> C_0004719306933154942241 : -template_features_
+C_0007515671693990773077 --> C_0013209112481675569667 : -template_features_
+C_0007515671693990773077 --> C_0006803870178338607239 : -template_features_
+C_0013091704519496394340 <|-- C_0007515671693990773077
+C_0010932504481083671360 ..> C_0007864902835755853810
+C_0010932504481083671360 ..> C_0013209112481675569667
+C_0010932504481083671360 o-- C_0008694131390083528216 : -features_extractor
+C_0001195104063191803326 <|-- C_0010932504481083671360
+C_0013209112481675569667 <|-- C_0010905019035547594885
+C_0006442236536148712878 ..> C_0007864902835755853810
+C_0006442236536148712878 ..> C_0013209112481675569667
+C_0006442236536148712878 o-- C_0011498552137128780711 : -hasher_
+C_0001195104063191803326 <|-- C_0006442236536148712878
+C_0004862978895369129534 ..> C_0002412044637214463541
+C_0004862978895369129534 ..> C_0013209112481675569667
+C_0004862978895369129534 o-- C_0004455011570033198152 : -features_matcher
+C_0002540756556307439686 <|-- C_0004862978895369129534
+C_0005916434157941030715 ..> C_0002412044637214463541
+C_0005916434157941030715 ..> C_0013209112481675569667
+C_0005916434157941030715 o-- C_0011498552137128780711 : -hasher_
+C_0002540756556307439686 <|-- C_0005916434157941030715
+C_0002596638195112562051 o-- C_0010150675480472172099 : -keypoints_
+C_0002596638195112562051 o-- C_0007469406222479762528 : -rect_points_
+C_0013209112481675569667 <|-- C_0002596638195112562051
+C_0018442101554143594452 ..> C_0015263769300784040416
+C_0018442101554143594452 o-- C_0014337743056613949091 : -params_
+C_0011078278731095687805 <|-- C_0018442101554143594452
+C_0012748391507001784930 ..> C_0001347152004389415025
+C_0012748391507001784930 o-- C_0001275076681856179721 : -outputPath_
+C_0012748391507001784930 o-- C_0012828316383792434276 : -frameSize_
+
+'Generated with clang-uml, version 0.6.2
+'LLVM version Ubuntu clang version 18.1.3 (1ubuntu1)
+@enduml

@@ -12,7 +12,7 @@ else:
     device = 'cpu'
     print("No GPU detected, using CPU (this will be slow!)")
 
-DATASET_NAME = "synthetic_dataset_1280x1280"
+DATASET_NAME = "synthetic_dataset_100"
 
 DATASET_PATH = f'../../card_dataset_generation/data/{DATASET_NAME}/data.yaml'
 
@@ -22,9 +22,9 @@ if not os.path.isfile(DATASET_PATH):
 
 results = model.train(
     data=DATASET_PATH, 
-    epochs=50,
+    epochs=100,
     imgsz=1280,
-    batch=8,
+    batch=12,
     device=device,
     mosaic=1.0,
     degrees=10.0,

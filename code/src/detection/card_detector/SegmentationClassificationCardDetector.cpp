@@ -42,9 +42,8 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
 
             const ObjectType* obj_type = nullptr;
             //cv::imshow("Projected Card1", card_projected_image);
-            //cv::waitKey(0);
-            card_color_utils::CardColor color = detect_card_color(card_projected_image); 
-            card_projected_image = Filters::two_color_binarization(card_projected_image, card_color_utils::to_scalar(color), cv::Scalar(255,255,255));
+            card_color_utils::CardColor color = detect_card_color(card_projected_image);
+            //card_projected_image = Filters::two_color_binarization(card_projected_image, card_color_utils::to_scalar(color), cv::Scalar(255,255,255));
             //cv::imshow("Projected Card", card_projected_image);
             //cv::waitKey(0);
             obj_type = this->object_classifier_->classify_object(card_projected_image, cv::Mat());
