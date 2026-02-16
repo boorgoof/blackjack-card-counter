@@ -185,3 +185,73 @@ cv::Mat Filters::two_color_binarization(const cv::Mat& src_img, const cv::Scalar
 
     return dst;
 }
+
+
+cv::Mat Filters::laplaceFilter(const cv::Mat& src)
+{
+    if (src.empty())
+    {
+        std::cerr << "Error: Image is empty!" << std::endl;
+        return cv::Mat();
+    }
+
+    // laplacian kernel 
+    cv::Mat kernel = (cv::Mat_<float>(3, 3) <<
+         1,  1,  1,
+         1, -8,  1,
+         1,  1,  1);
+
+    
+    cv::Mat imgLaplacian;
+    cv::filter2D(src, imgLaplacian, CV_32F, kernel);
+    cv::Mat sharp;
+    src.convertTo(sharp, CV_32F);
+
+    // Sharpening, so original - laplacian
+    cv::Mat imgResult = sharp - imgLaplacian;
+
+    // Convert back to original type
+    cv::Mat result8U;
+    imgResult.convertTo(result8U, src.type());
+ 
+    return result8U;
+}
+
+cv::Mat Filters::binaryImage(const cv::Mat& src)
+{
+    if (src.empty())
+    {
+        std::cerr << "Error: Image is empty!" << std::endl;
+        return cv::Mat();
+    }
+    cv::Mat gray;
+    cv::Mat bw;
+
+    // Convert to grayscale
+    cv::cvtColor(src, gray, cv::COLOR_BGR2GRAY);
+    // Apply Otsu thresholding
+    cv::threshold(gray, bw, 40, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
+
+    return bw;
+}
+
+
+cv::Mat Filters::distanceTransformFilter(const cv::Mat& binaryImage)
+{
+    if (binaryImage.empty())
+    {
+        std::cerr << "Error: Binary image is empty!" << std::endl;
+        return cv::Mat();
+    }
+
+    cv::Mat dist;
+
+    // Perform the distance transform algorithm
+    cv::distanceTransform(binaryImage, dist, cv::DIST_L2, 3);
+    // Normalize the distance image for range = {0.0, 1.0}
+    cv::normalize(dist, dist, 0, 1.0, cv::NORM_MINMAX);
+
+    return dist;
+}
+
+

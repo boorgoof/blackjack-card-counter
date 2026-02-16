@@ -7,7 +7,6 @@
 #include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/matchers/KeypointMatcher.h"
 #include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/matchers/HashMatcher.h"
 
-
 #include "../../../../../include/Utils.h"
 #include "../../../../../include/StatisticsCalculation.h"
 #include "../../../../../include/Loaders.h"
@@ -92,7 +91,7 @@ const ObjectType* FeaturePipeline::classify_object(const cv::Mat &src_img, const
     //std::cout << "Best score: " << best_score << ", Second best score: " << second_best_score << ", Ratio: " << ratio << std::endl;
 
     if(ratio > this->ratio_threshold_) {
-        std::cout << "No reliable match found. Best ratio " << ratio << " is above the threshold of " << this->ratio_threshold_ << std::endl;
+        // std::cout << "No reliable match found. Best ratio " << ratio << " is above the threshold of " << this->ratio_threshold_ << std::endl;
         return nullptr;
     }
 
