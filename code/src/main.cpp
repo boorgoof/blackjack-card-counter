@@ -36,132 +36,191 @@ cv::Mat draw_hi_low_count(const cv::Mat& image, const SequentialFrameProcessing&
 int main(int argc, char** argv) {
 
     try{
-    //TODO: use a proper argument parser library or make this more flexible
-    if (argc < 5) {
-        std::cerr << "Usage: ./program <datasets_path> <template_dataset_path> <output_path> <dataset_name_to_use> <visualize_flag>" << std::endl;
-        std::cerr << "datasets_path: path to the folder containing the datasets (single_cards and videos folders)" << std::endl;
-        std::cerr << "template_dataset_path: path to the folder containing the template cards dataset" << std::endl;
-        std::cerr << "model_path: path to the onnx model" << std::endl;
-        std::cerr << "output_path: path to the folder where the output will be saved" << std::endl;
-        std::cerr << "dataset_name_to_use: name of the dataset to use. Possible values are 'single_cards' or 'video'" << std::endl;
-        std::cerr << "visualize_flag (JUST FOR DEVELOPMENT PURPOSE): whether to visualize the detected images (true/false), optional, default is false" << std::endl;
-        return 1;
-    }
-    std::string datasets_path = argv[1];
-    std::string template_dataset_path = argv[2];
-    std::string model_path = argv[3];
-    std::string output_path = argv[4];
-    std::string dataset_to_use = argv[5];
+        if (argc < 5) {
+            std::cerr << "Usage: ./program <datasets_path> <template_dataset_path> <models_path> <output_path> <dataset_name_to_use> <method> <visualize_flag>" << std::endl;
+            std::cerr << "datasets_path: path to the folder containing the datasets (single_cards and videos folders)" << std::endl;
+            std::cerr << "template_dataset_path: path to the folder containing the template cards dataset" << std::endl;
+            std::cerr << "models_path: path to the onnx models folder" << std::endl;
+            std::cerr << "output_path: path to the folder where the output will be saved" << std::endl;
+            std::cerr << "dataset_name_to_use: name of the dataset to use. Possible values are 'single_cards', 'video_images', or 'video'" << std::endl;
+            std::cerr << "method: method to use for card detection. Possible values are 'templates' or 'model'" << std::endl;
+            std::cerr << "visualize_flag (JUST FOR DEVELOPMENT PURPOSE): whether to visualize the detected images (true/false), optional, default is false" << std::endl;
+            return 1;
+        }
+        std::string datasets_path = argv[1];
+        std::string template_dataset_path = argv[2];
+        std::string models_path = argv[3];
+        std::string output_path = argv[4];
+        std::string dataset_to_use = argv[5];
+        std::string method = argv[6];
 
-    if (!std::filesystem::exists(datasets_path)) {
-        std::cerr << "The datasets path does not exist!" << std::endl;
-        return 1;
-    }
+        if (!std::filesystem::exists(datasets_path)) {
+            std::cerr << "The datasets path does not exist!" << std::endl;
+            return 1;
+        }
 
-    if (!std::filesystem::exists(template_dataset_path)) {
-        std::cerr << "The template dataset path does not exist!" << std::endl;
-        return 1;
-    }
-    
-    if (std::filesystem::exists(output_path)) {
-        std::cout << "The output path already exists! Do you want to proceed? (y/n): ";
-        char response;
-        std::cin >> response;
-        if (response != 'y' && response != 'Y') {
-            std::cout << "Exiting the program." << std::endl;
-            return 0;
+        if (!std::filesystem::exists(template_dataset_path)) {
+            std::cerr << "The template dataset path does not exist!" << std::endl;
+            return 1;
+        }
+
+        if (!std::filesystem::exists(models_path)) {
+            std::cerr << "The models path does not exist!" << std::endl;
+            return 1;
+        }
+        
+        if (std::filesystem::exists(output_path)) {
+            std::cout << "The output path already exists! Do you want to proceed? (y/n): ";
+            char response;
+            std::cin >> response;
+            if (response != 'y' && response != 'Y') {
+                std::cout << "Exiting the program." << std::endl;
+                return 0;
+            }
+            else{
+                std::cout << "Overwriting the output path!" << std::endl;
+                std::filesystem::remove_all(output_path);
+                std::filesystem::create_directories(output_path);
+            }
+        } else {
+            std::filesystem::create_directories(output_path);
+            std::cout << "The output path has been created!" << std::endl;
+        }
+
+        const std::string YOLO_SINGLE_CARD_MODEL_NAME = "yolov11s_single_cards_1280.onnx";
+        const std::string YOLO_MULTIPLE_CARDS_MODEL_NAME = "yolov11s_synthetic_1280_20.onnx";
+
+        const std::string SINGLE_CARD_DATASET_NAME = "single_cards";
+        const std::string VIDEO_IMAGE_DATASET_NAME = "video_images";
+        const std::string VIDEO_DATASET_NAME = "video";
+
+        std::string dataset_path = "";
+
+        if(dataset_to_use == SINGLE_CARD_DATASET_NAME){
+            dataset_path = datasets_path + "/" + "single_cards";
+
+        } else if(dataset_to_use == VIDEO_IMAGE_DATASET_NAME){
+            dataset_path = datasets_path + "/" + "video_images";
+
+        }
+        else if(dataset_to_use == VIDEO_DATASET_NAME){
+            dataset_path = datasets_path + "/" + "videos" + "/" + "video_blue_bg/VideoBlackjack.mp4";
         }
         else{
-            std::cout << "Overwriting the output path!" << std::endl;
-            std::filesystem::remove_all(output_path);
-            std::filesystem::create_directories(output_path);
+            std::cerr << "The selected dataset (" << dataset_to_use << ") is not a valid option! Possible options are 'single_cards', 'video_images', 'video'" << std::endl;
+            return 1;
         }
-    } else {
-        std::filesystem::create_directories(output_path);
-        std::cout << "The output path has been created!" << std::endl;
-    }
 
-    const std::string SINGLE_CARD_DATASET_NAME = "single_cards";
-    const std::string MULTIPLE_CARDS_DATASET_NAME = "multiple_cards";
-    const std::string VIDEO_DATASET_NAME = "video";
+        DETECTION_MODE detection_method;
+        if(method == "templates"){
+            detection_method = DETECTION_MODE::TEMPLATES;
+        } else if(method == "model"){
+            detection_method = DETECTION_MODE::MODEL;
+        }
+        else{
+            std::cerr << "The selected method (" << method << ") is not a valid option! Possible options are 'templates' or 'model'" << std::endl;
+            return 1;
+        }
 
-    std::string dataset_path = "";
+        bool visualize = (argc > 7) ? (std::string(argv[7]) == "true") : false;
 
-    if(dataset_to_use == SINGLE_CARD_DATASET_NAME){
-        dataset_path = datasets_path + "/" + "single_cards";
+        std::cout << "Program started with the following parameters:" << std::endl;
+        std::cout << "datasets_path: " << datasets_path << std::endl;
+        std::cout << "template_dataset_path: " << template_dataset_path << std::endl;
+        std::cout << "models_path: " << models_path << std::endl;
+        std::cout << "output_path: " << output_path << std::endl;
+        std::cout << "dataset_to_use: " << dataset_to_use << std::endl;
+        std::cout << "method: " << method << std::endl;
+        std::cout << "visualize: " << (visualize ? "true" : "false") << std::endl;
 
-    } else if(dataset_to_use == MULTIPLE_CARDS_DATASET_NAME){
-        dataset_path = datasets_path + "/" + "multiple_cards";
+        constexpr int num_classes = 53; //52 cards + background/no card class
+        constexpr float iou_threshold = 0.5f;
 
-    }
-    else if(dataset_to_use == VIDEO_DATASET_NAME){
-        dataset_path = datasets_path + "/" + "videos" + "/" + "video_blue_bg/VideoBlackjack.mp4";
-    }
-    else{
-        std::cerr << "The selected dataset (" << dataset_to_use << ") is not a valid option! Possible options are 'single_cards' or 'video'" << std::endl;
-        return 1;
-    }
+        ImageFilter img_filter;
 
-    bool visualize = (argc > 6) ? (std::string(argv[6]) == "true") : false;
+        if(dataset_to_use == SINGLE_CARD_DATASET_NAME){
+            //Dataset object creation
+            std::unique_ptr<Dataset> single_cards_dataset(new ImageDataset(dataset_path));
 
-    std::cout << "Program started with the following parameters:" << std::endl;
-    std::cout << "datasets_path: " << datasets_path << std::endl;
-    std::cout << "template_dataset_path: " << template_dataset_path << std::endl;
-    std::cout << "model_path: " << model_path << std::endl;
-    std::cout << "output_path: " << output_path << std::endl;
-    std::cout << "visualize: " << (visualize ? "true" : "false") << std::endl;
+            if (detection_method == DETECTION_MODE::TEMPLATES) {
+                //TemplateDataset creation 
+                TemplateDataset template_dataset(template_dataset_path);
+                std::cout << "Template Dataset root: " << template_dataset.get_root() << std::endl;
+                std::cout << "Template Dataset loaded with " << template_dataset.size() << " entries." << std::endl;
+                if (visualize) {
+                    for (auto it = template_dataset.begin(); it != template_dataset.end(); ++it) {
+                        const TemplateInfo& sample = dynamic_cast<const TemplateInfo&>(*it);
+                        cv::Mat img = template_dataset.load(it);
+                        std::cout << "Visualizing template sample: " << sample << std::endl;
+                        Utils::Visualization::showImage(img, "Template Card: " + sample.get_name(), 200, 1.0);
+                    }
+                }
+                //depending on the dataset type, create the appropriate card detector
+                std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, visualize, detection_method, &template_dataset);
+                //image preprocesing (resize to faster computations)
+                img_filter.add_filter("Resize", Filters::resize, 0.25, 0.25); 
+                //iterate through dataset and detect each image
+                //output is saved into output_path/single_cards
+                iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + SINGLE_CARD_DATASET_NAME, visualize, num_classes);
+            }
+            else if (detection_method == DETECTION_MODE::MODEL) {
+                std::string model_path = models_path + "/" + YOLO_SINGLE_CARD_MODEL_NAME;
+                if (!std::filesystem::exists(model_path)) {
+                    std::cerr << "The specified model file does not exist: " << model_path << std::endl;
+                    return 1;
+                }
+                //depending on the dataset type, create the appropriate card detector
+                std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, visualize, detection_method, nullptr, &model_path);
+                //image preprocesing (resize to faster computations)
+                img_filter.add_filter("Resize", Filters::resize_to, 1280, 960);
+                //iterate through dataset and detect each image
+                //output is saved into output_path/single_cards
+                iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + SINGLE_CARD_DATASET_NAME, visualize, num_classes);
+            }
+        } else if(dataset_to_use == VIDEO_IMAGE_DATASET_NAME){
+            
+            //Dataset object creation
+            std::unique_ptr<Dataset> multiple_cards_dataset(new ImageDataset(dataset_path));
+            
+            if(detection_method == DETECTION_MODE::MODEL){
+                std::string model_path = models_path + "/" + YOLO_MULTIPLE_CARDS_MODEL_NAME;
+                if (!std::filesystem::exists(model_path)) {
+                    std::cerr << "The specified model file does not exist: " << model_path << std::endl;
+                    return 1;
+                }
+                //depending on the dataset type, create the appropriate card detector
+                std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(multiple_cards_dataset, visualize, detection_method, nullptr, &model_path);
+                //iterate through dataset and detect each image
+                //output is saved into output_path/multiple_cards
+                img_filter.add_filter("Resize", Filters::resize_to, 1280, 1280);
+                iterate_dataset(multiple_cards_dataset, img_filter, mode, output_path + "/" + dataset_to_use, visualize, num_classes);
+            }
+            else{
+                std::cerr << "The selected method (" << method << ") is not a valid option for the selected dataset (" << dataset_to_use << ")! For the 'video_images' dataset, only the 'model' method is supported." << std::endl;
+                return 1;
+            }
+        } else if(dataset_to_use == VIDEO_DATASET_NAME){
+            //Dataset object creation
+            constexpr double VIDEO_SAMPLE_FPS = 10.0;
+            std::unique_ptr<Dataset> video_dataset(new VideoDataset(dataset_path, false, VIDEO_SAMPLE_FPS));
 
-    constexpr int num_classes = 53; //52 cards + background/no card class
-    constexpr float iou_threshold = 0.5f;
-
-    ImageFilter img_filter;
-
-    if(dataset_to_use == SINGLE_CARD_DATASET_NAME){
-        //TemplateDataset creation 
-        TemplateDataset template_dataset(template_dataset_path);
-        std::cout << "Template Dataset root: " << template_dataset.get_root() << std::endl;
-        std::cout << "Template Dataset loaded with " << template_dataset.size() << " entries." << std::endl;
-        if (visualize) {
-            for (auto it = template_dataset.begin(); it != template_dataset.end(); ++it) {
-                const TemplateInfo& sample = dynamic_cast<const TemplateInfo&>(*it);
-                cv::Mat img = template_dataset.load(it);
-                std::cout << "Visualizing template sample: " << sample << std::endl;
-                Utils::Visualization::showImage(img, "Template Card: " + sample.get_name(), 200, 1.0);
+            if(detection_method == DETECTION_MODE::MODEL){
+                std::string model_path = models_path + "/" + YOLO_MULTIPLE_CARDS_MODEL_NAME;
+                if (!std::filesystem::exists(model_path)) {
+                    std::cerr << "The specified model file does not exist: " << model_path << std::endl;
+                    return 1;
+                }
+                //depending on the dataset type, create the appropriate card detector
+                std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(video_dataset, visualize, detection_method, nullptr, &model_path);
+                //iterate through dataset and detect each image
+                //output is saved into output_path/video
+                iterate_dataset(video_dataset, img_filter, mode, output_path + "/" + VIDEO_DATASET_NAME, visualize, num_classes);
+            }
+            else{
+                std::cerr << "The selected method (" << method << ") is not a valid option for the selected dataset (" << dataset_to_use << ")! For the 'video' dataset, only the 'model' method is supported." << std::endl;
+                return 1;
             }
         }
-        //Dataset object creation
-        std::unique_ptr<Dataset> single_cards_dataset(new ImageDataset(dataset_path));
-
-        //depending on the dataset type, create the appropriate card detector
-        std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, visualize, DETECTION_MODE::TEMPLATES, &template_dataset);
-        //image preprocesing (resize to faster computations)
-        img_filter.add_filter("Resize", Filters::resize, 0.25, 0.25); 
-        //iterate through dataset and detect each image
-        //output is saved into output_path/single_cards
-        iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + SINGLE_CARD_DATASET_NAME, visualize, num_classes);
-
-    } else if(dataset_to_use == MULTIPLE_CARDS_DATASET_NAME){
-        
-        //Dataset object creation
-        std::unique_ptr<Dataset> multiple_cards_dataset(new ImageDataset(dataset_path));
-        
-        //depending on the dataset type, create the appropriate card detector
-        std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(multiple_cards_dataset, visualize, DETECTION_MODE::MODEL, nullptr, &model_path);
-        //iterate through dataset and detect each image
-        //output is saved into output_path/multiple_cards
-        iterate_dataset(multiple_cards_dataset, img_filter, mode, output_path + "/" + dataset_to_use, visualize, num_classes);
-
-    } else if(dataset_to_use == VIDEO_DATASET_NAME){
-        //Dataset object creation - sample at 10 FPS for smoother output
-        constexpr double VIDEO_SAMPLE_FPS = 10.0;
-        std::unique_ptr<Dataset> video_dataset(new VideoDataset(dataset_path, false, VIDEO_SAMPLE_FPS));
-
-        //depending on the dataset type, create the appropriate card detector
-        std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(video_dataset, visualize, DETECTION_MODE::MODEL, nullptr, &model_path);
-        //iterate through dataset and detect each image
-        //output is saved into output_path/video
-        iterate_dataset(video_dataset, img_filter, mode, output_path + "/" + VIDEO_DATASET_NAME, visualize, num_classes);
-    }
     }catch (const std::runtime_error& e) {
         std::cerr << "RUNTIME ERROR: " << e.what() << std::endl;
         return -1;
