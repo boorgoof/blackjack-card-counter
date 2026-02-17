@@ -13,29 +13,43 @@ std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv
 
     std::vector<Label> detected_labels;
 
-    cv::Mat mask = this->mask_card_detector_->getMask(image);
-    cv::Mat masked_image(image.size(), image.type(), cv::Scalar(255,255,255));
-    image.copyTo(masked_image, mask);   
+    cv::Mat filtered_image = Filters::delete_gray_background(image);
+    cv::Mat mask = this->mask_card_detector_->getMask(filtered_image);
+    cv::Mat white_masked_image(image.size(), image.type(), cv::Scalar(255,255,255));
+    cv::Mat black_masked_image(image.size(), image.type(), cv::Scalar(0,0,0));
+    image.copyTo(white_masked_image, mask);   
+    image.copyTo(black_masked_image, mask);
     
+    //----
     cv::Mat mask_display = mask;
-    cv::Mat masked_image_display = masked_image;
+    cv::Mat masked_image_display = white_masked_image;
+    cv::Mat black_masked_image_display = black_masked_image;
 
     cv::resize( mask, mask_display, cv::Size(), 0.5, 0.5);
-    cv::resize(masked_image, masked_image_display, cv::Size(), 0.5, 0.5);   
+    cv::resize(white_masked_image, masked_image_display, cv::Size(), 0.5, 0.5);   
+    cv::resize(black_masked_image, black_masked_image_display, cv::Size(), 0.5, 0.5);
 
-    //cv::imshow("Mask", mask_display);
-    //cv::waitKey(0);
-    //cv::imshow("Image", masked_image_display);
-    //cv::waitKey(0);
-    std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(image, mask); 
-   
+    cv::imshow("Mask", mask_display);
+    cv::imshow("Image", masked_image_display);
+    cv::imshow("Black Masked Image", black_masked_image_display);
+    //----
+
+    std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(black_masked_image, mask); 
+
+    // debugging ----
+    cv::Mat conotour_image = black_masked_image.clone();
+    cv::drawContours(conotour_image, cards_contour, -1,  cv::Scalar(0, 0, 255),2                  );
+    cv::imshow("Contours", conotour_image);
+    cv::waitKey(0);
+    // ----
+
     for (std::vector<cv::Point>& contour : cards_contour) {
         
         // Get projected card and corner bounding boxes in original image coordinates
         cv::Mat card_projected_image;
         cv::Rect bbox1, bbox2;
 
-        CardProjection::getCornerBboxes(masked_image, contour, bbox1, bbox2, card_projected_image);
+        CardProjection::getCornerBboxes(white_masked_image, contour, bbox1, bbox2, card_projected_image);
 
         // now we classify the card using the projected image
         if (this->object_classifier_) {
