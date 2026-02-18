@@ -32,7 +32,7 @@ cv::Mat flatten(const cv::Mat &image, const cv::Mat &mask);
  * @return bool: True if successful, false otherwise.
  */
 bool getCornerBboxes(const cv::Mat &image, const std::vector<cv::Point> &contour, cv::Rect &bbox1, cv::Rect &bbox2, cv::Mat &card_projected_image, cv::Size outputSize = cv::Size(250, 350),
-                        float cornerWidthFrac = 0.20, float cornerHeightFrac = 0.20);
+                        float cornerWidthFrac = 0.18, float cornerHeightFrac = 0.25);
 
 } // namespace CardProjection
 
