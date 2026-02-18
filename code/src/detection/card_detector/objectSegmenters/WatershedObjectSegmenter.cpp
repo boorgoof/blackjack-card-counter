@@ -33,32 +33,6 @@ std::vector<std::vector<cv::Point>> WatershedObjectSegmenter::segment_objects(co
     watershedSegmentation(imgResult, markers, marker_contours);
 
     
-    // --- Debug visualization ---
-    cv::imshow("Binary Image", bw);
-    cv::imshow("Laplacian Filter", imgResult);
-
-    cv::imshow("Binary Image", bw);
-    cv::imshow("Laplacian Filter", imgResult);
-
-
-    cv::Mat dist_vis;
-    dist.convertTo(dist_vis, CV_8U, 255);
-    cv::imshow("Distance Transform", dist_vis);
-
-    cv::Mat peaks_vis;
-    peaks.convertTo(peaks_vis, CV_8U, 255);
-    cv::imshow("Peaks (foreground markers)", peaks_vis);
-
-    cv::Mat contour_img = imgResult.clone();
-    cv::drawContours(contour_img, marker_contours, -1, cv::Scalar(0,255,0), 2);
-    cv::imshow("Marker Contours", contour_img);
-
-    cv::Mat markers_vis;
-    cv::normalize(markers, markers_vis, 0, 255, cv::NORM_MINMAX, CV_8U);
-    cv::imshow("Watershed Labels", markers_vis);
-    // --------------------------
-    
-
     // Extract contours from watershed result
     for (int label = 1; label <= static_cast<int>(marker_contours.size()); ++label)
     {

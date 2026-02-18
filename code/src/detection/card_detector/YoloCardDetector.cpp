@@ -12,13 +12,14 @@ YoloCardDetector::YoloCardDetector(const std::string& modelPath, bool visualize)
 }
 
 std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
+    
     std::vector<Label> detections;
     
     const float input_size = 1280.0f;
-    const float conf_threshold = 0.7f;
+    const float conf_threshold = 0.3f;
     const float nms_threshold = 0.50f;
 
-    // preprocessing
+    // preprocessing of the image
     cv::Mat blob;
     cv::dnn::blobFromImage(image, blob, 1.0/255.0, cv::Size(input_size, input_size), cv::Scalar(), true, false);
     
@@ -27,12 +28,12 @@ std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
     std::vector<cv::Mat> outputs;
     net.forward(outputs, net.getUnconnectedOutLayersNames());
 
-    // post-processing 
+    // post-processing: we obtian a 2D matrix where each row corresponds to a detection and the columns correspond to : center_x, center_y, width, height, conf_class_0, ...., conf_class_51
     cv::Mat res = outputs[0];
     if (res.dims == 3) {
         res = cv::Mat(res.size[1], res.size[2], CV_32F, res.ptr<float>());
     }
-    cv::transpose(res, res);
+    cv::transpose(res, res); 
 
     std::vector<int> class_ids;
     std::vector<float> confidences;
@@ -45,8 +46,8 @@ std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
     for (int i = 0; i < res.rows; ++i) {
         cv::Mat row = res.row(i);
 
-        
-        cv::Mat scores = row.colRange(4, 56);
+        // we take the class with max score 
+        cv::Mat scores = row.colRange(4, 56);  
         cv::Point class_id_point;
         double score;
         cv::minMaxLoc(scores, 0, &score, 0, &class_id_point);
@@ -72,6 +73,7 @@ std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
     std::vector<int> indices;
     cv::dnn::NMSBoxes(boxes, confidences, conf_threshold, nms_threshold, indices);
 
+    // Labels construction 
     for (int idx : indices) {
 
         CardType card = Yolo_index_codec::yolo_index_to_card(this->mapCardIndex(class_ids[idx]));
@@ -84,11 +86,12 @@ std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
 
 int YoloCardDetector::mapCardIndex(int inputIndex) {
     
+    // a mapping from the model's class indices to the ones used in the logic program (in CardType). 
     static const int mapping[52] = {
-        37, 5, 9, 13, 17, 21, 25, 29, 33, 1, 41, 49, 45, // C: 10, 2..9, A, J, K, Q
-        38, 6, 10, 14, 18, 22, 26, 30, 34, 2, 42, 50, 46, // D: 10, 2..9, A, J, K, Q
-        39, 7, 11, 15, 19, 23, 27, 31, 35, 3, 43, 51, 47, // H: 10, 2..9, A, J, K, Q
-        36, 4, 8, 12, 16, 20, 24, 28, 32, 0, 40, 48, 44   // S: 10, 2..9, A, J, K, Q
+        37, 5, 9, 13, 17, 21, 25, 29, 33, 1, 41, 49, 45, 
+        38, 6, 10, 14, 18, 22, 26, 30, 34, 2, 42, 50, 46, 
+        39, 7, 11, 15, 19, 23, 27, 31, 35, 3, 43, 51, 47, 
+        36, 4, 8, 12, 16, 20, 24, 28, 32, 0, 40, 48, 44   
     };
 
     if (inputIndex < 0 || inputIndex >= 52) {

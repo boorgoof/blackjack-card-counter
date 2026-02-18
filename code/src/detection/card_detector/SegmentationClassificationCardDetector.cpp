@@ -12,54 +12,36 @@ SegmentationClassificationCardDetector::SegmentationClassificationCardDetector(s
 std::vector<Label> SegmentationClassificationCardDetector::detect_cards(const cv::Mat& image) {
 
     std::vector<Label> detected_labels;
-
+    // small preprocessing 
     cv::Mat filtered_image = Filters::delete_gray_background(image);
+    
+    // get the mask 
     cv::Mat mask = this->mask_card_detector_->getMask(filtered_image);
     cv::Mat white_masked_image(image.size(), image.type(), cv::Scalar(255,255,255));
     cv::Mat black_masked_image(image.size(), image.type(), cv::Scalar(0,0,0));
     image.copyTo(white_masked_image, mask);   
     image.copyTo(black_masked_image, mask);
-    
-    //----
-    cv::Mat mask_display = mask;
-    cv::Mat masked_image_display = white_masked_image;
-    cv::Mat black_masked_image_display = black_masked_image;
 
-    cv::resize( mask, mask_display, cv::Size(), 0.5, 0.5);
-    cv::resize(white_masked_image, masked_image_display, cv::Size(), 0.5, 0.5);   
-    cv::resize(black_masked_image, black_masked_image_display, cv::Size(), 0.5, 0.5);
-
-    cv::imshow("Mask", mask_display);
-    cv::imshow("Image", masked_image_display);
-    cv::imshow("Black Masked Image", black_masked_image_display);
-    //----
-
+    // segment the card using the mask
     std::vector<std::vector<cv::Point>> cards_contour = this->object_segmenter_->segment_objects(black_masked_image, mask); 
-
-    // debugging ----
-    cv::Mat conotour_image = black_masked_image.clone();
-    cv::drawContours(conotour_image, cards_contour, -1,  cv::Scalar(0, 0, 255),2                  );
-    cv::imshow("Contours", conotour_image);
-    cv::waitKey(0);
-    // ----
 
     for (std::vector<cv::Point>& contour : cards_contour) {
         
         // Get projected card and corner bounding boxes in original image coordinates
         cv::Mat card_projected_image;
         cv::Rect bbox1, bbox2;
-
         CardProjection::getCornerBboxes(white_masked_image, contour, bbox1, bbox2, card_projected_image);
 
         // now we classify the card using the projected image
         if (this->object_classifier_) {
 
             const ObjectType* obj_type = nullptr;
-            //cv::imshow("Projected Card1", card_projected_image);
-            card_color_utils::CardColor color = detect_card_color(card_projected_image);
+            
+            // This is an optional step to try to improve the classification by binarizing the projected card image 
+            //card_color_utils::CardColor color = detect_card_color(card_projected_image);
             //card_projected_image = Filters::two_color_binarization(card_projected_image, card_color_utils::to_scalar(color), cv::Scalar(255,255,255));
-            //cv::imshow("Projected Card", card_projected_image);
-            //cv::waitKey(0);
+            
+            // classify the card using the projected image
             obj_type = this->object_classifier_->classify_object(card_projected_image, cv::Mat());
             
             // create label only if the classification is valid
