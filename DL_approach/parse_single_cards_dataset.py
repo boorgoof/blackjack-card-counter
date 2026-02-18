@@ -1,3 +1,5 @@
+#Matteo Bino
+
 import os
 import shutil
 import random
@@ -12,9 +14,6 @@ LBL_DIR = SOURCE_DIR / "YOLO_Annotations" / "YOLO_Annotations"
 TARGET_DIR = Path("datasets/single_cards")
 TRAIN_RATIO = 0.8
 
-# The mapping provided by the user
-# Note: In your filenames, cards are likely '2C', '10H', but the table uses 'C2', 'H10'.
-# We will create a helper to map the filename prefix to the table index.
 LABEL_NAMES = {
     0: "C10", 1: "C2", 2: "C3", 3: "C4", 4: "C5", 5: "C6", 6: "C7", 7: "C8", 8: "C9", 9: "CA", 10: "CJ", 11: "CK", 12: "CQ",
     13: "D10", 14: "D2", 15: "D3", 16: "D4", 17: "D5", 18: "D6", 19: "D7", 20: "D8", 21: "D9", 22: "DA", 23: "DJ", 24: "DK", 25: "DQ",
@@ -35,7 +34,6 @@ def get_card_type(filename):
     # Rank can be 1 or 2 digits/chars (2-9, 10, A, J, Q, K)
     # Suit is 1 char (C, D, H, S)
     
-    # Check for JOKER
     if stem.startswith("JOKER"):
         return None
 
@@ -77,7 +75,7 @@ def process_label(src_path, dst_path, class_id):
 def main():
     setup_dirs()
     
-    # 1. Group images by card type
+    # Group images by card type
     all_images = list(IMG_DIR.glob("*.jpg"))
     groups = {}
     
@@ -89,7 +87,7 @@ def main():
     
     print(f"Found {len(groups)} card types.")
 
-    # 2. Split each group and move files
+    # Split each group and move files
     for card_type, images in groups.items():
         if card_type not in NAME_TO_ID:
             print(f"Warning: Card type {card_type} not found in mapping table. Skipping.")
@@ -105,7 +103,6 @@ def main():
         
         for split, image_list in [('train', train_images), ('val', val_images)]:
             for img_path in image_list:
-                # File names
                 img_name = img_path.name
                 lbl_name = img_path.stem + ".txt"
                 
@@ -113,7 +110,6 @@ def main():
                 dst_img = TARGET_DIR / "images" / split / img_name
                 dst_lbl = TARGET_DIR / "labels" / split / lbl_name
                 
-                # Copy Image
                 shutil.copy(img_path, dst_img)
                 
                 # Process and Move Label (ensuring ID matches table)
@@ -121,7 +117,7 @@ def main():
                 if not process_label(src_lbl, dst_lbl, class_id):
                     print(f"Warning: Label not found for {img_name}")
 
-    # 3. Create data.yaml
+    # Create data.yaml
     yaml_content = f"""
 train: {TARGET_DIR}/images/train
 val: {TARGET_DIR}/images/val
@@ -135,7 +131,7 @@ names:
     with open(TARGET_DIR / "data.yaml", "w") as f:
         f.write(yaml_content.strip())
 
-    print("Success! Dataset split and data.yaml generated.")
+    print("Dataset split and data.yaml generated.")
 
 if __name__ == "__main__":
     main()
