@@ -175,7 +175,7 @@ int main(int argc, char** argv) {
                 //depending on the dataset type, create the appropriate card detector
                 std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, visualize, detection_method, nullptr, &model_path);
                 //image preprocesing (resize to faster computations)
-                img_filter.add_filter("Resize", Filters::resize_to, 1280, 960);
+                //img_filter.add_filter("Resize", Filters::resize_to, 1280, 960);
                 //iterate through dataset and detect each image
                 //output is saved into output_path/single_cards
                 iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + SINGLE_CARD_DATASET_NAME, visualize, num_classes);
@@ -195,7 +195,7 @@ int main(int argc, char** argv) {
                 std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(multiple_cards_dataset, visualize, detection_method, nullptr, &model_path);
                 //iterate through dataset and detect each image
                 //output is saved into output_path/multiple_cards
-                img_filter.add_filter("Resize", Filters::resize_to, 1280, 1280);
+                //img_filter.add_filter("Resize", Filters::resize_to, 1280, 1280);
                 iterate_dataset(multiple_cards_dataset, img_filter, mode, output_path + "/" + dataset_to_use, visualize, num_classes);
             }
             else{
@@ -294,6 +294,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
 
     const auto total_images = std::distance(dataset->begin(), dataset->end());
     int idx = 0;
+    int object_count = 0;
 
     cv::Mat cumulative_confusion_matrix = cv::Mat::zeros(num_classes, num_classes, CV_32S);
     const int save_cm_every = 10;
@@ -362,8 +363,9 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
                 
                 for (size_t n = 0; n < cards_iou.size(); ++n) {
                     float a_n = cards_iou[n];
-                    all_objects_mean_iou += (a_n - all_objects_mean_iou) / static_cast<float>(n + 1);
+                    all_objects_mean_iou += (a_n - all_objects_mean_iou) / static_cast<float>(object_count + n + 1);
                 }
+                object_count += cards_iou.size();
                 
                 std::vector<float> precision = StatisticsCalculation::calc_precision(cumulative_confusion_matrix);
                 std::vector<float> recall = StatisticsCalculation::calc_recall(cumulative_confusion_matrix);
@@ -443,9 +445,6 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     // final cumulative confusion matrix + metrics
     Utils::Save::save_confusion_matrix(stats_folder + "confusion_matrix.txt", cumulative_confusion_matrix);
     float final_accuracy = StatisticsCalculation::calc_accuracy(cumulative_confusion_matrix);
-    
-    
-    
     std::vector<float> precision = StatisticsCalculation::calc_precision(cumulative_confusion_matrix);
     std::vector<float> recall = StatisticsCalculation::calc_recall(cumulative_confusion_matrix);
     std::vector<float> f1 = StatisticsCalculation::calc_f1(cumulative_confusion_matrix);
