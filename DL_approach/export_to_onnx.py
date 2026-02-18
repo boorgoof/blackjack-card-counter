@@ -1,3 +1,5 @@
+#Federico Meneghetti
+
 from ultralytics import YOLO
 
 model_path = 'yolov11s_single_cards_1280.pt'
