@@ -1,12 +1,12 @@
-#include "../../../../include/detection/card_detector/objectSegmenters/WatershedObjectSegmenter.h"
+#include "../../../../include/detection/card_detector/objectSegmenters/WatershedCardSegmenter.h"
 #include "../../../../include/ImageFilter.h"
 
-WatershedObjectSegmenter::WatershedObjectSegmenter()
+WatershedCardSegmenter::WatershedCardSegmenter()
 {
     set_method_name("Watershed (Distance Transform + Markers)");
 }
 
-std::vector<std::vector<cv::Point>> WatershedObjectSegmenter::segment_objects(const cv::Mat& src_img, const cv::Mat& src_mask)
+std::vector<std::vector<cv::Point>> WatershedCardSegmenter::segment_objects(const cv::Mat& src_img, const cv::Mat& src_mask)
 {
     std::vector<std::vector<cv::Point>> final_contours;
 
@@ -55,7 +55,7 @@ std::vector<std::vector<cv::Point>> WatershedObjectSegmenter::segment_objects(co
 
 /*
 //This is the version that follows the documentation, but in this case we prefer to use a single seed for the watershed algorithm, since we are looking for a single card in the image.
-cv::Mat WatershedObjectSegmenter::peaksFromDistance(const cv::Mat& dist)
+cv::Mat WatershedCardSegmenter::peaksFromDistance(const cv::Mat& dist)
 {
     cv::Mat peaks = dist.clone();
     // Threshold to obtain the peaks. This will be the markers for the foreground objects
@@ -70,7 +70,7 @@ cv::Mat WatershedObjectSegmenter::peaksFromDistance(const cv::Mat& dist)
 
 
 // In this case return only the strongest peak
-cv::Mat WatershedObjectSegmenter::peaksFromDistance(const cv::Mat& dist)
+cv::Mat WatershedCardSegmenter::peaksFromDistance(const cv::Mat& dist)
 {
      cv::Mat peakMask = cv::Mat::zeros(dist.size(), CV_32F);
 
@@ -90,7 +90,7 @@ cv::Mat WatershedObjectSegmenter::peaksFromDistance(const cv::Mat& dist)
 }
 
 
-cv::Mat WatershedObjectSegmenter::markersFromPeaks(const cv::Mat& peaks, std::vector<std::vector<cv::Point>>& contours)
+cv::Mat WatershedCardSegmenter::markersFromPeaks(const cv::Mat& peaks, std::vector<std::vector<cv::Point>>& contours)
 {
     // Create the CV_8U version of the distance image
     cv::Mat peaks_8u;
@@ -112,7 +112,7 @@ cv::Mat WatershedObjectSegmenter::markersFromPeaks(const cv::Mat& peaks, std::ve
     return markers;
 }
 
-cv::Mat WatershedObjectSegmenter::watershedSegmentation(const cv::Mat& srcColor, cv::Mat& markers, const std::vector<std::vector<cv::Point>>& marker_contours)
+cv::Mat WatershedCardSegmenter::watershedSegmentation(const cv::Mat& srcColor, cv::Mat& markers, const std::vector<std::vector<cv::Point>>& marker_contours)
 {
     // Perform the watershed algorithm
     cv::watershed(srcColor, markers);

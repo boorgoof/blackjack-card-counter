@@ -6,11 +6,11 @@
 #include "ObjectSegmenter.h"
 #include <opencv2/opencv.hpp>
 
-class WatershedObjectSegmenter : public ObjectSegmenter {
+class WatershedCardSegmenter : public ObjectSegmenter {
 public:
 
-    WatershedObjectSegmenter();
-    ~WatershedObjectSegmenter() override = default;
+    WatershedCardSegmenter();
+    ~WatershedCardSegmenter() override = default;
 
     std::vector<std::vector<cv::Point>>
     segment_objects(const cv::Mat& src_img, const cv::Mat& src_mask) override;

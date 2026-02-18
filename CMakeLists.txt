@@ -39,7 +39,7 @@ add_executable(main
 
     code/src/detection/card_detector/objectSegmenters/ObjectSegmenter.cpp
     code/src/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.cpp
-    code/src/detection/card_detector/objectSegmenters/WatershedObjectSegmenter.cpp)
+    code/src/detection/card_detector/objectSegmenters/WatershedCardSegmenter.cpp)
 
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/code/include)
     
