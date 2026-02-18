@@ -1,3 +1,5 @@
+#Matteo Bino
+
 from ultralytics import YOLO
 import torch
 import os
@@ -10,7 +12,7 @@ if torch.cuda.is_available():
     print(f" GPU Detected: {torch.cuda.get_device_name(0)}")
 else:
     device = 'cpu'
-    print("No GPU detected, using CPU (this will be slow!)")
+    print("No GPU detected, using CPU.")
 
 DATASET_NAME = "single_cards"
 

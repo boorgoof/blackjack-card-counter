@@ -69,24 +69,6 @@ int main(int argc, char** argv) {
             std::cerr << "The models path does not exist!" << std::endl;
             return 1;
         }
-        
-        if (std::filesystem::exists(output_path)) {
-            std::cout << "The output path already exists! Do you want to proceed? (y/n): ";
-            char response;
-            std::cin >> response;
-            if (response != 'y' && response != 'Y') {
-                std::cout << "Exiting the program." << std::endl;
-                return 0;
-            }
-            else{
-                std::cout << "Overwriting the output path!" << std::endl;
-                std::filesystem::remove_all(output_path);
-                std::filesystem::create_directories(output_path);
-            }
-        } else {
-            std::filesystem::create_directories(output_path);
-            std::cout << "The output path has been created!" << std::endl;
-        }
 
         const std::string YOLO_SINGLE_CARD_MODEL_NAME = "yolov11s_single_cards_1280.onnx";
         const std::string YOLO_MULTIPLE_CARDS_MODEL_NAME = "yolov11s_synthetic_1280_20.onnx";
@@ -111,6 +93,26 @@ int main(int argc, char** argv) {
             std::cerr << "The selected dataset (" << dataset_to_use << ") is not a valid option! Possible options are 'single_cards', 'video_images', 'video'" << std::endl;
             return 1;
         }
+
+        std::string dataset_output_path = output_path + "/" + dataset_to_use;
+        if (std::filesystem::exists(dataset_output_path)) {
+            std::cout << "The output path (" << dataset_output_path << ") already exists! Do you want to proceed? (y/n): ";
+            char response;
+            std::cin >> response;
+            if (response != 'y' && response != 'Y') {
+                std::cout << "Exiting the program." << std::endl;
+                return 0;
+            }
+            else{
+                std::cout << "Overwriting the output path!" << std::endl;
+                std::filesystem::remove_all(dataset_output_path);
+                std::filesystem::create_directories(dataset_output_path);
+            }
+        } else {
+            std::filesystem::create_directories(dataset_output_path);
+            std::cout << "The output path (" << dataset_output_path << ") has been created!" << std::endl;
+        }
+
 
         DETECTION_MODE detection_method;
         if(method == "templates"){
