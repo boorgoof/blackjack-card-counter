@@ -393,7 +393,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         //draw labels on image and save output image
         cv::Mat output_img = img.clone();
         if(dataset->get_has_annotations()){
-            Utils::Visualization::printLabelsOnImage(output_img, true_labels, cv::Scalar(0,255,0), cv::Scalar(0,255,0)); //true labels in green
+            Utils::Visualization::printLabelsOnImage(output_img, true_labels, cv::Scalar(0,0,0), cv::Scalar(0,0,0)); //true labels in black
         }
         Utils::Visualization::printLabelsOnImageHiLo(output_img, predicted_labels); //Hi-Lo color-coded bounding boxes
 

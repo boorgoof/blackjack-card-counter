@@ -24,8 +24,8 @@ float StatisticsCalculation::calc_IoU(const Label& true_label, const Label& pred
         cv::Rect2f intersection = trueRect & predRect;
         float intersection_area = std::max(0.0f, intersection.area());
 
-        float union_area = trueRect.area() + predRect.area() - intersection_area;
-        if (union_area <= 0.0f)
+        float union_area = std::max(0.0f, trueRect.area() + predRect.area() - intersection_area);
+        if (union_area == 0.0f)
             continue;
 
         float iou = intersection_area / union_area;
@@ -65,7 +65,8 @@ std::vector<float> StatisticsCalculation::calc_image_meanIoU(const std::vector<L
     }
 
     if (all_candidates_pairs.empty()) {
-        return {0.0f}; 
+        size_t n = std::max(true_labels.size(), predicted_labels.size());
+        return std::vector<float>(n, 0.0f); 
     }
 
     //2) Sort candidates by IoU in descending order
@@ -75,7 +76,8 @@ std::vector<float> StatisticsCalculation::calc_image_meanIoU(const std::vector<L
     std::vector<char> true_used(true_labels.size(), 0);
     std::vector<char> pred_used(predicted_labels.size(), 0);
 
-    std::vector<float> objects_iou = {};
+    size_t n = std::max(true_labels.size(), predicted_labels.size());
+    std::vector<float> objects_iou(n, 0.0f);
     //int predictions = 0;
 
     for (const auto& candidate : all_candidates_pairs) {
@@ -85,14 +87,13 @@ std::vector<float> StatisticsCalculation::calc_image_meanIoU(const std::vector<L
         if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in trueRect match
 
         float IoU = std::get<0>(candidate);
-        objects_iou.push_back(IoU);
-        //predictions += 1;
+        objects_iou[pred_idx] = IoU;
 
         true_used[true_idx] = pred_used[pred_idx] = 1;
 
     }
 
-    return objects_iou.empty() ? std::vector<float>{0.0f} : objects_iou;
+    return objects_iou;
 }
 
 
