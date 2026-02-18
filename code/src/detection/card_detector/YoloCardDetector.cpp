@@ -16,7 +16,7 @@ std::vector<Label> YoloCardDetector::detect_cards(const cv::Mat& image) {
     std::vector<Label> detections;
     
     const float input_size = 1280.0f;
-    const float conf_threshold = 0.3f;
+    const float conf_threshold = 0.4f;
     const float nms_threshold = 0.50f;
 
     // preprocessing of the image

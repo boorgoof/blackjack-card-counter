@@ -25,28 +25,16 @@ namespace StatisticsCalculation {
     float calc_IoU(const Label& true_label, const Label& pred_label);
 
     /**
-     * @brief Calculates the mean IoU for one image.
+     * @brief Calculates the mean IoU for all objects in one image.
      * For a true label it select the best match across all classes, not just within the same class
      * 
-     * @param true_masks vector of ground truth masks
-     * @param pred_masks vector of the predicted labels
-     * @return float mean IoU value of all objects in the image
-     * @throws std::invalid_argument If vectors have different sizes
+     * @param true_labels vector of ground truth labels
+     * @param predicted_labels vector of the predicted labels
+     * @return std::vector<float> mean IoU value of all objects in the image
      */                                   
-    float calc_image_meanIoU(const std::vector<Label>& true_labels, const std::vector<Label>& pred_labels);
+    std::vector<float> calc_image_meanIoU(const std::vector<Label>& true_labels, const std::vector<Label>& predicted_labels);
     
-    /**
-     * @brief Calculates IoU list for each image of the dataset.
-     * It computes calc_image_meanIoU for each image of the dataset.
-     * 
-     * @param true_masks vector of ground truth masks
-     * @param pred_masks vector of the predicted labels
-     * @return std::vector<float> List of IoU values
-     * @throws std::invalid_argument If vectors have different sizes
-     */
-    std::vector<float> calc_dataset_meanIoU(const std::vector<std::vector<Label>>& true_labels,  const std::vector<std::vector<Label>>& pred_labels);
     
-
      /**
      * @brief Calculates confusion matrix (TP, FP, FN, TN) from single image labels
      * 

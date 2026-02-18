@@ -306,7 +306,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
 
     int frame_number = 0;
     std::set<int> encountered_classes;
-    
+    float all_objects_mean_iou = 0.0f;
     for (auto it = dataset->begin(); it != dataset->end(); ++it) {
 
         //vectors to hold predicted and true labels for the current image
@@ -355,12 +355,20 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
             cumulative_confusion_matrix += StatisticsCalculation::calc_confusion_matrix(true_labels, predicted_labels, num_classes, iou_threshold);
             float accuracy = StatisticsCalculation::calc_accuracy(cumulative_confusion_matrix);
             if (save_cm_every > 0 && (idx % save_cm_every == 0)) {
+                
                 Utils::Save::save_confusion_matrix(stats_folder + "confusion_matrix.txt", cumulative_confusion_matrix);
-
+                
+                std::vector<float> cards_iou = StatisticsCalculation::calc_image_meanIoU(true_labels, predicted_labels);
+                
+                for (size_t n = 0; n < cards_iou.size(); ++n) {
+                    float a_n = cards_iou[n];
+                    all_objects_mean_iou += (a_n - all_objects_mean_iou) / static_cast<float>(n + 1);
+                }
+                
                 std::vector<float> precision = StatisticsCalculation::calc_precision(cumulative_confusion_matrix);
                 std::vector<float> recall = StatisticsCalculation::calc_recall(cumulative_confusion_matrix);
                 std::vector<float> f1 = StatisticsCalculation::calc_f1(cumulative_confusion_matrix);
-                Utils::Save::save_metrics(stats_folder + "metrics.txt",accuracy, precision, recall, f1, encountered_classes);
+                Utils::Save::save_metrics(stats_folder + "metrics.txt", accuracy, all_objects_mean_iou, precision, recall, f1, encountered_classes);
             }
 
             gt_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - step_start).count();
@@ -435,10 +443,13 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     // final cumulative confusion matrix + metrics
     Utils::Save::save_confusion_matrix(stats_folder + "confusion_matrix.txt", cumulative_confusion_matrix);
     float final_accuracy = StatisticsCalculation::calc_accuracy(cumulative_confusion_matrix);
+    
+    
+    
     std::vector<float> precision = StatisticsCalculation::calc_precision(cumulative_confusion_matrix);
     std::vector<float> recall = StatisticsCalculation::calc_recall(cumulative_confusion_matrix);
     std::vector<float> f1 = StatisticsCalculation::calc_f1(cumulative_confusion_matrix);
-    Utils::Save::save_metrics(stats_folder + "metrics.txt", final_accuracy, precision, recall, f1, encountered_classes);
+    Utils::Save::save_metrics(stats_folder + "metrics.txt", final_accuracy, all_objects_mean_iou, precision, recall, f1, encountered_classes);
 
     std::cout << "Total images processed: " << total_images << std::endl;
 

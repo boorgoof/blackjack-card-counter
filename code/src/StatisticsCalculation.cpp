@@ -36,17 +36,18 @@ float StatisticsCalculation::calc_IoU(const Label& true_label, const Label& pred
     return best_iou;
 }
 
-float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_labels,const std::vector<Label>& predicted_labels)
+std::vector<float> StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_labels, const std::vector<Label>& predicted_labels)
 {
     
     // Case with no objects in both true and predicted labels. We define mean IoU = 1.0
     if (true_labels.empty() && predicted_labels.empty()) {
-        return 1.0f; 
+        return {}; 
     }
 
     // Case with no objects in just one of true and predicted labels. We define mean IoU = 0.0
     if (true_labels.empty() || predicted_labels.empty()) {
-        return 0.0f; 
+        size_t n = std::max(true_labels.size(), predicted_labels.size());
+        return std::vector<float>(n, 0.0f); 
     }
 
     // 1) calculate IoU for each pair of true and predicted labels
@@ -64,7 +65,7 @@ float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_l
     }
 
     if (all_candidates_pairs.empty()) {
-        return 0.0f; 
+        return {0.0f}; 
     }
 
     //2) Sort candidates by IoU in descending order
@@ -74,7 +75,7 @@ float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_l
     std::vector<char> true_used(true_labels.size(), 0);
     std::vector<char> pred_used(predicted_labels.size(), 0);
 
-    double sum_iou = 0.0;
+    std::vector<float> objects_iou = {};
     //int predictions = 0;
 
     for (const auto& candidate : all_candidates_pairs) {
@@ -84,36 +85,16 @@ float StatisticsCalculation::calc_image_meanIoU(const std::vector<Label>& true_l
         if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in trueRect match
 
         float IoU = std::get<0>(candidate);
-        sum_iou += static_cast<double>(IoU);
+        objects_iou.push_back(IoU);
         //predictions += 1;
 
         true_used[true_idx] = pred_used[pred_idx] = 1;
 
     }
 
-    int predictions = std::max(true_labels.size(), predicted_labels.size());
-    return (predictions > 0) ? static_cast<float>(sum_iou / predictions) : 0.0f;
-
+    return objects_iou.empty() ? std::vector<float>{0.0f} : objects_iou;
 }
 
-std::vector<float> StatisticsCalculation::calc_dataset_meanIoU(const std::vector<std::vector<Label>>& true_labels_per_image,
-                                                                const std::vector<std::vector<Label>>& predicted_labels_per_image)
-{
-    if (true_labels_per_image.size() != predicted_labels_per_image.size()) {
-        throw std::invalid_argument("True and predicted label lists must have the same number of images.");
-    }
-
-    std::vector<float> mean_IoU_list;
-    mean_IoU_list.reserve(true_labels_per_image.size());
-
-    for (size_t img_idx = 0; img_idx < true_labels_per_image.size(); ++img_idx) {
-
-        float image_mean_iou = StatisticsCalculation::calc_image_meanIoU(true_labels_per_image[img_idx], predicted_labels_per_image[img_idx] );
-        mean_IoU_list.push_back(image_mean_iou);
-    }
-
-    return mean_IoU_list;
-}
 
 // usefull link: https://medium.com/mcd-unison/multiclass-confusion-matrix-clarity-without-confusion-88af1494c1d1
 cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& true_labels,

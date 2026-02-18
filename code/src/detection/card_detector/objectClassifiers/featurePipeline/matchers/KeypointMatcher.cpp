@@ -25,7 +25,13 @@ double KeypointMatcher::matchFeatures(const Feature* query, const Feature* targe
     if (!q || !t || q->getDescriptors().empty() || t->getDescriptors().empty()) return 0.0;
 
     std::vector<std::vector<cv::DMatch>> knn_matches;
-    this->features_matcher->knnMatch(q->getDescriptors(), t->getDescriptors(), knn_matches, 2);
+    try {
+        this->features_matcher->knnMatch(q->getDescriptors(), t->getDescriptors(), knn_matches, 2);
+    } catch (const cv::Exception& e) {
+        // std::cerr << "Error during feature matching: " << e.what() << std::endl;
+        return 0.0;
+    }
+    
     
     //apply Lowe's ratio test to select good matches
     std::vector<cv::DMatch> good_matches;
