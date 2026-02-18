@@ -105,7 +105,8 @@ bool getCornerBboxes(const cv::Mat &image,
                      cv::Rect &bbox2,
                      cv::Mat &card_projected_image,
                      cv::Size outputSize,
-                     float cornerFraction) {
+                     float cornerWidthFrac,
+                     float cornerHeightFrac) {
   if (contour.size() < 4) {
     std::cerr << "[CardProjection] Contour has less than 4 points." << std::endl;
     return false;
@@ -159,8 +160,8 @@ bool getCornerBboxes(const cv::Mat &image,
   cv::Mat H_inv = H.inv();
 
   // Define corner regions (where card number is) in projected card space
-  int cornerW = static_cast<int>(width * cornerFraction);
-  int cornerH = static_cast<int>(height * cornerFraction);
+  int cornerW = static_cast<int>(width * cornerWidthFrac);
+  int cornerH = static_cast<int>(height * cornerHeightFrac);
 
   // Top-left corner (in projected space)
   std::vector<cv::Point2f> topLeftCorner = {

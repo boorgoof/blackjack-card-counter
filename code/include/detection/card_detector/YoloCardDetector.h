@@ -1,3 +1,5 @@
+//Federico Meneghetti
+
 #ifndef YOLO_CARD_DETECTOR_H
 #define YOLO_CARD_DETECTOR_H
 

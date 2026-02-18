@@ -1,3 +1,5 @@
+//Gianluca Caregnato
+
 #ifndef VIDEODATASET_H
 #define VIDEODATASET_H
 

@@ -1,7 +1,10 @@
+//Gianluca Caregnato
+
 #ifndef CARDPROJECTION_H
 #define CARDPROJECTION_H
 
 #include <opencv2/opencv.hpp>
+#include <vector>
 
 namespace CardProjection {
 
@@ -28,7 +31,8 @@ cv::Mat flatten(const cv::Mat &image, const cv::Mat &mask);
  * @param cornerFraction: Fraction of card size for corner region (default: 0.35).
  * @return bool: True if successful, false otherwise.
  */
-bool getCornerBboxes(const cv::Mat &image, const std::vector<cv::Point> &contour, cv::Rect &bbox1, cv::Rect &bbox2, cv::Mat &card_projected_image, cv::Size outputSize = cv::Size(250, 350), float cornerFraction = 0.20);
+bool getCornerBboxes(const cv::Mat &image, const std::vector<cv::Point> &contour, cv::Rect &bbox1, cv::Rect &bbox2, cv::Mat &card_projected_image, cv::Size outputSize = cv::Size(250, 350),
+                        float cornerWidthFrac = 0.20, float cornerHeightFrac = 0.20);
 
 } // namespace CardProjection
 

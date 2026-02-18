@@ -1,3 +1,5 @@
+// Gianluca Caregnato
+
 #ifndef FRAMEINFO_H
 #define FRAMEINFO_H
 

@@ -1,3 +1,5 @@
+//Gianluca Caregnato
+
 #ifndef IMAGEDATASET_H
 #define IMAGEDATASET_H
 

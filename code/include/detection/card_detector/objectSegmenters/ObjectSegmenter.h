@@ -1,3 +1,5 @@
+//Federico Meneghetti
+
 #ifndef OBJECT_SEGMENTER_H
 #define OBJECT_SEGMENTER_H
 

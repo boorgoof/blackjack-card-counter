@@ -1,3 +1,5 @@
+//Federico Meneghetti
+
 #ifndef KEYPOINTFEATURE_H
 #define KEYPOINTFEATURE_H
 

@@ -1,3 +1,5 @@
+//Matteo Bino
+
 #ifndef HASH_EXTRACTOR_H
 #define HASH_EXTRACTOR_H
 

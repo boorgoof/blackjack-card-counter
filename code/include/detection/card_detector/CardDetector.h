@@ -1,3 +1,5 @@
+//Matteo Bino
+
 #ifndef CARD_DETECTOR_H
 #define CARD_DETECTOR_H
 

@@ -1,3 +1,5 @@
+// Gianluca Caregnato
+
 #ifndef IMAGE_INFO_H
 #define IMAGE_INFO_H
 

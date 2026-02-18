@@ -19,6 +19,7 @@
 #include "../include/detection/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"
 #include "../include/detection/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
 #include "../include/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
+#include "../include/detection/card_detector/objectSegmenters/WatershedObjectSegmenter.h"
 #include "../include/VideoWriter.h"
 
 #include <exception>
@@ -244,7 +245,7 @@ std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Da
         if (!template_dataset){
             throw std::runtime_error("Template dataset is required but pointer to it is nullptr!");
         }
-        card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::CONVEX_HULL, visualize), std::make_unique<FeaturePipeline>(ExtractorType::FeatureDescriptorAlgorithm::SIFT, 1, *template_dataset), std::make_unique<SimpleContoursCardSegmenter>(), visualize);
+        card_detector = std::make_unique<SegmentationClassificationCardDetector>(std::make_unique<MaskCardDetector>(PipelinePreset::DEFAULT, MaskType::CONVEX_HULL, visualize), std::make_unique<FeaturePipeline>(ExtractorType::FeatureDescriptorAlgorithm::SIFT, 1, *template_dataset), std::make_unique<WatershedObjectSegmenter>(), visualize);
         break;
     case DETECTION_MODE::MODEL:
         if (!model_path){
@@ -303,6 +304,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
 
     int frame_number = 0;
     std::set<int> encountered_classes;
+    
     for (auto it = dataset->begin(); it != dataset->end(); ++it) {
 
         //vectors to hold predicted and true labels for the current image

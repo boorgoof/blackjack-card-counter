@@ -1,3 +1,5 @@
+// Federico Meneghetti
+
 #ifndef CARD_TYPE_H
 #define CARD_TYPE_H
 

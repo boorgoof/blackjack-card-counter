@@ -1,3 +1,5 @@
+//Gianluca Caregnato
+
 #ifndef MASK_CARD_DETECTOR_H
 #define MASK_CARD_DETECTOR_H
 
@@ -192,6 +194,13 @@ namespace mask {
  * detected cards.
  */
 std::vector<std::vector<cv::Point>> getCardsPolygon(const cv::Mat &mask);
+
+/**
+ * @brief getCardsPolygonMask: Creates a mask filled with the raw polygonal contours.
+ * @param mask: Input binary mask (CV_8UC1).
+ * @return cv::Mat: Binary mask with polygons filled.
+ */
+cv::Mat getCardsPolygonMask(const cv::Mat &mask);
 
 /**
  * @brief getCardsConvexHulls: Extracts the convex hulls from detected polygons.

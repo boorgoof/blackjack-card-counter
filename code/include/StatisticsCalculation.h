@@ -1,3 +1,5 @@
+// Federico Meneghetti
+
 #ifndef STATISTICS_CALCULATION_H
 #define STATISTICS_CALCULATION_H
 

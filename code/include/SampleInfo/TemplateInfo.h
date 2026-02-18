@@ -1,3 +1,5 @@
+// Matteo Bino
+
 #ifndef TEMPLATE_INFO_H
 #define TEMPLATE_INFO_H
 

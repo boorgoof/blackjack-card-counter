@@ -1,3 +1,5 @@
+// Matteo Bino
+
 #ifndef PROCESSING_MODE_H
 #define PROCESSING_MODE_H
 

@@ -1,3 +1,5 @@
+// Gianluca Caregnato
+
 #ifndef SEQUENTIAL_FRAMES_PROCESSING_H
 #define SEQUENTIAL_FRAMES_PROCESSING_H
 

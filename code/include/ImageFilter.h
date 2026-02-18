@@ -127,6 +127,35 @@ namespace Filters{
      */
     cv::Mat two_color_binarization(const cv::Mat& src_img, const cv::Scalar& fg_color, const cv::Scalar& bg_color);
 
+    /**
+     * @brief Applies a Laplace filter to the input image for edge detection.
+     * @param src The input image to be filtered.
+     * @return The filtered image with edges highlighted.
+     */
+    cv::Mat laplaceFilter(const cv::Mat& src);
+
+    /**
+     * @brief Converts the input image to a binary image using Otsu's thresholding method.
+     * @param src The input image to be converted.
+     * @return The binary image.
+     */
+    cv::Mat binaryImage(const cv::Mat& src);
+
+    /**
+     * @brief Applies a distance transform to the input binary image.
+     * @param binaryImage The input binary image 
+     * @return The distance transform image where each pixel value represents the distance to the nearest background pixel.
+     */
+    cv::Mat distanceTransformFilter(const cv::Mat& binaryImage);
+
+
+    /**
+     * @brief Converts the input image to a binary image where the background is set to black and the foreground is set to white.
+     */
+    cv::Mat delete_gray_background(const cv::Mat& input);
+
+
+
 }
 
 template<typename FilterFunction, typename... Args>

@@ -1,3 +1,5 @@
+//Federico Meneghetti
+
 #ifndef OBJECT_CLASSIFIER_H
 #define OBJECT_CLASSIFIER_H
 
