@@ -133,14 +133,14 @@ cv::Mat StatisticsCalculation::calc_confusion_matrix(const std::vector<Label>& t
         int true_idx = std::get<1>(candidate);
         int pred_idx = std::get<2>(candidate);
         if (true_used[true_idx] || pred_used[pred_idx]) continue; // already used labels in trueRect match
-                                                                  
-        int col_actual_class_index = true_labels[true_idx].get_object()->get_id_number();
+                
         int row_predicted_class_index = pred_labels[pred_idx].get_object()->get_id_number();
+        int col_actual_class_index = true_labels[true_idx].get_object()->get_id_number();
 
         //CV_Assert(0 <= row_predicted_class_index && row_predicted_class_index < num_classes);
         //CV_Assert(0 <= col_actual_class_index && col_actual_class_index < num_classes);
         
-        multiclass_conf_matrix.at<int>(col_actual_class_index, row_predicted_class_index) += 1;
+        multiclass_conf_matrix.at<int>(row_predicted_class_index, col_actual_class_index) += 1;
 
         true_used[true_idx] = 1;
         pred_used[pred_idx] = 1;
@@ -238,8 +238,8 @@ std::vector<float> StatisticsCalculation::calc_precision(const cv::Mat& confusio
             row_sum += confusion_matrix.at<int>(c, j);
         }
 
-        const long long false_positive = row_sum - true_positive;
-        const long long denom = true_positive + false_positive;
+        //const long long false_positive = row_sum - true_positive;
+        const long long denom = row_sum;
         precision[c] = (denom > 0) ? static_cast<float>(static_cast<double>(true_positive) / static_cast<double>(denom)) : 0.0f;
     }
 
@@ -265,8 +265,8 @@ std::vector<float> StatisticsCalculation::calc_recall(const cv::Mat& confusion_m
             col_sum += confusion_matrix.at<int>(i, c);
         }
 
-        long long false_negative = col_sum - true_positive;
-        long long denom = true_positive + false_negative;
+        //const long long false_negative = col_sum - true_positive;
+        const long long denom = col_sum;
         recall[c] = (denom > 0) ? static_cast<float>(static_cast<double>(true_positive) / static_cast<double>(denom)) : 0.0f;
     }
 

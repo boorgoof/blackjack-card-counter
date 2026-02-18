@@ -177,7 +177,7 @@ int main(int argc, char** argv) {
                 img_filter.add_filter("Resize", Filters::resize, 0.25, 0.25); 
                 //iterate through dataset and detect each image
                 //output is saved into output_path/single_cards
-                iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + SINGLE_CARD_DATASET_NAME, visualize, num_classes);
+                iterate_dataset(single_cards_dataset, img_filter, mode, dataset_output_path, visualize, num_classes);
             }
             else if (detection_method == DETECTION_MODE::MODEL) {
                 std::string model_path = models_path + "/" + YOLO_SINGLE_CARD_MODEL_NAME;
@@ -191,7 +191,7 @@ int main(int argc, char** argv) {
                 //img_filter.add_filter("Resize", Filters::resize_to, 1280, 960);
                 //iterate through dataset and detect each image
                 //output is saved into output_path/single_cards
-                iterate_dataset(single_cards_dataset, img_filter, mode, output_path + "/" + SINGLE_CARD_DATASET_NAME, visualize, num_classes);
+                iterate_dataset(single_cards_dataset, img_filter, mode, dataset_output_path, visualize, num_classes);
             }
         } else if(dataset_to_use == VIDEO_IMAGE_DATASET_NAME){
             
