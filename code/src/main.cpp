@@ -77,6 +77,19 @@ int main(int argc, char** argv) {
         const std::string VIDEO_IMAGE_DATASET_NAME = "video_images";
         const std::string VIDEO_DATASET_NAME = "video";
 
+
+        DETECTION_MODE detection_method;
+        if(method == "templates"){
+            detection_method = DETECTION_MODE::TEMPLATES;
+        } else if(method == "model"){
+            detection_method = DETECTION_MODE::MODEL;
+        }
+        else{
+            std::cerr << "The selected method (" << method << ") is not a valid option! Possible options are 'templates' or 'model'" << std::endl;
+            return 1;
+        }
+
+
         std::string dataset_path = "";
 
         if(dataset_to_use == SINGLE_CARD_DATASET_NAME){
@@ -95,6 +108,15 @@ int main(int argc, char** argv) {
         }
 
         std::string dataset_output_path = output_path + "/" + dataset_to_use;
+
+        if(dataset_to_use == SINGLE_CARD_DATASET_NAME){
+            if(detection_method == DETECTION_MODE::TEMPLATES){
+                dataset_output_path += "_templates";
+            } else if(detection_method == DETECTION_MODE::MODEL){
+                dataset_output_path += "_model";
+            }
+        }
+        
         if (std::filesystem::exists(dataset_output_path)) {
             std::cout << "The output path (" << dataset_output_path << ") already exists! Do you want to proceed? (y/n): ";
             char response;
@@ -114,16 +136,7 @@ int main(int argc, char** argv) {
         }
 
 
-        DETECTION_MODE detection_method;
-        if(method == "templates"){
-            detection_method = DETECTION_MODE::TEMPLATES;
-        } else if(method == "model"){
-            detection_method = DETECTION_MODE::MODEL;
-        }
-        else{
-            std::cerr << "The selected method (" << method << ") is not a valid option! Possible options are 'templates' or 'model'" << std::endl;
-            return 1;
-        }
+        
 
         bool visualize = (argc > 7) ? (std::string(argv[7]) == "true") : false;
 
