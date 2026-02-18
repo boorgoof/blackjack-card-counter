@@ -1,3 +1,4 @@
+// Federico Meneghetti
 #include "../../../include/detection/card_detector/YoloCardDetector.h"
 #include "../../../include/ObjectType.h"
 #include "../../../include/CardType.h"

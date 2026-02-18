@@ -1,3 +1,4 @@
+// Federico Meneghetti
 #include "../../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/matchers/KeypointMatcher.h"
 #include "../../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/features/KeypointFeature.h"
 

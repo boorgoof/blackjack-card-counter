@@ -1,3 +1,5 @@
+// Gianluca Caregnato 
+
 #include "../../include/detection/card_detector/CardProjection.h"
 #include "../../include/detection/SingleFrameProcessing.h"
 #include "../../include/ObjectType.h"

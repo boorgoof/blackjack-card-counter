@@ -1,3 +1,5 @@
+// Federico Meneghetti
+
 #include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/FeaturePipeline.h"
 #include "../../../../../include/Dataset/TemplateDataset.h"
 #include "../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/features/FeatureContainer.h"

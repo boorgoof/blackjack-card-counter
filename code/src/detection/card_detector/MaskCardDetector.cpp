@@ -1,3 +1,4 @@
+// Gianluca Caregnato
 #include "../../../include/detection/card_detector/MaskCardDetector.h"
 
 MaskCardDetector::MaskCardDetector(const PipelinePreset preset, const MaskType maskType, bool visualize) 

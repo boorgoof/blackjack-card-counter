@@ -1,3 +1,4 @@
+// Gianluca Caregnato
 #include "../../include/detection/SequentialFrameProcessing.h"
 
 SequentialFrameProcessing::SequentialFrameProcessing(std::unique_ptr<CardDetector> card_detector, bool visualize, double fps) 

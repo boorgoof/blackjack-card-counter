@@ -1,5 +1,8 @@
+// Matteo Bino
+
 #include "../../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/extractors/HashExtractor.h"
 #include "../../../../../../include/Utils.h"
+
 void HashExtractor::init()
 {
     switch(this->type_) {

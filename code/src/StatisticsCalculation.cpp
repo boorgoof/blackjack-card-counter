@@ -1,3 +1,4 @@
+// Federico Meneghetti
 #include "../include/StatisticsCalculation.h"
 #include "../include/Label.h"
 #include "../include/CardType.h"

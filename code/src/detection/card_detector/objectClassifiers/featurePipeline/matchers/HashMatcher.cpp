@@ -1,3 +1,5 @@
+// Matteo Bino
+
 #include "../../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/matchers/HashMatcher.h"
 #include "../../../../../../include/detection/card_detector/objectClassifiers/featurePipeline/features/HashFeature.h"
 

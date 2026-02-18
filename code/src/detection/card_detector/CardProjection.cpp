@@ -1,3 +1,4 @@
+// Gianluca Caregnato
 #include "../../../include/detection/card_detector/CardProjection.h"
 #include <opencv2/imgproc.hpp>
 

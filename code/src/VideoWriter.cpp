@@ -1,3 +1,4 @@
+// Gianluca Caregnato
 #include "../include/VideoWriter.h"
 #include <filesystem>
 #include <algorithm>

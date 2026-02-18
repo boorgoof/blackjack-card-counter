@@ -1,3 +1,4 @@
+// Federico Meneghetti
 #include "../../../../include/detection/card_detector/objectSegmenters/SimpleContoursCardSegmenter.h"
 
 

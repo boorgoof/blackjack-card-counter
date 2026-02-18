@@ -1,3 +1,4 @@
+// Gianluca Caregnato
 #include "../../include/detection/CardTracker.h"
 #include <cmath>
 

@@ -1,3 +1,5 @@
+// Federico Meneghetti
+
 #include "../../../../include/detection/card_detector/objectSegmenters/WatershedCardSegmenter.h"
 #include "../../../../include/ImageFilter.h"
 

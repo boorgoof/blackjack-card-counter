@@ -1,3 +1,4 @@
+// Federico Meneghetti
 #include "../../../include/detection/card_detector/CardProjection.h"
 #include "../../../include/detection/card_detector/SegmentationClassificationCardDetector.h"
 #include "../../../include/ObjectType.h"
