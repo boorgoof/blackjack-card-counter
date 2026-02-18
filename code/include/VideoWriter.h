@@ -1,3 +1,5 @@
+// Gianluca Caregnato
+
 #ifndef VIDEOWRITER_H
 #define VIDEOWRITER_H
 

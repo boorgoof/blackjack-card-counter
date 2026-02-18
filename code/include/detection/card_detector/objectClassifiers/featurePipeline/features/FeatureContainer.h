@@ -1,3 +1,5 @@
+//Matteo Bino
+
 #ifndef FEATURECONTAINER_H
 #define FEATURECONTAINER_H
 

@@ -1,3 +1,5 @@
+//Federico Meneghetti
+
 #ifndef KEYPOINT_EXTRACTOR_H
 #define KEYPOINT_EXTRACTOR_H
 

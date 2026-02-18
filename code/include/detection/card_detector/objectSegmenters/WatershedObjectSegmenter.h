@@ -1,3 +1,5 @@
+//Federico Meneghetti
+
 #ifndef WATERSHED_OBJECT_SEGMENTER_H
 #define WATERSHED_OBJECT_SEGMENTER_H
 

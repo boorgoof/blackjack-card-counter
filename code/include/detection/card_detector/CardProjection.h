@@ -1,3 +1,5 @@
+//Gianluca Caregnato
+
 #ifndef CARDPROJECTION_H
 #define CARDPROJECTION_H
 

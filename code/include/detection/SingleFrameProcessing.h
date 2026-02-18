@@ -1,3 +1,5 @@
+// Gianluca Caregnato   
+
 #ifndef SINGLE_CARD_DETECTOR_H
 #define SINGLE_CARD_DETECTOR_H
 

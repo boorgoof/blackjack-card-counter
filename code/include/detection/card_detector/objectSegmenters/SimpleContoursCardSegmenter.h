@@ -1,3 +1,5 @@
+//Gianluca Caregnato
+
 #ifndef SIMPLE_CONTOURS_CARD_SEGMENTER_H
 #define SIMPLE_CONTOURS_CARD_SEGMENTER_H
 

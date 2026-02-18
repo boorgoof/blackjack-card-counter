@@ -1,3 +1,5 @@
+// Gianluca Caregnato
+
 #ifndef SAMPLEINFO_H
 #define SAMPLEINFO_H
 

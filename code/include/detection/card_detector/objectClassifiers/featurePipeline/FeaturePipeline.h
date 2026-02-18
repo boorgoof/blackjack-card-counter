@@ -1,3 +1,5 @@
+//Federico Meneghetti
+
 #ifndef FEATUREPIPELINE_H
 #define FEATUREPIPELINE_H
 

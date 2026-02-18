@@ -1,3 +1,5 @@
+//Matteo Bino
+
 #ifndef HASHFEATURE_H
 #define HASHFEATURE_H
 

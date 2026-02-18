@@ -142,6 +142,15 @@ std::vector<std::vector<cv::Point>> getCardsPolygon(const cv::Mat &mask) {
   return polys;
 }
 
+cv::Mat getCardsPolygonMask(const cv::Mat &mask) {
+  std::vector<std::vector<cv::Point>> polys = getCardsPolygon(mask);
+  cv::Mat result = cv::Mat::zeros(mask.size(), CV_8UC1);
+  for (const std::vector<cv::Point>& p : polys) {
+    cv::fillPoly(result, std::vector<std::vector<cv::Point>>{p}, cv::Scalar(255));
+  }
+  return result;
+}
+
 std::vector<std::vector<cv::Point>> getCardsConvexHulls(const cv::Mat &mask) {
   std::vector<std::vector<cv::Point>> polys = getCardsPolygon(mask);
   std::vector<std::vector<cv::Point>> hulls;
