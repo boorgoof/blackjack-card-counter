@@ -93,8 +93,15 @@ void Utils::Save::save_metrics(const std::string& file_path, const float accurac
         throw std::runtime_error("Could not open file for writing: " + file_path);
     }
 
+    float mean_average_precision = 0.0f;
+    for (int cls : classes_to_select) {
+        mean_average_precision += precision[cls];
+    }
+    mean_average_precision /= static_cast<float>(classes_to_select.size());
+
     file << "Accuracy: " << accuracy << "\n";
-    file << "Mean IoU: " << mean_iou << "\n\n";
+    file << "Mean IoU: " << mean_iou << "\n";
+    file << "Mean Average Precision: " << mean_average_precision << "\n\n";
     file << "Class,Precision,Recall,F1-Score\n";
 
     for (int cls : classes_to_select) {
