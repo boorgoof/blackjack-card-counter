@@ -1,20 +1,15 @@
-// Gianluca Caregnato 
+// Gianluca Caregnato
 
 #include "../../include/detection/card_detector/CardProjection.h"
 #include "../../include/detection/SingleFrameProcessing.h"
 #include "../../include/ObjectType.h"
 #include <opencv2/imgproc.hpp>
 
-SingleFrameProcessing::SingleFrameProcessing(std::unique_ptr<CardDetector> card_detector, const bool visualize)
-    : ProcessingMode(visualize), card_detector_(std::move(card_detector)) {
+SingleFrameProcessing::SingleFrameProcessing(std::unique_ptr<CardDetector> card_detector, bool visualize)
+    : ProcessingMode(visualize), card_detector_(std::move(card_detector)) {}
 
-}
-
-SingleFrameProcessing::~SingleFrameProcessing() {
-    
-}
+SingleFrameProcessing::~SingleFrameProcessing() {}
 
 std::vector<Label> SingleFrameProcessing::detect_image(const cv::Mat& image) {
-    return this->card_detector_->detect_cards(image);
+    return card_detector_->detect_cards(image);
 }
-

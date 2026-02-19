@@ -61,7 +61,7 @@ std::vector<std::shared_ptr<SampleInfo>> ImageDataset::build_entries() {
 
         const std::filesystem::path& p = dirent.path();
         std::string ext = p.extension().string();
-        
+
         std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) {
             return std::tolower(c);
         });

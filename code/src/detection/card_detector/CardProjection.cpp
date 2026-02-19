@@ -4,15 +4,15 @@
 
 namespace CardProjection {
 
-// Helper to sort points: Top-Left, Top-Right, Bottom-Right, Bottom-Left
+// Sort corners into order: TL, TR, BR, BL
 static std::vector<cv::Point2f> sortCorners(const std::vector<cv::Point2f> &corners) {
   std::vector<cv::Point2f> sorted(4);
   std::vector<cv::Point2f> pts = corners;
 
-  // Sort by Y to separate top and bottom
+  // Separate top/bottom by Y
   std::sort(pts.begin(), pts.end(), [](const cv::Point2f &a, const cv::Point2f &b) { return a.y < b.y; });
 
-  // Top points (first 2) sorted by X
+  // Top pair sorted by X
   if (pts[0].x < pts[1].x) {
     sorted[0] = pts[0]; // TL
     sorted[1] = pts[1]; // TR
@@ -21,7 +21,7 @@ static std::vector<cv::Point2f> sortCorners(const std::vector<cv::Point2f> &corn
     sorted[1] = pts[0]; // TR
   }
 
-  // Bottom points (last 2) sorted by X
+  // Bottom pair sorted by X
   if (pts[2].x < pts[3].x) {
     sorted[3] = pts[2]; // BL
     sorted[2] = pts[3]; // BR
@@ -55,16 +55,16 @@ cv::Mat flatten(const cv::Mat &image, const cv::Mat &mask) {
       maxIdx = i;
     }
   }
-  const auto &contour = contours[maxIdx];
+  const std::vector<cv::Point> &contour = contours[maxIdx];
 
-  // Approximate polygon to get corners
+  // Approximate polygon to get 4 corners
   std::vector<cv::Point2f> corners;
   double perimeter = cv::arcLength(contour, true);
   std::vector<cv::Point> approx;
   cv::approxPolyDP(contour, approx, 0.02 * perimeter, true);
 
   if (approx.size() == 4) {
-    for (const auto &p : approx) {
+    for (const cv::Point &p : approx) {
       corners.push_back(cv::Point2f((float)p.x, (float)p.y));
     }
   } else {
@@ -81,9 +81,9 @@ cv::Mat flatten(const cv::Mat &image, const cv::Mat &mask) {
   int width = 400;
   int height = 560;
 
+  // Rotate source points if card is in landscape orientation
   float w1 = cv::norm(srcPoints[0] - srcPoints[1]);
   float h1 = cv::norm(srcPoints[1] - srcPoints[2]);
-
   if (w1 > h1) {
     std::rotate(srcPoints.begin(), srcPoints.begin() + 1, srcPoints.end());
   }
@@ -113,14 +113,14 @@ bool getCornerBboxes(const cv::Mat &image,
     return false;
   }
 
-  // Approximate polygon to get corners
+  // Approximate polygon to get 4 corners
   std::vector<cv::Point2f> corners;
   double perimeter = cv::arcLength(contour, true);
   std::vector<cv::Point> approx;
   cv::approxPolyDP(contour, approx, 0.02 * perimeter, true);
 
   if (approx.size() == 4) {
-    for (const auto &p : approx) {
+    for (const cv::Point &p : approx) {
       corners.push_back(cv::Point2f((float)p.x, (float)p.y));
     }
   } else {
@@ -132,39 +132,33 @@ bool getCornerBboxes(const cv::Mat &image,
     }
   }
 
-  // Sort corners: TL, TR, BR, BL
   std::vector<cv::Point2f> srcPoints = sortCorners(corners);
 
   int width = outputSize.width;
   int height = outputSize.height;
 
-  // Check aspect ratio to handle landscape vs portrait orientation
+  // Rotate source points if card is in landscape orientation
   float w1 = cv::norm(srcPoints[0] - srcPoints[1]);
   float h1 = cv::norm(srcPoints[1] - srcPoints[2]);
-
   if (w1 > h1) {
     std::rotate(srcPoints.begin(), srcPoints.begin() + 1, srcPoints.end());
   }
 
-  // Destination points for portrait card
   std::vector<cv::Point2f> dstPoints = {{0, 0},
                                         {(float)width, 0},
                                         {(float)width, (float)height},
                                         {0, (float)height}};
 
-  // Get perspective transform and warp
   cv::Mat H = cv::getPerspectiveTransform(srcPoints, dstPoints);
   cv::warpPerspective(image, card_projected_image, H, outputSize, 
                       cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255));
 
-  // Inverse transform to map back to original coordinates
   cv::Mat H_inv = H.inv();
 
-  // Define corner regions (where card number is) in projected card space
+  // Define corner regions in projected card space
   int cornerW = static_cast<int>(width * cornerWidthFrac);
   int cornerH = static_cast<int>(height * cornerHeightFrac);
 
-  // Top-left corner (in projected space)
   std::vector<cv::Point2f> topLeftCorner = {
     cv::Point2f(0, 0),
     cv::Point2f((float)cornerW, 0),
@@ -172,7 +166,6 @@ bool getCornerBboxes(const cv::Mat &image,
     cv::Point2f(0, (float)cornerH)
   };
 
-  // Bottom-right corner (in projected space)
   std::vector<cv::Point2f> bottomRightCorner = {
     cv::Point2f((float)(width - cornerW), (float)(height - cornerH)),
     cv::Point2f((float)width, (float)(height - cornerH)),
@@ -180,12 +173,11 @@ bool getCornerBboxes(const cv::Mat &image,
     cv::Point2f((float)(width - cornerW), (float)height)
   };
 
-  // Transform back to original image coordinates
+  // Transform corner regions back to original image coordinates
   std::vector<cv::Point2f> topLeftOriginal, bottomRightOriginal;
   cv::perspectiveTransform(topLeftCorner, topLeftOriginal, H_inv);
   cv::perspectiveTransform(bottomRightCorner, bottomRightOriginal, H_inv);
 
-  // Get bounding rects in original image coords
   bbox1 = cv::boundingRect(topLeftOriginal);
   bbox2 = cv::boundingRect(bottomRightOriginal);
 

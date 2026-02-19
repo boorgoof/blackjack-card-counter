@@ -7,49 +7,43 @@
 #include <memory>
 #include <opencv2/videoio.hpp>
 
-VideoDataset::VideoDataset(const std::string& video_path, const bool has_annotations, const double sample_fps)
+VideoDataset::VideoDataset(const std::string& video_path, bool has_annotations, double sample_fps)
     : Dataset(has_annotations), video_root_{video_path}, frame_interval_seconds_{1.0 / sample_fps}, entries_{build_entries(video_root_, frame_interval_seconds_)} { }
 
 
 cv::Mat VideoDataset::load(const Dataset::Iterator& it) {
-    // Check if the dataset is empty or iterator is at the end
     if (entries_.empty() || it == Iterator(entries_.cend())) {
         return {};
     }
 
-    // Cast the iterator's SampleInfo to FrameInfo to access video-specific metadata
-    const auto* frame_info = dynamic_cast<const FrameInfo*>(&*it);
-    // Add null check
+    const FrameInfo* frame_info = dynamic_cast<const FrameInfo*>(&*it);
     if (!frame_info) {
         std::cerr << "VideoDataset: iterator does not point to a FrameInfo object" << std::endl;
         return {};
     }
 
-    // Extract the video file path and the target frame index from the FrameInfo
     const std::string& video_path = frame_info->get_pathSample();
     const std::size_t target_index = frame_info->get_frame_index();
 
-    // Try to retrieve or create a cache entry for this video file
+    // Retrieve or create a cache entry for this video file
     std::pair<decltype(capture_cache_)::iterator, bool> cache_pair = capture_cache_.try_emplace(video_path); 
     decltype(capture_cache_)::iterator cache_it = cache_pair.first;
-    bool inserted = cache_pair.second; // true if a new entry was created
+    bool inserted = cache_pair.second;
     CaptureState& state = cache_it->second;
-    
-    // If this is a new cache entry or the capture is not open, open the video file
+
     if (inserted || !state.capture.isOpened()) {
         if (!state.capture.open(video_path)) {
             std::cerr << "VideoDataset: unable to open video capture for " << video_path << std::endl;
             return {};
         }
-        state.next_frame_index = 0; // Start at the beginning of the video
+        state.next_frame_index = 0;
     }
 
-    // If the target frame is not the next sequential frame, we need to seek
+    // Seek only if the target is not the next sequential frame
     if (target_index != state.next_frame_index) {
-        state.capture.set(cv::CAP_PROP_POS_FRAMES, static_cast<double>(target_index)) ;
+        state.capture.set(cv::CAP_PROP_POS_FRAMES, static_cast<double>(target_index));
     }
 
-    // Read the actual frame data into a cv::Mat
     cv::Mat frame;
     if (!state.capture.read(frame)) {
         return {};
@@ -78,12 +72,12 @@ void VideoDataset::append_frames(const std::filesystem::path& video_file, std::v
         return;
     }
 
-    const auto frame_count = static_cast<std::size_t>(capture.get(cv::CAP_PROP_FRAME_COUNT)); // Total number of frames
-    const double fps = capture.get(cv::CAP_PROP_FPS); // Frames per second
+    const std::size_t frame_count = static_cast<std::size_t>(capture.get(cv::CAP_PROP_FRAME_COUNT));
+    const double fps = capture.get(cv::CAP_PROP_FPS);
     const std::string video_name = video_file.stem().string();
 
     double duration_seconds = static_cast<double>(frame_count) / fps;
-    // Use floor to avoid going past the end, subtract 2x interval for safety margin
+    // Subtract 2x interval as safety margin to avoid reading past the end
     double safe_duration = duration_seconds - (2.0 * frame_interval_seconds);
     std::size_t steps = static_cast<std::size_t>(std::floor(safe_duration / frame_interval_seconds)) + 1;
     
@@ -91,22 +85,23 @@ void VideoDataset::append_frames(const std::filesystem::path& video_file, std::v
     
     for (std::size_t i = 0; i < steps && frame_count > 0; ++i) {
         double timestamp = static_cast<double>(i) * frame_interval_seconds;
-        // Stop if timestamp exceeds safe video duration
         if (timestamp >= safe_duration) {
             break;
         }
+
         std::size_t frame_idx = 0;
         if (fps > 0.0) {
-            frame_idx = static_cast<std::size_t>(std::llround(timestamp * fps)); // Corresponding frame index
+            frame_idx = static_cast<std::size_t>(std::llround(timestamp * fps));
             if (frame_idx >= frame_count) {
-                break; // Stop if we've gone beyond the video
+                break;
             }
         } else {
             frame_idx = std::min<std::size_t>(i, frame_count - 1);
             if (frame_idx >= frame_count - 1 && i > 0) {
-                break; // Stop if we've reached the last frame
+                break;
             }
         }
+
         std::string name = video_name + "_t_" + std::to_string(timestamp); 
         entries.emplace_back(std::make_shared<FrameInfo>(name, video_file.string(), frame_idx, timestamp));
     }
@@ -114,6 +109,6 @@ void VideoDataset::append_frames(const std::filesystem::path& video_file, std::v
 
 void VideoDataset::setSampleFPS(double sample_fps) {
     frame_interval_seconds_ = 1.0 / sample_fps;
-    capture_cache_.clear(); // Clear the cache when changing interval
+    capture_cache_.clear();
     entries_ = build_entries(video_root_, frame_interval_seconds_);
 }

@@ -52,14 +52,12 @@ void CardTracker::update_frame(const std::vector<Label>& detections) {
         std::map<std::string, int>::iterator det_it = detection_counts.find(card_id);
         
         if (det_it != detection_counts.end()) {
-            // Card detected this frame
             int det_count = det_it->second;
             tracked.detection_count = det_count;
             tracked.confirmed_card_count = (det_count + 1) / 2;
             tracked.frames_detected++;
             tracked.frames_since_last_seen = 0;
 
-            // Check for background card
             if (tracked.frames_detected > frames_background_) {
                 tracked.state = CardState::BACKGROUND;
                 background_cards_.insert(card_id);
@@ -77,7 +75,6 @@ void CardTracker::update_frame(const std::vector<Label>& detections) {
             detection_counts.erase(det_it);
         } 
         else {
-            // Card NOT detected this frame
             tracked.frames_since_last_seen++;
 
             if (tracked.state == CardState::CONFIRMED) {
@@ -85,7 +82,6 @@ void CardTracker::update_frame(const std::vector<Label>& detections) {
             } 
             else if (tracked.state == CardState::OCCLUDED) {
                 if (tracked.frames_since_last_seen > frames_occlusion_) {
-                    // Card(s) left the table
                     int num_cards = tracked.confirmed_card_count;
                     for (int c = 0; c < num_cards; ++c) {
                         removed_this_frame_.push_back(tracked.card);
@@ -102,12 +98,11 @@ void CardTracker::update_frame(const std::vector<Label>& detections) {
         }
     }
 
-    // Remove processed cards
     for (size_t i = 0; i < to_remove.size(); ++i) {
         tracked_cards_.erase(to_remove[i]);
     }
 
-    // Add remaining detections as new tracked cards
+    // Add new detections as tracked cards
     for (std::map<std::string, int>::const_iterator it = detection_counts.begin();
          it != detection_counts.end(); ++it) {
         std::string card_id = it->first;
@@ -118,7 +113,6 @@ void CardTracker::update_frame(const std::vector<Label>& detections) {
         }
     }
 
-    // Recalculate running count based on all currently confirmed cards
     recalculate_running_count();
 }
 

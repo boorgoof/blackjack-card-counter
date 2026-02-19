@@ -1,4 +1,4 @@
-//Gianluca Caregnato
+// Gianluca Caregnato
 
 #ifndef MASK_CARD_DETECTOR_H
 #define MASK_CARD_DETECTOR_H

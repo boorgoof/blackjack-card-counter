@@ -1,4 +1,4 @@
-//Gianluca Caregnato
+// Gianluca Caregnato
 
 #ifndef SIMPLE_CONTOURS_CARD_SEGMENTER_H
 #define SIMPLE_CONTOURS_CARD_SEGMENTER_H
@@ -6,26 +6,29 @@
 #include "ObjectSegmenter.h"
 #include <opencv2/opencv.hpp>
 
-
+/**
+ * @brief Segmenter that finds card contours directly from a binary mask.
+ *
+ * Uses cv::findContours on the mask and filters out contours
+ * that are too small in area or have too few points.
+ */
 class SimpleContoursCardSegmenter : public ObjectSegmenter {
 private:
-   
     struct Params {
-        double minCardArea = 1000.0;     
-        int minContourPoints = 5;          
+        double minCardArea = 1000.0;
+        int minContourPoints = 5;
     };
     Params params_;
 
 public:
-    
     SimpleContoursCardSegmenter();
     ~SimpleContoursCardSegmenter() override = default;
 
     /**
-     * @brief segment objects in an image given a mask
-     * @param src_img the image to segment objects from (in this case, the image is useless since we are only using the mask to find contours)
-     * @param src_mask the mask to apply to the image to select the regions to segment
-     * @return a vector of contours, where each contour is a vector of points representing the boundary of a segmented object
+     * @brief Segment card-shaped objects from a binary mask.
+     * @param src_img  Source image (unused — segmentation relies only on the mask).
+     * @param src_mask Binary mask whose contours are extracted.
+     * @return Filtered contours, each a vector of boundary points.
      */
     std::vector<std::vector<cv::Point>> segment_objects(const cv::Mat& src_img, const cv::Mat& src_mask) override;
 

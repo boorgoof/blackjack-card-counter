@@ -1,4 +1,4 @@
-//Gianluca Caregnato
+// Gianluca Caregnato
 
 #ifndef DATASET_H
 #define DATASET_H
@@ -16,17 +16,14 @@
 
 /**
  * @brief Abstract base class for dataset management.
- * 
- * This class defines the interface for different dataset types (e.g., image folders, video streams).
- * Derived classes must implement the pure virtual methods to provide specific dataset functionality.
+ *
+ * Derived classes (ImageDataset, VideoDataset, TemplateDataset)
+ * implement the pure virtual methods for their specific source type.
  */
 class Dataset {
 public:
     /**
-     * A forward iterator for Dataset entries.
-     * This iterator allows traversal over SampleInfo entries in the Dataset.
-     * It supports standard iterator operations such as dereferencing, incrementing,
-     * and comparison.
+     * @brief Forward iterator over the SampleInfo entries of a Dataset.
      */
     struct Iterator {
         using iterator_category = std::forward_iterator_tag;
@@ -37,35 +34,18 @@ public:
 
     public:
         Iterator() = default;
+
         /**
-         * Constructor for the Iterator.
+         * @brief Construct from an underlying shared_ptr const_iterator.
          * @param current Iterator to the current SampleInfo entry.
          */
         explicit Iterator(std::vector<std::shared_ptr<SampleInfo>>::const_iterator current)
             : current_(current) {}
 
-        /**
-         * @brief Dereference operator to access the current SampleInfo.
-         * @return Reference to the current SampleInfo.
-         */
         reference operator*() const { return *(*current_); }
-
-        /**
-         * @brief Arrow operator to access members of the current SampleInfo.
-         * @return Pointer to the current SampleInfo.
-         */
         pointer operator->() const { return current_->get(); }
 
-        /**
-         * @brief Pre-increment operator to move to the next SampleInfo.
-         * @return Reference to the incremented iterator.
-         */
         Iterator& operator++() { ++current_; return *this; }
-
-        /**
-         * @brief Post-increment operator to move to the next SampleInfo.
-         * @return Iterator before incrementing.
-         */
         Iterator operator++(int) { Iterator tmp = *this; ++(*this); return tmp; }
 
         friend bool operator== (const Iterator& a, const Iterator& b) { return a.current_ == b.current_; };
@@ -74,51 +54,48 @@ public:
         std::vector<std::shared_ptr<SampleInfo>>::const_iterator current_;
     };
 
-    /**
-     * @brief Virtual destructor for proper cleanup of derived classes.
-     */
     virtual ~Dataset() = default;
 
     /**
-     * @brief Returns an iterator to the beginning of the Dataset entries.
+     * @brief Returns an iterator to the beginning of the dataset.
      * @return Iterator to the first SampleInfo entry.
      */
     virtual Iterator begin() const = 0;
 
     /**
-     * @brief Returns an iterator to the end of the Dataset entries.
-     * @return Iterator to one past the last SampleInfo entry.
+     * @brief Returns an iterator to the end of the dataset.
+     * @return Iterator past the last SampleInfo entry.
      */
     virtual Iterator end() const = 0;
 
     /**
-     * @brief Returns the number of entries in the Dataset.
-     * @return Size of the Dataset.
+     * @brief Returns the number of entries in the dataset.
+     * @return Number of samples.
      */
     virtual size_t size() const noexcept = 0;
 
     /**
-     * @brief Load the sample referenced by the iterator.
+     * @brief Load the sample referenced by the given iterator.
      * @param it Iterator pointing to a sample owned by this dataset.
-     * @return Loaded cv::Mat image/frame.
+     * @return The loaded cv::Mat image/frame.
      */
     virtual cv::Mat load(const Iterator& it) = 0;
 
     /**
-     * @brief Checks if the Dataset is empty.
-     * @return True if the Dataset has no entries, false otherwise.
+     * @brief Checks if the dataset is empty.
+     * @return True if the dataset has no entries.
      */
     bool empty() const noexcept { return size() == 0; }
 
     /**
-     * @brief Returns if it is a sequential dataset (for video).
-     * @return True if the dataset is sequential, false otherwise.
+     * @brief Returns whether the dataset must be consumed sequentially.
+     * @return True if sequential (e.g. video), false otherwise.
      */
     virtual bool is_sequential() const noexcept = 0;
 
     /**
-     * @brief Get the image root directory.
-     * @return Path to the image directory, or empty path if not applicable.
+     * @brief Get the image/frame root directory.
+     * @return Path to the source directory, or empty path if not applicable.
      */
     virtual std::filesystem::path get_root() const = 0;
 
@@ -128,39 +105,18 @@ public:
      */
     virtual std::filesystem::path get_annotation_root() const = 0;
 
-    const bool get_has_annotations(){return this->has_annotations_;}
-    void set_has_annotations(const bool has_annotations){this->has_annotations_ = has_annotations;}
+    bool get_has_annotations() const { return has_annotations_; }
+    void set_has_annotations(bool has_annotations) { has_annotations_ = has_annotations; }
 
 protected:
-    /**
-     * @brief Flag, true if the dataset has the ground truth, false elsewhere
-     */
+    /** @brief True if the dataset has ground-truth annotations. */
     bool has_annotations_;
 
-    /**
-     * @brief Constructor for derived classes.
-     */
-    Dataset(const bool has_annotations = false) : has_annotations_{has_annotations}{};
-
-    /**
-     * @brief Copy constructor (protected to prevent slicing).
-     */
+    Dataset(bool has_annotations = false) : has_annotations_{has_annotations} {};
     Dataset(const Dataset&) = default;
-
-    /**
-     * @brief Copy assignment operator (protected to prevent slicing).
-     */
     Dataset& operator=(const Dataset&) = default;
-
-    /**
-     * @brief Move constructor (protected to prevent slicing).
-     */
     Dataset(Dataset&&) = default;
-
-    /**
-     * @brief Move assignment operator (protected to prevent slicing).
-     */
     Dataset& operator=(Dataset&&) = default;
 };
 
-#endif 
+#endif

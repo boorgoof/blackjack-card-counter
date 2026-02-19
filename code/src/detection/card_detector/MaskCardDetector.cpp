@@ -1,13 +1,13 @@
 // Gianluca Caregnato
 #include "../../../include/detection/card_detector/MaskCardDetector.h"
 
-MaskCardDetector::MaskCardDetector(const PipelinePreset preset, const MaskType maskType, bool visualize) 
+MaskCardDetector::MaskCardDetector(PipelinePreset preset, MaskType maskType, bool visualize) 
   : visualize_{visualize} {
   loadPreset(preset);
   loadMaskPreset(maskType);
 }
 
-void MaskCardDetector::loadPreset(const PipelinePreset preset) {
+void MaskCardDetector::loadPreset(PipelinePreset preset) {
   clearPipeline();
 
   switch (preset) {
@@ -38,12 +38,11 @@ void MaskCardDetector::loadPreset(const PipelinePreset preset) {
     add_step(preprocessing::filterBySize, 300000);
     add_step(preprocessing::morphOpenClose, 10, 20);
     add_step(preprocessing::keepLargestObject);
-    //add_step();//todo: add a check to verify if the mask is done or it did not find anything and do it with different parameters if not found)
     break;
   }
 }
 
-void MaskCardDetector::loadMaskPreset(const MaskType maskType) {
+void MaskCardDetector::loadMaskPreset(MaskType maskType) {
   switch (maskType) {
   case MaskType::POLYGON:
     maskType_ = [this](const cv::Mat &img) { return applyPipeline(img); };
@@ -67,10 +66,8 @@ void MaskCardDetector::loadMaskPreset(const MaskType maskType) {
 
 cv::Mat MaskCardDetector::applyPipeline(const cv::Mat &img) const {
   cv::Mat current = img.clone();
-  for (size_t stepIndex = 0; stepIndex < steps_.size(); ++stepIndex) {
-    const std::function<cv::Mat(const cv::Mat&)> &currentStep = steps_[stepIndex];
-    cv::Mat processedImage = currentStep(current);
-    current = processedImage;
+  for (size_t i = 0; i < steps_.size(); ++i) {
+    current = steps_[i](current);
   }
   return current;
 }
@@ -104,8 +101,8 @@ cv::Mat filterBySize(const cv::Mat &maskIn, int minArea) {
 cv::Mat morphOpenClose(const cv::Mat &maskIn, int openSize, int closeSize) {
   CV_Assert(maskIn.type() == CV_8UC1);
   cv::Mat mask = maskIn.clone();
-    cv::morphologyEx(mask, mask, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_RECT, {openSize, openSize}));
-    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_RECT, {closeSize, closeSize}));
+  cv::morphologyEx(mask, mask, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_RECT, {openSize, openSize}));
+  cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_RECT, {closeSize, closeSize}));
   return mask;
 }
 
@@ -156,8 +153,8 @@ std::vector<std::vector<cv::Point>> getCardsConvexHulls(const cv::Mat &mask) {
   std::vector<std::vector<cv::Point>> polys = getCardsPolygon(mask);
   std::vector<std::vector<cv::Point>> hulls;
   hulls.reserve(polys.size());
-    for (const std::vector<cv::Point>& p : polys) {
-        if (p.empty()) continue;
+  for (const std::vector<cv::Point>& p : polys) {
+    if (p.empty()) continue;
     std::vector<cv::Point> h;
     cv::convexHull(p, h);
     if (!h.empty()) hulls.push_back(std::move(h));
@@ -168,8 +165,8 @@ std::vector<std::vector<cv::Point>> getCardsConvexHulls(const cv::Mat &mask) {
 cv::Mat getCardsConvexHullsMask(const cv::Mat &mask) {
   std::vector<std::vector<cv::Point>> points = getCardsConvexHulls(mask);
   cv::Mat result = cv::Mat::zeros(mask.size(), CV_8UC1);
-    for (const std::vector<cv::Point>& h : points) {
-        cv::fillPoly(result, std::vector<std::vector<cv::Point>>{h}, cv::Scalar(255));
+  for (const std::vector<cv::Point>& h : points) {
+    cv::fillPoly(result, std::vector<std::vector<cv::Point>>{h}, cv::Scalar(255));
   }
   return result;
 }
@@ -179,8 +176,7 @@ std::vector<cv::Rect> getCardsBoundingBox(const cv::Mat &mask) {
   std::vector<cv::Rect> boxes;
   boxes.reserve(polys.size());
   for (const std::vector<cv::Point> &p : polys) {
-    cv::Rect boundingBox = cv::boundingRect(p);
-    boxes.emplace_back(boundingBox);
+    boxes.emplace_back(cv::boundingRect(p));
   }
   return boxes;
 }
@@ -194,4 +190,4 @@ cv::Mat getBoundingBoxesMask(const cv::Mat &mask) {
   return result;
 }
 
-}
+} // namespace mask

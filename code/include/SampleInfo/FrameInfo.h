@@ -25,12 +25,14 @@ public:
     const std::string& get_pathLabel() const noexcept override { return label_path_; }
 
     /**
-     * @brief Returns the frame index within the video.
+     * @brief Get the frame index within the video.
+     * @return Frame index (0-based).
      */
     std::size_t get_frame_index() const noexcept { return frame_index_; }
 
     /**
-     * @brief Returns the frame timestamp (seconds).
+     * @brief Get the frame timestamp.
+     * @return Timestamp in seconds from the start of the video.
      */
     double get_timestamp() const noexcept { return timestamp_seconds_; }
 

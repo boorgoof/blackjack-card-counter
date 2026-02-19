@@ -1,4 +1,4 @@
-//Gianluca Caregnato
+// Gianluca Caregnato
 
 #ifndef IMAGEDATASET_H
 #define IMAGEDATASET_H
@@ -11,26 +11,26 @@
 #include <vector>
 
 /**
- * @brief Concrete implementation of Dataset for folder-based image datasets.
- * 
- * This class manages datasets stored as collections of image files in a directory,
+ * @brief Dataset implementation for folder-based image collections.
+ *
+ * Manages datasets stored as image files in a directory,
  * with corresponding annotation files in a separate directory.
  */
 class ImageDataset : public Dataset {
 public:
     /**
-     * @brief Construct from dataset path (legacy).
+     * @brief Construct from a single dataset path (legacy layout).
      * @param dataset_path Base path containing "Images/Images" and "YOLO_Annotations/YOLO_Annotations" subdirectories.
      */
     ImageDataset(const std::string& dataset_path);
-    
+
     /**
-     * @brief Construct from separate image and annotation directories.
+     * @brief Construct from separate image and annotation directory strings.
      * @param image_dir Path to the directory containing images.
      * @param annotation_dir Path to the directory containing annotations.
      */
     ImageDataset(const std::string& image_dir, const std::string& annotation_dir);
-    
+
     /**
      * @brief Construct from filesystem paths.
      * @param image_root Path to the directory containing images.
@@ -38,12 +38,8 @@ public:
      */
     ImageDataset(std::filesystem::path image_root, std::filesystem::path annotation_root);
 
-    /**
-     * @brief Default destructor.
-     */
     ~ImageDataset() override = default;
 
-    // Implement pure virtual methods from Dataset
     Iterator begin() const override;
     Iterator end() const override;
     size_t size() const noexcept override { return entries_.size(); }
@@ -54,16 +50,14 @@ public:
 
 private:
     /**
-     * @brief Builds the dataset entries by scanning the image and annotation directories.
-     * @param image_root Path to the directory containing images.
-     * @param annotation_root Path to the directory containing annotations.
-     * @return A vector of SampleInfo objects representing the dataset entries.
+     * @brief Scan image_root_ and annotation_root_ to build the sample entries.
+     * @return Vector of SampleInfo shared pointers, sorted by name.
      */
     std::vector<std::shared_ptr<SampleInfo>> build_entries();
 
-    std::vector<std::shared_ptr<SampleInfo>> entries_; // Vector of all sample info entries
-    std::filesystem::path image_root_; // Root directory for images
-    std::filesystem::path annotation_root_; // Root directory for annotations
+    std::vector<std::shared_ptr<SampleInfo>> entries_;
+    std::filesystem::path image_root_;
+    std::filesystem::path annotation_root_;
 };
 
 #endif // IMAGEDATASET_H
