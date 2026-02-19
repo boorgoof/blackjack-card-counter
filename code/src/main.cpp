@@ -217,7 +217,7 @@ int main(int argc, char** argv) {
             }
         } else if(dataset_to_use == VIDEO_DATASET_NAME){
             //Dataset object creation
-            constexpr double VIDEO_SAMPLE_FPS = 10.0;
+            constexpr double VIDEO_SAMPLE_FPS = 5.0;
             std::unique_ptr<Dataset> video_dataset(new VideoDataset(dataset_path, false, VIDEO_SAMPLE_FPS));
 
             if(detection_method == DETECTION_MODE::MODEL){
@@ -273,7 +273,7 @@ std::unique_ptr<ProcessingMode> create_mode_for_dataset(const std::unique_ptr<Da
     }
 
     if (dataset->is_sequential()) {
-        return std::make_unique<SequentialFrameProcessing>(std::move(card_detector), visualize, 10.0);
+        return std::make_unique<SequentialFrameProcessing>(std::move(card_detector), visualize, 5.0);
     } else {
         return std::make_unique<SingleFrameProcessing>(std::move(card_detector), visualize);
     }
@@ -315,7 +315,7 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
     std::unique_ptr<VideoWriter> video_writer;
     if(dataset->is_sequential()){
         // Output at 15 FPS for slightly faster than realtime playback
-        video_writer = std::make_unique<VideoWriter>(output_folder_path+"/"+dataset->get_root().filename().string(), 15);
+        video_writer = std::make_unique<VideoWriter>(output_folder_path+"/"+dataset->get_root().filename().string(), 5);
     }
 
     int frame_number = 0;
