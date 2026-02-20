@@ -1,6 +1,7 @@
---- GLOBAL METRICS ---
-Mean Accuracy (mAP50): 0.7605
-Mean IoU-based (mAP50-95): 0.4702
+--- SUMMARY METRICS ---
+Global Accuracy:  0.6570
+mAP50:  0.7605
+Mean IoU:  0.7917
 
 --- CLASS-WISE METRICS ---
 Class_ID | Name     | Precision  | Recall     | F1-Score  
