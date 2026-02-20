@@ -24,6 +24,9 @@ public:
     KeypointExtractor(const ExtractorType::FeatureDescriptorAlgorithm& type) : FeatureExtractor(type) {this->init();}
     ~KeypointExtractor();
     
+    /**
+     * @brief extract features from an image given a mask to select the region of interest.
+     */
     Feature* extractFeatures(const cv::Mat& img, const cv::Mat& mask) const;
 };
 

@@ -12,9 +12,12 @@ public:
     YoloCardDetector(const std::string& modelPath, bool visualize);
     ~YoloCardDetector() override = default;
 
+    /**
+     * @brief detect cards in an image using a YOLO object detection model.
+     */
     std::vector<Label> detect_cards(const cv::Mat& image) override;
     /**
-     * @brief mapCardIndex: maps the index of the detected class from the model to the one used in the logic program. 
+     * @brief mapCardIndex: maps the index of the detected class from the model to the one used in the logic program (Yolo_index_codec)
      *  This is necessary only if the model was trained on a different dataset with a different class ordering than the ones used in the program.
      */
     int mapCardIndex(int inputIndex);

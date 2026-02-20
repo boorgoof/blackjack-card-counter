@@ -21,7 +21,10 @@ public:
         PHASH,
         COLOR_MOMENT_HASH
     };
-   
+
+    /**
+     * @brief convert the FeatureDescriptorAlgorithm enum value to a string 
+     */
     static std::string toString(FeatureDescriptorAlgorithm type) {
         switch (type) {
             case SIFT: return "SIFT";

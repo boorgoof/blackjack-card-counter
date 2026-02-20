@@ -23,14 +23,31 @@ public:
     SegmentationClassificationCardDetector(std::unique_ptr<MaskCardDetector> mask_card_detector, std::unique_ptr<ObjectClassifier> object_classifier, std::unique_ptr<ObjectSegmenter> object_segmenter, bool visualize);
     ~SegmentationClassificationCardDetector() override = default;
 
+    /**
+     * @brief detect cards in an image using a segmentation-classification approach. 
+     */
     std::vector<Label> detect_cards(const cv::Mat& image) override;
     card_color_utils::CardColor detect_card_color(const cv::Mat& card_img);
 
 
 private:
+    /**
+     * @brief unique pointer to a MaskCardDetector object that will be used to generate masks for card detection
+     */
     std::unique_ptr<MaskCardDetector> mask_card_detector_;
+
+    /**
+     * @brief unique pointer to an ObjectClassifier object that will be used to classify the detected cards
+     */
     std::unique_ptr<ObjectClassifier> object_classifier_;
+
+    /**
+     * @brief unique pointer to an ObjectSegmenter object that will be used to segment the detected cards
+     */
     std::unique_ptr<ObjectSegmenter> object_segmenter_;
+
+
+    
 };
 
 #endif // SEG_CLASS_CARD_DETECTOR_H

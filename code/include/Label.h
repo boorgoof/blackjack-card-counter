@@ -5,10 +5,20 @@
 
 #include <opencv2/opencv.hpp>
 # include "ObjectType.h"
+/**
+ * @brief Class to represent a label for a detected object
+ */
 class Label {
 private:
 
+    /**
+     * @brief the type of the detected object
+     */
     std::unique_ptr<ObjectType> object_;
+
+    /**
+     * @brief the bounding boxes of the detected object in the original image coordinates.
+     */
     std::vector<cv::Rect> bounding_boxes_;
    
 

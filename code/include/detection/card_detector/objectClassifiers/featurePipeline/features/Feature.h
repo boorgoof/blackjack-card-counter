@@ -4,6 +4,9 @@
 #define FEATURE_H
 
 
+/**
+ * @brief Class to represent the extracted features from an image.
+ */
 class Feature {
     public:
         Feature() = default;

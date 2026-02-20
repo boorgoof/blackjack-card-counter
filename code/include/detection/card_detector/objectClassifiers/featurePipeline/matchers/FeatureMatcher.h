@@ -20,6 +20,9 @@ public:
     };
 
 
+    /**
+     * @brief convert the MatcherAlgorithm enum value to a string 
+     */
     static std::string toString(MatcherAlgorithm type) {
         switch (type) {
             case BRUTEFORCE_HAMMING: return "BRUTEFORCE_HAMMING";

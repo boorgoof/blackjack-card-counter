@@ -26,6 +26,9 @@ private:
      */
     std::unique_ptr<FeatureMatcher> matcher_;
 
+    /**
+     * @brief pointer to the template features map, which contains the pre-extracted features for each template 
+     */
     const std::map<const ObjectType*, const Feature*>* template_features_;
 
     double ratio_threshold_ = 0.8;
@@ -36,7 +39,9 @@ public:
 
     ~FeaturePipeline();
 
-    
+    /**
+     * @brief classify an object in an image given a mask by extracting its features and matching them with the template features. 
+     */
     const ObjectType* classify_object(const cv::Mat& src_img,  const cv::Mat &src_mask) override;
 
     void setExtractororComponent(FeatureExtractor* fd) {

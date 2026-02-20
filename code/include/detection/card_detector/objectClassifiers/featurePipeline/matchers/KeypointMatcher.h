@@ -19,6 +19,13 @@ private:
     void init();
 
 public:
+
+    /**
+     * @brief constructor for the KeypointMatcher class
+     * @param type the type of the matcher to use (e.g. BRUTEFORCE_HAMMING, FLANN, etc.)
+     * @param min_matches_threshold the minimum number of matches required for a valid match
+     * @param lowe_ratio_thresh the threshold for Lowe's ratio test to filter matches
+     */
     KeypointMatcher(const MatcherType::MatcherAlgorithm& type, size_t min_matches_threshold = 10, float lowe_ratio_thresh = 0.8) : FeatureMatcher(type), min_matches_threshold_{min_matches_threshold}, lowe_ratio_thresh_{lowe_ratio_thresh} {this->init();}
     ~KeypointMatcher();
 

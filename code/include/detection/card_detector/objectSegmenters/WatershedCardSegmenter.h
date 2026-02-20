@@ -13,6 +13,14 @@ public:
     ~WatershedCardSegmenter() override = default;
 
     std::vector<std::vector<cv::Point>>
+
+    /**
+     * @brief segment objects in an image given a mask using the watershed algorithm with distance transform and markers
+     * 
+     * @param src_img the image to segment objects from
+     * @param src_mask the mask to apply to the image to select the regions to segment
+     * @return a vector of contours, where each contour is a vector of points representing the boundary of a segmented object
+     */
     segment_objects(const cv::Mat& src_img, const cv::Mat& src_mask) override;
 
    

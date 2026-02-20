@@ -13,6 +13,9 @@ class CardType : public ObjectType {
 
 public:
 
+  /**
+   * @brief enum to represent the suit of a card. 
+   */
   enum class Suit {
     SPADES = 0,     // S
     CLUBS = 1,    // C
@@ -21,6 +24,9 @@ public:
     UNKNOWN = -1
   };
 
+  /**
+   * @brief enum to represent the rank of a card.
+   */
   enum class Rank {
     
     A = 0, 
@@ -59,22 +65,37 @@ public:
   int get_id_number() const;
   bool isValid() const { return this->rank != Rank::UNKNOWN && this->suit != Suit::UNKNOWN; } 
   
+  //getters
   const Rank& get_rank() const { return this->rank; }
   const Suit& get_suit() const { return this->suit; }
   const std::string get_type() const { return this->get_id(); }
-  
+  // setters
   void set_rank(const Rank& r) { this->rank = r; }
   void set_suit(const Suit& s) { this->suit = s; }
   void set_type(const std::string& card_text);
 
-
+  // to string
   static const Rank string_to_rank(const std::string& r);
   static const Suit string_to_suit(const std::string& s);
 
+  /**
+   * @brief maps the string representation of a rank to the corresponding Rank enum value.
+   */
   static std::map<std::string, Rank> map_string_to_rank;
+
+  /**
+   * @brief maps the string representation of a suit to the corresponding Suit enum value.
+   */
   static std::map<std::string, Suit> map_string_to_suit;
 
+  /**
+   * @brief maps the Rank enum value to its corresponding string representation.
+   */
   static std::map<Rank, std::string> map_rank_to_string;
+
+  /**
+   * @brief maps the Suit enum value to its corresponding string representation.
+   */
   static std::map<Suit, std::string> map_suit_to_string;
 
   
@@ -92,6 +113,9 @@ private:
 
 namespace card_color_utils { 
 
+  /**
+   * @brief enum to represent the color of a card.
+   */
   enum class CardColor {
     RED,
     BLACK,
@@ -104,13 +128,23 @@ namespace card_color_utils {
 
 }
 
+/**
+ * @brief namespace to encode and decode the card types using YOLO index conventions.
+ */
 namespace Yolo_index_codec {
 
   constexpr int numRanks = 13;  
   constexpr int numSuits = 4;   
   constexpr int noCardIndex = numRanks * numSuits;  
 
+  /**
+   * @brief maps the index of a detected class from the YOLO model to a CardType object.
+   */
   CardType yolo_index_to_card(int index);
+
+  /**
+   * @brief maps a CardType object to the corresponding index used in the YOLO model for detection.
+   */
   int card_to_yolo_index(const CardType& card); 
 
 }
@@ -121,6 +155,9 @@ namespace Blackjack {
   enum class HiLo { Pos=+1, Neutral=0, Neg=-1 };
   inline int HiLo_to_int(HiLo v) { return v==HiLo::Pos ? 1 : (v==HiLo::Neg ? -1 : 0); }
   
+  /**
+   * @brief maps the rank of a card to its corresponding Hi-Lo count value.
+   */
   inline HiLo rank_to_HiLo(CardType::Rank r) {
     
     using R = CardType::Rank;
@@ -133,6 +170,10 @@ namespace Blackjack {
     }
   }
 
+
+  /**
+   * @brief maps a Hi-Lo count value to a corresponding OpenCV color for visualization.
+   */
   inline cv::Scalar HiLo_to_cv_color(HiLo v) {
     
     switch (v) {
