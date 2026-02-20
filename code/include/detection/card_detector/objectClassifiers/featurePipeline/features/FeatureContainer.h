@@ -14,11 +14,20 @@
 
 class FeatureContainer {
 public:
+    /**
+     * @brief Singleton access method for the FeatureContainer instance.
+     * 
+     */
     static FeatureContainer& getInstance() {
         static FeatureContainer inst;
         return inst;
     }
 
+    /**
+     * @brief Loads the template features from the given dataset using the specified feature extractor and stores them in the container.
+     * @param dataset the template dataset to load the features from
+     * @param extractor the feature extractor to use for extracting features
+     */
     void loadTemplates(TemplateDataset& dataset, const FeatureExtractor& extractor) {
         features_ = std::unique_ptr<const std::map<const ObjectType*, const Feature*>>(
             Loader::TemplateObject::load_template_feature(dataset, extractor)

@@ -39,7 +39,9 @@ private:
 
 class FeatureMatcher {
 public:
-
+    /**
+     * FeatureMatcher matches features between two images (the query and the target) and returns a score representing how well the features match. The specific implementation of the matching algorithm is determined by the type of the matcher, which can be set using the constructor or the setType method.
+     */
     FeatureMatcher(const MatcherType::MatcherAlgorithm& type) : type{type} {}
     virtual ~FeatureMatcher() = default;
 

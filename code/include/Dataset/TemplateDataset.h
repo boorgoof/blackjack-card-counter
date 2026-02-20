@@ -14,6 +14,10 @@
 
 class TemplateDataset : public Dataset {
 public:
+    /**
+     * @brief TemplateDataset represents a dataset of template cards.
+     * 
+     */
     TemplateDataset(const std::string& dataset_path);
     ~TemplateDataset() override = default;
 

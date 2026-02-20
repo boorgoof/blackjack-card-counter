@@ -9,10 +9,12 @@
 
 class CardDetector {
 public:
-//delete default constructor, copy constructor and assignment operator
- CardDetector(bool visualize) : visualize(visualize) {}
- CardDetector(const CardDetector&) = delete;
- CardDetector& operator=(const CardDetector&) = delete;
+    /**
+     * Abstract base class for card detectors. It defines the interface for detecting cards in an image, and it also contains a flag to visualize the detected cards on the image (for development purposes).
+     */
+    CardDetector(bool visualize) : visualize(visualize) {}
+    CardDetector(const CardDetector&) = delete;
+    CardDetector& operator=(const CardDetector&) = delete;
 
 virtual  ~CardDetector();
 

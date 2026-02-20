@@ -15,18 +15,71 @@
 namespace Utils{
 
     namespace String{
+        /**
+         * @brief function to normalize a string by removing leading and trailing whitespace and converting it to uppercase.
+         * @param str the string to normalize
+         * @return the normalized string
+         */
         std::string normalize(const std::string& str); 
     }
 
     namespace Path{
+        /**
+         * @brief function to find the longest common path between two paths.
+         * @param path1_str the first path as a string
+         * @param path2_str the second path as a string
+         * @return the longest common path as a string
+         */
         std::string longestCommonPath(const std::string& path1_str, const std::string& path2_str);
+        /**
+         * @brief function to find the longest common path between two paths.
+         * @param path1 the first path as a std::filesystem::path
+         * @param path2 the second path as a std::filesystem::path
+         * @return the longest common path as a std::filesystem::path
+         */
         std::filesystem::path longestCommonPath(const std::filesystem::path& path1, const std::filesystem::path& path2);
     }
 
     namespace Save{
+        /**
+         * @brief function to save a vector of labels to a file in YOLO format.
+         * @param file_path the path to the file where the labels will be saved
+         * @param labels the vector of labels to save
+         * @param image_width the width of the image (used to normalize the bounding box coordinates)
+         * @param image_height the height of the image (used to normalize the bounding box coordinates)
+         * 
+         * YOLO format: each line in the file represents a bounding box and has the following format:
+         * <class_id> <x_center> <y_center> <width> <height>
+         * where:
+         * - <class_id> is the integer ID of the class (starting from 0)
+         * - <x_center> is the x coordinate of the center of the bounding box, normalized by the width of the image
+         * - <y_center> is the y coordinate of the center of the bounding box, normalized by the height of the image
+         * - <width> is the width of the bounding box, normalized by the width of the image
+         * - <height> is the height of the bounding box, normalized by the height of the image
+         */
         void saveLabelsToYoloFile(const std::string& file_path, const std::vector<Label>& labels, const int image_width, const int image_height);
+        /**
+         * @brief function to save an image to a file.
+         * @param file_path the path to the file where the image will be saved
+         * @param image the image to save
+         */
         void saveImageToFile(const std::string& file_path, const cv::Mat& image);
+        /**
+         * @brief function to save a confusion matrix to a file.
+         * @param file_path the path to the file where the confusion matrix will be saved
+         * @param confusion_matrix the confusion matrix to save
+         */
         void save_confusion_matrix(const std::string& file_path, const cv::Mat& confusion_matrix);
+        /**
+         * @brief function to save evaluation metrics to a file.
+         * @param file_path the path to the file where the metrics will be saved
+         * @param accuracy the accuracy to save
+         * @param mean_iou the mean IoU to save
+         * @param precision the vector of precision values to save (one for each class)
+         * @param recall the vector of recall values to save (one for each class)
+         * @param f1 the vector of F1 score values to save (one for each class)
+         * @param classes_to_select the set of class indices for which to save the metrics (if empty, all classes will be saved)
+         */
         void save_metrics(const std::string& file_path, const float accuracy, const float mean_iou, const std::vector<float>& precision, const std::vector<float>& recall, const std::vector<float>& f1, const std::set<int>& classes_to_select);
     }
 

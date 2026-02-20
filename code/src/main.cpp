@@ -188,7 +188,7 @@ int main(int argc, char** argv) {
                 //depending on the dataset type, create the appropriate card detector
                 std::unique_ptr<ProcessingMode> mode = create_mode_for_dataset(single_cards_dataset, visualize, detection_method, nullptr, &model_path);
                 //image preprocesing (resize to faster computations)
-                //img_filter.add_filter("Resize", Filters::resize_to, 1280, 960);
+                img_filter.add_filter("Resize", Filters::resize, 0.25, 0.25);
                 //iterate through dataset and detect each image
                 //output is saved into output_path/single_cards
                 iterate_dataset(single_cards_dataset, img_filter, mode, dataset_output_path, visualize, num_classes);
@@ -406,6 +406,9 @@ void iterate_dataset(std::unique_ptr<Dataset>& dataset, const ImageFilter& image
         draw_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - step_start).count();
 
         step_start = std::chrono::steady_clock::now();
+
+        output_img = Filters::resize(output_img, 0.5, 0.5);
+
         Utils::Save::saveImageToFile(images_folder + img_info->get_name() + ".png", output_img);
         save_image_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - step_start).count();
 

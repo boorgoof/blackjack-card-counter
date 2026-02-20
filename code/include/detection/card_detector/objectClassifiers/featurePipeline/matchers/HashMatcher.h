@@ -15,6 +15,11 @@
 class HashMatcher : public FeatureMatcher {
 
 public:
+    /**
+     * HashMatcher uses the OpenCV img_hash module to compute the hash of the input images and compare them using the compare method of the hasher. The specific type of hash used is determined by the type parameter passed to the constructor, which can be one of the following: PHASH or COLOR_MOMENT_HASH. The threshold parameter is used to determine if a given score is valid (if it is good enough) and to compare scores.
+     * @param type the type of hash to use for matching (PHASH or COLOR_MOMENT_HASH)
+     * @param threshold the threshold to use for determining if a score is valid and for comparing scores
+     */
     HashMatcher(const MatcherType::MatcherAlgorithm& type, double threshold);
     double matchFeatures(const Feature* query, const Feature* target) const override;
     

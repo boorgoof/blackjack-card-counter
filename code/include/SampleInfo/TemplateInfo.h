@@ -11,6 +11,12 @@
 class TemplateInfo : public SampleInfo {
 
 public:
+    /**
+     * @brief TemplateInfo represents a sample in the template dataset, which contains the logical name/id of the sample, the path to the image of the card, and the CardType representing the rank and suit of the card. The get_pathLabel method returns an empty string since template samples do not have associated label files.
+     * @param name the logical name/id of the sample (without extension)
+     * @param image_path the filesystem path to the image of the card
+     * @param card_type the CardType representing the rank and suit of the card
+     */
     TemplateInfo(const std::string& name, const std::string& image_path, const CardType& card_type)
         : name_{name}, pathSample_{image_path}, card_type_{card_type} { }
 
