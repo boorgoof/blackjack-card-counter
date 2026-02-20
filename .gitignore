@@ -1,7 +1,7 @@
 **/build/
 **/build_debug/
-**/.vscode/
 **/output/
+**/.vscode/
 **/.DS_Store/
 .DS_Store
 DL_approach/datasets/**
