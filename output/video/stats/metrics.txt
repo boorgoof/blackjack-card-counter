@@ -1,0 +1,5 @@
+Accuracy: -nan
+Mean IoU: 0
+Mean Average Precision: -nan
+
+Class,Precision,Recall,F1-Score
