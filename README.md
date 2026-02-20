@@ -30,7 +30,7 @@ To run this mode, simply execute the `run_video.sh` script:
 
 The system analyzes 12 random video frames that were previously manually annotated. This allows evaluation of the model’s performance.
 
-Therefore, in this usage mode, the system returns the images showing the detected bounding boxes, the files containing the annotations, and a metrics file reporting the mean Average Precision (mAP), the mean IoU, and the precision, recall, and F1-score of the playing cards present in the images.
+Therefore, in this usage mode, the system returns the images showing the detected bounding boxes, the files containing the annotations, and a metrics file reporting the Accuracy, the mean Average Precision (mAP), the mean IoU, and the precision, recall, and F1-score of the playing cards present in the images.
 
 To run this mode, simply execute the `run_video_images.sh` script:
 ```bash
